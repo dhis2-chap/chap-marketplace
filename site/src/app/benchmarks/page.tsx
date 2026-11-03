@@ -81,14 +81,7 @@ export default function BenchmarksPage() {
       <section className="border-b border-line bg-surface">
         <div className="mx-auto max-w-[1240px] px-5 pb-10 pt-11 sm:px-8 sm:pt-16">
           <div>
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-exp">
-              {records.length === 0
-                ? "Waiting for the first run"
-                : suites.length === 1
-                  ? "Early results · one suite"
-                  : `Early results · ${suites.length} suites`}
-            </span>
-            <h1 className="my-4 font-brand text-[clamp(36px,4vw,50px)] font-medium leading-[1.02] text-ink">
+            <h1 className="mb-4 font-brand text-[clamp(36px,4vw,50px)] font-medium leading-[1.02] text-ink">
               Benchmarks
             </h1>
             <div className="max-w-[70ch] space-y-4 text-[16px] leading-[1.7] text-ink-2">
