@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { IconInfo24 } from "@dhis2/ui-icons";
 import { BenchmarkSuites } from "@/components/BenchmarksClient";
 import {
   buildBenchmarkSuites,
@@ -10,12 +11,10 @@ import {
 import { BENCHMARKS_LIVE } from "@/lib/flags";
 import { getRegistry } from "@/lib/registry";
 
-const LINK = "font-medium text-brand hover:underline";
-
 export const metadata: Metadata = {
   title: "Benchmarks",
   description:
-    "Backtest results for every listed pin, from controlled Chap evaluations — nothing self-reported.",
+    "How the listed models perform on a few public datasets, backtested by the Chap team — nothing self-reported.",
 };
 
 /** Rendered until real benchmark results exist. */
@@ -61,7 +60,7 @@ function BenchmarksComingSoon() {
             runs.
           </span>
           <Link
-            href="/"
+            href="/models"
             className="d2-button"
           >
             Browse models
@@ -77,71 +76,39 @@ export default function BenchmarksPage() {
   if (!BENCHMARKS_LIVE || records.length === 0) return <BenchmarksComingSoon />;
 
   const suites = buildBenchmarkSuites(getRegistry(), records, getMetricDefinitions());
-  const singleSplitSmoke = records.length === 1 && records[0].run?.splits === 1;
 
   return (
     <main>
       <section className="border-b border-line bg-surface">
         <div className="mx-auto max-w-[1240px] px-5 pb-10 pt-11 sm:px-8 sm:pt-16">
           <div>
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-exp">
-              {records.length === 0
-                ? "Waiting for the first run"
-                : suites.length === 1
-                  ? "Early results · one suite"
-                  : `Early results · ${suites.length} suites`}
-            </span>
-            <h1 className="my-4 font-brand text-[clamp(36px,4vw,50px)] font-medium leading-[1.02] text-ink">
+            <h1 className="mb-4 font-brand text-[clamp(36px,4vw,50px)] font-medium leading-[1.02] text-ink">
               Benchmarks
             </h1>
-            <p className="max-w-[58ch] text-[16px] leading-[1.7] text-ink-2">
-              Every score on this page comes from a controlled Chap evaluation
-              of a pinned commit — nothing is self-reported.{" "}
-              {records.length === 0
-                ? "No run has been recorded yet, so there is nothing to rank — a suite appears once its first result is published."
-                : singleSplitSmoke
-                  ? "Only one model has been evaluated so far, over a single backtest split, so read this as provenance rather than a ranking. Rows without a run stay empty on purpose."
-                  : `${records.length} runs have been recorded so far — still early, so read this as provenance rather than a ranking. Rows without a run stay empty on purpose.`}
-            </p>
+            <div className="max-w-[70ch] space-y-4 text-[16px] leading-[1.7] text-ink-2">
+              <p>
+                How the listed models perform on a few public datasets: a
+                quick, rough picture of model performance, not a guide to
+                which model to choose.{" "}
+                <Link href="/docs/benchmarks" className="font-medium text-brand hover:underline">
+                  How the benchmarks are run →
+                </Link>
+              </p>
+              <div className="d2-notice d2-notice-warning [&_svg]:shrink-0 [&_svg]:fill-exp">
+                <IconInfo24 />
+                <p className="text-[14px] leading-[1.55]">
+                  These results cover a few datasets with a single setup, and a
+                  model may do better or worse on your data. Evaluate the
+                  candidates on your own data before choosing one, and use
+                  these results to narrow down which to try.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <BenchmarkSuites suites={suites} baselines={getBaselines()} />
-
-      {suites.length > 0 ? (
-        <section className="mx-auto max-w-[1240px] px-5 sm:px-8 pt-9">
-          <div className="d2-card px-[26px] py-6">
-            <div className="font-brand text-[15px] font-medium text-ink">
-              How models are run
-            </div>
-            <p className="mt-1 max-w-[72ch] text-[13px] leading-[1.6] text-ink-2">
-              Chap&apos;s{" "}
-              <a href="https://github.com/dhis2-chap/chap_benchmarking" className={LINK}>
-                benchmarking server
-              </a>{" "}
-              installs every listed pin with{" "}
-              <code className="font-mono text-[12px] text-ink">chap-admin</code>{" "}
-              and backtests it on a schedule, on each of the{" "}
-              <a href="https://github.com/dhis2/climate-health-data" className={LINK}>
-                datasets
-              </a>{" "}
-              it can run on. A{" "}
-              <a
-                href="https://chap.dhis2.org/chap-modeling-platform/contributor/evaluation_pipeline/"
-                className={LINK}
-              >
-                backtest
-              </a>{" "}
-              trains the model on the history up to a cut-off, forecasts the
-              next few months, and repeats from later cut-offs; the forecasts
-              are scored against the observed cases with Chap&apos;s own
-              metrics. Each row&apos;s run record shows the settings it ran
-              with. How the suites are ranked is not settled yet.
-            </p>
-          </div>
-        </section>
-      ) : null}
 
       {suites.length === 0 ? (
         <section className="mx-auto max-w-[1240px] px-5 sm:px-8 pt-9">
@@ -165,7 +132,7 @@ export default function BenchmarksPage() {
             dataset.
           </span>
           <Link
-            href="/"
+            href="/models"
             className="d2-button"
           >
             Browse models

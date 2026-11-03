@@ -19,7 +19,7 @@ describe("the real registry", () => {
 
   it("carries the marketplace's own repository for open-PR ingestion", () => {
     expect(registry.index.marketplace.repository).toBe(
-      "https://github.com/dhis2-chap/model-marketplace",
+      "https://github.com/dhis2-chap/chap-marketplace",
     );
   });
 

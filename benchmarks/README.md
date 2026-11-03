@@ -1,5 +1,10 @@
 # Benchmark results
 
+For what the benchmarks can and cannot tell you, and how they are run, in
+plain language, see
+[How the benchmarks are run](https://chap-marketplace.dhis2.org/docs/benchmarks)
+on the site. This file covers how the results reach the site.
+
 Benchmark results are not stored in this repository. They are read from
 Chap's benchmarking server — a chap instance that backtests models on a cron
 — each time the site is deployed, and baked into the build. The site never
@@ -62,8 +67,9 @@ then run `pnpm fetch-benchmarks` in `site/`.
 | `metrics`               | `aggregateMetrics`, verbatim — every metric   |
 
 Metrics keep chap's ids (`crps`, `crps_norm`, `mae`, `coverage_10_90`, ...)
-and the site names and describes them with chap-core's own definitions; a
-metric with no definition fails the build. A backtest whose metric
+and the site names and describes them with chap-core's own definitions
+([`chap_core/assessment/metrics`](https://github.com/dhis2-chap/chap-core/tree/master/chap_core/assessment/metrics));
+a metric with no definition fails the build. A backtest whose metric
 computation failed (no `crps`) is skipped.
 
 ## How models are run
@@ -77,4 +83,9 @@ backtest is chap-core's expanding-window evaluation, described in
 [Evaluation Pipeline](https://chap.dhis2.org/chap-modeling-platform/contributor/evaluation_pipeline/).
 
 How the suites are ranked is not settled yet. Until it is, the site shows the
-server's results as recorded, provenance rather than a ranking.
+server's results as recorded, provenance rather than a ranking. Each table
+shows the first six metrics of chap-core's `DEFAULT_METRIC_ORDER`
+(`METRIC_ORDER` in `site/src/lib/metrics.ts`) and sorts by the first of them,
+`crps_log1p`. That is a default ordering, not a verdict on which model is
+best: the datasets are few, more benchmarks are needed, and visitors can sort
+by and show any metric. The site says so on the docs page above.

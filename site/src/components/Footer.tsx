@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Dhis2Mark } from "./icons";
+import { ChapMark } from "./icons";
 
 function buildStamp(): string {
   const date = new Date().toISOString().slice(0, 10);
@@ -13,45 +12,18 @@ const LinkClass =
 export function Footer() {
   return (
     <footer className="board-panel text-board-ink">
-      <div className="mx-auto grid max-w-[1240px] gap-x-10 gap-y-9 px-5 pb-10 pt-11 sm:grid-cols-2 sm:px-8 sm:pt-12 md:grid-cols-[1.5fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-[1240px] gap-x-10 gap-y-9 px-5 pb-10 pt-11 sm:grid-cols-[1.5fr_1fr] sm:px-8 sm:pt-12">
         <div>
           <div className="flex items-center gap-3">
-            <Dhis2Mark className="h-[22px] w-auto text-white" />
+            <ChapMark className="h-6 w-6 text-white" />
             <span className="text-[14px] font-medium leading-none">
-              Chap Hub
+              Chap Marketplace
             </span>
           </div>
           <p className="mt-4 max-w-[44ch] text-[15px] leading-[1.7] text-board-ink-2">
             Climate &amp; Health Analytics Platform, by the HISP Centre at the
             University of Oslo.
           </p>
-        </div>
-        <div>
-          <div className="mb-3.5 text-[13px] font-medium uppercase tracking-[0.1em] text-board-ink-2">
-            Chap Hub
-          </div>
-          <ul className="space-y-2.5 text-[15px]">
-            <li>
-              <Link href="/" className={LinkClass}>
-                Models
-              </Link>
-            </li>
-            <li>
-              <Link href="/verification" className={LinkClass}>
-                Model verification
-              </Link>
-            </li>
-            <li>
-              <Link href="/contribute" className={LinkClass}>
-                Contribute
-              </Link>
-            </li>
-            <li>
-              <Link href="/benchmarks" className={LinkClass}>
-                Benchmarks
-              </Link>
-            </li>
-          </ul>
         </div>
         <div>
           <div className="mb-3.5 text-[13px] font-medium uppercase tracking-[0.1em] text-board-ink-2">

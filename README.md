@@ -1,4 +1,4 @@
-# Chap Hub
+# Chap Marketplace
 
 A curated, verified catalog of forecasting models for [Chap](https://chap.dhis2.org),
 the Climate & Health Analytics Platform. **This repository is the marketplace**:
@@ -8,7 +8,7 @@ rendering of them.
 Listed model versions are marked **Verified** after a compatibility review.
 Verification checks the pinned revision and published image, chapkit service
 registration, and training and prediction. **Verified does not assess or
-guarantee model performance.** See [Model verification](https://chap-marketplace.dhis2.org/verification)
+guarantee model performance.** See [Model verification](https://chap-marketplace.dhis2.org/docs/verification)
 for the checks and their limitations.
 
 The authors' own `assessed_status` remains in the registry as data; the site
@@ -75,7 +75,7 @@ The applied configuration is recorded at
 [`.github/rulesets/main.json`](.github/rulesets/main.json) so it is
 reviewable like everything else. GitHub is the live source of truth; that
 file is the record of what was applied, replayable with
-`gh api -X POST repos/dhis2-chap/model-marketplace/rulesets --input .github/rulesets/main.json`.
+`gh api -X POST repos/dhis2-chap/chap-marketplace/rulesets --input .github/rulesets/main.json`.
 
 **Currently pending:** the maintainers are not yet collaborators on this
 repository, so nobody but the repository owner can cast an approval that
