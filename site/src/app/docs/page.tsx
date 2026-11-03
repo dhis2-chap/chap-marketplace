@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Docs",
@@ -9,15 +10,21 @@ export const metadata: Metadata = {
 const ENTRIES = [
   {
     kicker: "marketplace",
+    title: "Model verification",
+    body: "What the Chap team checks before a model version is listed, and what verification does not mean.",
+    href: "/docs/verification",
+  },
+  {
+    kicker: "marketplace",
     title: "Model registry format",
     body: "The marketplace YAML schema, version pins, channels, configurations, and review conventions.",
     href: "https://github.com/dhis2-chap/model-marketplace/blob/main/models/README.md",
   },
   {
     kicker: "marketplace",
-    title: "Benchmark results",
-    body: "Where benchmark results come from and how the models are run.",
-    href: "https://github.com/dhis2-chap/model-marketplace/blob/main/benchmarks/README.md",
+    title: "How the benchmarks are run",
+    body: "What the benchmark results can and cannot tell you, and the datasets, method and metrics behind them.",
+    href: "/docs/benchmarks",
   },
   {
     kicker: "platform",
@@ -60,34 +67,40 @@ export default function DocsPage() {
             Documentation
           </h1>
           <p className="max-w-[44ch] text-[17px] leading-[1.7] text-ink-2">
-            Guides for running, building and listing chapkit models.
+            Guides for running, building and listing chapkit models, and what
+            the Chap team checks before a model is listed.
           </p>
         </div>
         <div className="d2-card overflow-hidden">
-          {ENTRIES.map((entry) => (
-            <a
-              key={entry.title}
-              href={entry.href}
-              target={entry.href.startsWith("mailto:") ? undefined : "_blank"}
-              rel="noreferrer"
-              className="group grid grid-cols-[92px_minmax(0,1fr)_auto] items-start gap-x-6 border-b border-line px-5 py-[22px] transition-colors duration-150 last:border-b-0 hover:bg-surface-2 hover:[box-shadow:inset_4px_0_0_var(--mp-brand)] max-sm:grid-cols-[minmax(0,1fr)_auto]"
-            >
-              <span className="pt-[3px] text-[13px] font-medium uppercase tracking-[0.08em] text-ink-3 max-sm:col-span-2 max-sm:pb-1.5">
-                {entry.kicker}
-              </span>
-              <span className="min-w-0">
-                <span className="block font-brand text-[17px] font-medium text-ink transition-colors group-hover:text-brand">
-                  {entry.title}
+          {ENTRIES.map((entry) => {
+            // Pages on this site open in place; everything else in a new tab.
+            const internal = entry.href.startsWith("/");
+            const Anchor = internal ? Link : "a";
+            return (
+              <Anchor
+                key={entry.title}
+                href={entry.href}
+                target={internal || entry.href.startsWith("mailto:") ? undefined : "_blank"}
+                rel={internal ? undefined : "noreferrer"}
+                className="group grid grid-cols-[92px_minmax(0,1fr)_auto] items-start gap-x-6 border-b border-line px-5 py-[22px] transition-colors duration-150 last:border-b-0 hover:bg-surface-2 hover:[box-shadow:inset_4px_0_0_var(--mp-brand)] max-sm:grid-cols-[minmax(0,1fr)_auto]"
+              >
+                <span className="pt-[3px] text-[13px] font-medium uppercase tracking-[0.08em] text-ink-3 max-sm:col-span-2 max-sm:pb-1.5">
+                  {entry.kicker}
                 </span>
-                <span className="mt-1 block max-w-[62ch] text-[15px] leading-[1.55] text-ink-2">
-                  {entry.body}
+                <span className="min-w-0">
+                  <span className="block font-brand text-[17px] font-medium text-ink transition-colors group-hover:text-brand">
+                    {entry.title}
+                  </span>
+                  <span className="mt-1 block max-w-[62ch] text-[15px] leading-[1.55] text-ink-2">
+                    {entry.body}
+                  </span>
                 </span>
-              </span>
-              <span className="self-center pl-4 font-brand text-[15px] text-ink-3 transition-[color,transform] duration-150 group-hover:translate-x-[2px] group-hover:-translate-y-[2px] group-hover:text-brand">
-                ↗
-              </span>
-            </a>
-          ))}
+                <span className="self-center pl-4 font-brand text-[15px] text-ink-3 transition-[color,transform] duration-150 group-hover:translate-x-[2px] group-hover:-translate-y-[2px] group-hover:text-brand">
+                  {internal ? "→" : "↗"}
+                </span>
+              </Anchor>
+            );
+          })}
         </div>
       </div>
     </main>

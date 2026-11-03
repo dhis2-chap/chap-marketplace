@@ -4,13 +4,16 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Model verification",
   description:
-    "What Verified means on Chap Hub: compatibility checks and their limitations, without a guarantee of model performance.",
+    "What Verified means on Chap Marketplace: compatibility checks and their limitations, without a guarantee of model performance.",
 };
 
 export default function VerificationPage() {
   return (
     <main className="mx-auto max-w-[1240px] px-5 pb-20 pt-12 sm:px-8 sm:pt-16">
-      <h1 className="font-brand text-[clamp(32px,4vw,46px)] font-medium leading-[1.1] text-ink">
+      <Link href="/docs" className="text-[15px] font-medium text-brand hover:underline">
+        ← Documentation
+      </Link>
+      <h1 className="mt-5 font-brand text-[clamp(32px,4vw,46px)] font-medium leading-[1.1] text-ink">
         What does Verified mean?
       </h1>
       <div className="mt-6 max-w-[70ch] space-y-8 text-[17px] leading-[1.6] text-ink-2">
@@ -73,10 +76,10 @@ export default function VerificationPage() {
             DHIS2 App Hub submission guidelines
           </a>
           : make review expectations clear and leave extensive testing with
-          authors. Chap Hub verification is a separate review for model
+          authors. Chap Marketplace verification is a separate review for model
           compatibility with Chap.
         </p>
-        <Link href="/" className="d2-button d2-button-secondary">
+        <Link href="/models" className="d2-button d2-button-secondary">
           Browse models
         </Link>
       </div>

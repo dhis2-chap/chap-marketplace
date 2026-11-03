@@ -1,4 +1,4 @@
-# Chap Hub — registry index
+# Chap Marketplace — registry index
 #
 # This file is the entry point for the marketplace site. Every model listed
 # here has been reviewed and verified by the Chap maintainers; a model (or a
@@ -16,7 +16,7 @@
 schema_version: 2
 
 marketplace:
-  name: Chap Hub
+  name: Chap Marketplace
   description: >-
     Discover forecasting models for Chap, the Climate & Health Analytics
     Platform. Browse models, check their requirements and follow the

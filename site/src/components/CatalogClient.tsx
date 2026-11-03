@@ -135,7 +135,7 @@ export function CatalogClient({
           open a pull request
         </Link>
         . Every version listed here is{" "}
-        <Link href="/verification" className="font-medium text-brand hover:underline">
+        <Link href="/docs/verification" className="font-medium text-brand hover:underline">
           verified
         </Link>{" "}
         to run in Chap.
