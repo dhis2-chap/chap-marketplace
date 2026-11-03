@@ -18,7 +18,7 @@ const ENTRIES = [
     kicker: "marketplace",
     title: "Model registry format",
     body: "The marketplace YAML schema, version pins, channels, configurations, and review conventions.",
-    href: "https://github.com/dhis2-chap/model-marketplace/blob/main/models/README.md",
+    href: "https://github.com/dhis2-chap/chap-marketplace/blob/main/models/README.md",
   },
   {
     kicker: "marketplace",

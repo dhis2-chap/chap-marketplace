@@ -75,7 +75,7 @@ The applied configuration is recorded at
 [`.github/rulesets/main.json`](.github/rulesets/main.json) so it is
 reviewable like everything else. GitHub is the live source of truth; that
 file is the record of what was applied, replayable with
-`gh api -X POST repos/dhis2-chap/model-marketplace/rulesets --input .github/rulesets/main.json`.
+`gh api -X POST repos/dhis2-chap/chap-marketplace/rulesets --input .github/rulesets/main.json`.
 
 **Currently pending:** the maintainers are not yet collaborators on this
 repository, so nobody but the repository owner can cast an approval that

@@ -157,7 +157,7 @@ export default function BenchmarkDocsPage() {
         <p className="text-[15px]">
           Technical details on how results reach this site are in{" "}
           <a
-            href="https://github.com/dhis2-chap/model-marketplace/blob/main/benchmarks/README.md"
+            href="https://github.com/dhis2-chap/chap-marketplace/blob/main/benchmarks/README.md"
             target="_blank"
             rel="noreferrer"
             className={LINK}

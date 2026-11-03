@@ -24,7 +24,7 @@ marketplace:
   # The marketplace's own repository. The site build ingests this repo's open
   # pull requests so an in-review model or version pin can appear on the site
   # with its running approval count before it merges.
-  repository: https://github.com/dhis2-chap/model-marketplace
+  repository: https://github.com/dhis2-chap/chap-marketplace
   documentation:
     chap: https://chap.dhis2.org
     # Only chapkit model services are supported. Every listed model is a
