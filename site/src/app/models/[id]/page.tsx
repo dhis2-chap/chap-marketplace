@@ -6,6 +6,7 @@ import { AuthorPanel } from "@/components/author";
 import { GitHubMark } from "@/components/icons";
 import { ModelDetailTabs } from "@/components/ModelDetailTabs";
 import {
+  getBaselines,
   getBenchmarks,
   getDefaultMetrics,
   getMetricDefinitions,
@@ -47,6 +48,7 @@ export default async function ModelPage({
     getMetricDefinitions(),
     proposals,
     getDefaultMetrics(),
+    getBaselines(),
   );
 
   const header = (

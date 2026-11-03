@@ -4,8 +4,11 @@ import Link from "next/link";
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { IconWarningFilled24 } from "@dhis2/ui-icons";
 import { BENCHMARKS_LIVE } from "@/lib/flags";
+import { formatComparison } from "@/lib/metrics";
 import type { ModelDetailView } from "@/lib/views";
 import { ChannelChip, StatusBadge } from "./badges";
+import { BaselineToggle, useBaselineToggle } from "./baseline";
+import { MetricPicker, useMetricPicks } from "./metric-picker";
 import { CodePanel } from "./CodePanel";
 import { CopyButton } from "./copy";
 
@@ -293,6 +296,11 @@ function ConfigsTab({ view }: { view: ModelDetailView }) {
 
 function BenchmarksTab({ view }: { view: ModelDetailView }) {
   const b = view.benchmarks;
+  const { baseline, ...toggle } = useBaselineToggle(b?.baselines ?? []);
+  const [shown, setShown] = useMetricPicks(
+    b?.metrics.map((m) => m.id) ?? [],
+    b?.defaultMetrics ?? [],
+  );
   if (!b) {
     return (
       <p className="text-[15px] text-ink-2">
@@ -303,60 +311,107 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
   return (
     <div>
       <h2 className={H2}>Benchmarks</h2>
-      <p className={LEDE}>
-        Every recorded run of this model, newest version first, scored with
-        chap-core&apos;s default metrics. The best value in each column is in
-        bold; hover a metric for its definition.
-      </p>
-      {b.byVersion.map((t) => (
-        <div key={t.datasetName} className="mb-5">
-          <div className="mb-2 font-medium text-ink">{t.datasetName}</div>
-          <div className="overflow-x-auto">
-            <table className="d2-table" style={{ minWidth: 260 + t.columns.length * 110 }}>
-              <thead>
-                <tr>
-                  <th className="text-left" scope="col">
-                    <span className="d2-table-head">Version</span>
-                  </th>
-                  <th className="text-left" scope="col">
-                    <span className="d2-table-head">Configuration</span>
-                  </th>
-                  {t.columns.map((c) => (
-                    <th key={c.id} scope="col" title={c.description}>
-                      <span className="d2-table-head justify-end">{c.label}</span>
+      {/* As on the benchmarks page: only the caption's text changes when
+          the comparison is ticked, so the tables stay put. */}
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
+        <p className="min-w-0 max-w-[70ch] flex-[1_1_40ch] text-[15px] leading-[1.6] text-ink-2">
+          {baseline ? (
+            <>
+              Compared with the {baseline.name} baseline: positive is better,
+              negative worse. Percentages are relative improvements; the rest
+              are in each metric&apos;s units.
+            </>
+          ) : (
+            <>
+              Every recorded run of this model, newest version first, scored
+              with chap-core&apos;s default metrics. The best value in each
+              column is in bold; hover a metric for its definition.
+            </>
+          )}
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <BaselineToggle baselines={b.baselines} {...toggle} />
+          <MetricPicker
+            columns={b.metrics}
+            selected={shown}
+            defaults={b.defaultMetrics}
+            onChange={setShown}
+          />
+        </div>
+      </div>
+      {b.byVersion.map((t) => {
+        // The shown metrics this table has, by their index in its columns.
+        const picked = t.columns
+          .map((c, i) => ({ c, i }))
+          .filter(({ c }) => shown.includes(c.id));
+        return (
+          <div key={t.datasetName} className="mb-5">
+            <div className="mb-2 font-medium text-ink">{t.datasetName}</div>
+            <div className="overflow-x-auto">
+              <table className="d2-table" style={{ minWidth: 260 + picked.length * 110 }}>
+                <thead>
+                  <tr>
+                    <th className="text-left" scope="col">
+                      <span className="d2-table-head">Version</span>
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {t.rows.map((r) => (
-                  <tr key={`${r.versionTag}.${r.configuration ?? ""}`}>
-                    <td className="whitespace-nowrap font-mono text-[13px] text-ink">
-                      {r.versionTag}
-                      {r.isStable ? (
-                        <span className="d2-tag d2-tag-neutral ml-2 font-body">stable</span>
-                      ) : null}
-                    </td>
-                    <td className="font-mono text-[13px] text-ink-2">
-                      {r.configuration ?? "—"}
-                    </td>
-                    {r.values.map((v, i) => (
-                      <td
-                        key={t.columns[i].id}
-                        className={`text-right font-mono ${
-                          r.best[i] ? "font-bold text-ink" : "text-ink-2"
-                        }`}
-                      >
-                        {v}
-                      </td>
+                    <th className="text-left" scope="col">
+                      <span className="d2-table-head">Configuration</span>
+                    </th>
+                    {picked.map(({ c }) => (
+                      <th key={c.id} scope="col" title={c.description}>
+                        <span className="d2-table-head justify-end">{c.label}</span>
+                      </th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {t.rows.map((r) => (
+                    <tr key={`${r.versionTag}.${r.configuration ?? ""}`}>
+                      <td className="whitespace-nowrap font-mono text-[13px] text-ink">
+                        {r.versionTag}
+                        {r.isStable ? (
+                          <span className="d2-tag d2-tag-neutral ml-2 font-body">stable</span>
+                        ) : null}
+                      </td>
+                      <td className="font-mono text-[13px] text-ink-2">
+                        {r.configuration ?? "—"}
+                      </td>
+                      {picked.map(({ i }) => {
+                        const v = r.values[i];
+                        const c = baseline
+                          ? (r.comparisons[baseline.id]?.[i] ?? null)
+                          : null;
+                        return (
+                          <td
+                            key={t.columns[i].id}
+                            className={`text-right font-mono ${
+                              baseline
+                                ? c !== null && c > 0
+                                  ? "text-verified"
+                                  : c !== null && c < 0
+                                    ? "text-danger"
+                                    : "text-ink-2"
+                                : r.best[i]
+                                  ? "font-bold text-ink"
+                                  : "text-ink-2"
+                            }`}
+                          >
+                            {baseline
+                              ? c === null
+                                ? "—"
+                                : formatComparison(t.columns[i], c)
+                              : v}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
       <Link
         href="/benchmarks"
         className="mt-5 inline-block font-medium text-brand hover:underline"

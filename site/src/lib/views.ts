@@ -13,6 +13,7 @@ import {
   type Registry,
 } from "./registry";
 import type {
+  Baseline,
   Benchmark,
   MetricInfo,
   Model,
@@ -188,13 +189,24 @@ export interface ConfigurationView {
 export interface BenchmarksView {
   /** Every recorded run of the model, one table per dataset. */
   byVersion: VersionComparisonView[];
+  /** The baselines its runs can be compared with. */
+  baselines: Baseline[];
+  /** Every metric some table has, for the metric picker. */
+  metrics: { id: string; label: string; description: string }[];
+  /** The ones shown before the visitor picks their own. */
+  defaultMetrics: string[];
 }
 
 /** One dataset's runs of one model, newest version first, to compare versions. */
 export interface VersionComparisonView {
   datasetName: string;
-  /** chap-core's default metrics that some run records. */
-  columns: { id: string; label: string; description: string }[];
+  /** Every metric some run records, in chap-core's order. */
+  columns: {
+    id: string;
+    label: string;
+    description: string;
+    comparisonOp: string | null;
+  }[];
   rows: {
     versionTag: string;
     isStable: boolean;
@@ -203,6 +215,11 @@ export interface VersionComparisonView {
     values: string[];
     /** Per column: the table's best value; none when every run ties. */
     best: boolean[];
+    /**
+     * Per baseline id, per column: the comparison with that baseline,
+     * signed so positive is better; null where there is none.
+     */
+    comparisons: Record<string, (number | null)[]>;
   }[];
 }
 
@@ -288,15 +305,25 @@ function benchmarksView(
   benchmarks: Benchmark[],
   metrics: MetricInfo[],
   defaultMetrics: string[],
+  baselines: Baseline[],
 ): BenchmarksView | null {
   const records = recordsFor(model, benchmarks);
   if (records.length === 0) return null;
+  const byVersion = [...new Set(records.map((b) => b.dataset))]
+    .sort()
+    .map((dataset) => versionComparison(model, dataset, records, metrics));
+  const recorded = inMetricOrder(metrics)
+    .filter((m) => byVersion.some((t) => t.columns.some((c) => c.id === m.id)))
+    .map((m) => ({ id: m.id, label: m.displayName, description: m.description }));
   return {
-    byVersion: [...new Set(records.map((b) => b.dataset))]
-      .sort()
-      .map((dataset) =>
-        versionComparison(model, dataset, records, metrics, defaultMetrics),
-      ),
+    byVersion,
+    baselines: baselines.filter((bl) =>
+      records.some((b) => b.comparisons[bl.id] !== undefined),
+    ),
+    metrics: recorded,
+    defaultMetrics: recorded
+      .map((m) => m.id)
+      .filter((id) => defaultMetrics.includes(id)),
   };
 }
 
@@ -305,7 +332,6 @@ function versionComparison(
   dataset: string,
   records: Benchmark[],
   metrics: MetricInfo[],
-  defaultMetrics: string[],
 ): VersionComparisonView {
   const order = (b: Benchmark) =>
     model.versions.findIndex((v) => v.version === b.version);
@@ -317,11 +343,7 @@ function versionComparison(
         (a.run?.configuration ?? "").localeCompare(b.run?.configuration ?? ""),
     );
   const columns: MetricColumn[] = inMetricOrder(metrics)
-    .filter(
-      (m) =>
-        defaultMetrics.includes(m.id) &&
-        runs.some((b) => b.metrics[m.id] !== undefined),
-    )
+    .filter((m) => runs.some((b) => b.metrics[m.id] !== undefined))
     .map((m) => ({
       id: m.id,
       label: m.displayName,
@@ -342,7 +364,12 @@ function versionComparison(
 
   return {
     datasetName: datasetNameFor(dataset),
-    columns: columns.map(({ id, label, description }) => ({ id, label, description })),
+    columns: columns.map(({ id, label, description, comparisonOp }) => ({
+      id,
+      label,
+      description,
+      comparisonOp,
+    })),
     rows: runs.map((b) => {
       const formatted = new Map(metricViews(b, metrics).map((m) => [m.id, m.value]));
       return {
@@ -354,6 +381,12 @@ function versionComparison(
           (c, i) =>
             b.metrics[c.id] !== undefined &&
             metricRankKey(c, b.metrics[c.id]) === bestKey[i],
+        ),
+        comparisons: Object.fromEntries(
+          Object.entries(b.comparisons).map(([id, values]) => [
+            id,
+            columns.map((c) => values[c.id] ?? null),
+          ]),
         ),
       };
     }),
@@ -367,6 +400,7 @@ export function toDetailView(
   metrics: MetricInfo[],
   proposals: Proposals,
   defaultMetrics: string[] = DEFAULT_METRIC_COLUMNS,
+  baselines: Baseline[] = [],
 ): ModelDetailView {
   const pres = presentationFor(model.id);
   const stable = stableVersion(model);
@@ -433,7 +467,13 @@ export function toDetailView(
         curl: configCurl(key, configuration.config),
       }),
     ),
-    benchmarks: benchmarksView(model, benchmarks, metrics, defaultMetrics),
+    benchmarks: benchmarksView(
+      model,
+      benchmarks,
+      metrics,
+      defaultMetrics,
+      baselines,
+    ),
     verifiedPins,
     reviews: verifiedPins * required,
     installUrl:

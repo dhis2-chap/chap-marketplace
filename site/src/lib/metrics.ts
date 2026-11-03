@@ -77,7 +77,10 @@ export function metricRankKey(column: MetricColumn, value: number): number {
  * metric's direction: a skill ratio as a percentage, anything else in the
  * metric's units.
  */
-export function formatComparison(column: MetricColumn, value: number): string {
+export function formatComparison(
+  column: Pick<MetricColumn, "comparisonOp">,
+  value: number,
+): string {
   return value.toLocaleString("en-US", {
     maximumSignificantDigits: 3,
     signDisplay: "exceptZero",

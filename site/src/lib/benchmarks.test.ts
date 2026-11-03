@@ -321,9 +321,12 @@ describe("model page versions table", () => {
     );
     const [table] = view.benchmarks!.byVersion;
 
-    // Only chap-core's default metrics, in its order.
-    expect(table.columns.map((c) => c.id)).toEqual(["mae", "rmse"]);
-    expect(table.rows.map((r) => [r.versionTag, r.isStable, r.best])).toEqual([
+    // Every recorded metric in chap-core's order; its defaults shown first.
+    expect(table.columns.map((c) => c.id)).toEqual(["mae", "rmse", "crps", "crps_norm"]);
+    expect(view.benchmarks!.defaultMetrics).toEqual(["mae", "rmse"]);
+    expect(
+      table.rows.map((r) => [r.versionTag, r.isStable, r.best.slice(0, 2)]),
+    ).toEqual([
       [multistepStable.version, true, [false, true]],
       [older.version, false, [true, false]],
     ]);
