@@ -58,9 +58,11 @@ export interface Specification {
     configuredModel: {
       id: number;
       name: string;
-      modelTemplate: { displayName: string | null };
+      modelTemplate: { name: string; displayName: string | null };
     };
   }[] | null;
+  /** The baseline the others are compared with by default, by template name. */
+  defaultBaselineModel?: string | null;
 }
 
 /** The specification's baselines that have scores to compare with. */
@@ -70,6 +72,8 @@ function toBaselines(spec: Specification): Baseline[] {
     .map((b) => ({
       id: b.configuredModel.name,
       name: b.configuredModel.modelTemplate.displayName || b.configuredModel.name,
+      default:
+        b.configuredModel.modelTemplate.name === spec.defaultBaselineModel,
     }));
 }
 
@@ -206,7 +210,8 @@ export async function fetchBenchmarks(
         skipped.map((s) => `\n  - ${s}`).join(""),
     );
     records.push(...found);
-    for (const b of toBaselines(spec)) baselines.set(b.id, b);
+    for (const b of toBaselines(spec))
+      baselines.set(b.id, { ...b, default: b.default || !!baselines.get(b.id)?.default });
   }
   if (anyBacktest === null)
     return { metrics: [], baselines: [], results: records };

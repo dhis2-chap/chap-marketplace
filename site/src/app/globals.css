@@ -185,6 +185,14 @@ body {
     outline-offset: -3px;
     text-decoration: underline;
   }
+  .d2-button:disabled {
+    border-color: #e8edf2;
+    background-color: #f9fafb;
+    box-shadow: none;
+    color: #a0adba;
+    fill: #a0adba;
+    cursor: not-allowed;
+  }
   .d2-button-small {
     height: 28px;
     padding: 0 6px;

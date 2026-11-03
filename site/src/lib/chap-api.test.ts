@@ -82,7 +82,7 @@ describe("toBenchmarks", () => {
     };
     const baseline = (id: number, name: string, status: string) => ({
       status,
-      configuredModel: { id, name, modelTemplate: { displayName: null } },
+      configuredModel: { id, name, modelTemplate: { name, displayName: null } },
     });
     const { records } = toBenchmarks(registry, suite, {
       ...spec(run),

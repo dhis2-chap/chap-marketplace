@@ -641,8 +641,14 @@ export function BenchmarkSuites({
     columns.some((c) => c.id === id),
   );
   const [shown, setShown] = useState(defaults);
-  const [baselineId, setBaselineId] = useState("");
-  const baseline = baselines.find((b) => b.id === baselineId) ?? null;
+  // As in the modeling app: off by default, with chap's default baseline
+  // preselected for when it is ticked.
+  const [comparing, setComparing] = useState(false);
+  const [baselineId, setBaselineId] = useState(
+    () => (baselines.find((b) => b.default) ?? baselines[0])?.id ?? "",
+  );
+  const selectedBaseline = baselines.find((b) => b.id === baselineId) ?? null;
+  const baseline = comparing ? selectedBaseline : null;
 
   // Restored after hydration so the prerendered table matches the first render.
   useEffect(() => {
@@ -657,21 +663,43 @@ export function BenchmarkSuites({
     <>
       <section className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-end gap-3 px-5 pt-9 sm:px-8">
         {baselines.length > 0 ? (
-          <label className="flex items-center gap-2 text-[14px] text-ink-2">
-            Compare with
-            <select
-              className="d2-input d2-input-dense w-auto"
-              value={baselineId}
-              onChange={(e) => setBaselineId(e.target.value)}
-            >
-              <option value="">No baseline</option>
-              {baselines.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-          </label>
+          <div className="flex items-center gap-3">
+            <label className="d2-checkbox">
+              <input
+                type="checkbox"
+                checked={comparing}
+                onChange={(e) => setComparing(e.target.checked)}
+              />
+              <CheckboxIcon />
+              Compare with baseline
+            </label>
+            {/* A native select styled as the Metrics button, with its chevron. */}
+            <span className="relative inline-flex">
+              <select
+                aria-label="Baseline"
+                className="d2-button appearance-none pr-[34px] [field-sizing:content]"
+                disabled={!comparing}
+                title={
+                  comparing
+                    ? undefined
+                    : "Tick Compare with baseline to choose the baseline."
+                }
+                value={baselineId}
+                onChange={(e) => setBaselineId(e.target.value)}
+              >
+                {baselines.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name}
+                  </option>
+                ))}
+              </select>
+              <span
+                className={`pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 ${comparing ? "fill-ink" : "fill-[#a0adba]"}`}
+              >
+                <IconChevronDown16 />
+              </span>
+            </span>
+          </div>
         ) : null}
         <MetricPicker
           columns={columns}

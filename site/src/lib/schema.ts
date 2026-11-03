@@ -315,6 +315,8 @@ export const baselineSchema = z.object({
   /** The configured model's name, e.g. "seasonal_median". */
   id: z.string().min(1),
   name: z.string().min(1),
+  /** chap's default baseline, preselected when comparing. */
+  default: z.boolean().default(false),
 });
 
 /**
