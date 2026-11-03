@@ -661,62 +661,75 @@ export function BenchmarkSuites({
   if (suites.length === 0) return null;
   return (
     <>
-      <section className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-end gap-3 px-5 pt-9 sm:px-8">
-        {baselines.length > 0 ? (
-          <div className="flex items-center gap-3">
-            <label className="d2-checkbox">
-              <input
-                type="checkbox"
-                checked={comparing}
-                onChange={(e) => setComparing(e.target.checked)}
-              />
-              <CheckboxIcon />
-              Compare with baseline
-            </label>
-            {/* A native select styled as the Metrics button, with its chevron. */}
-            <span className="relative inline-flex">
-              <select
-                aria-label="Baseline"
-                className="d2-button appearance-none pr-[34px] [field-sizing:content]"
-                disabled={!comparing}
-                title={
-                  comparing
-                    ? undefined
-                    : "Tick Compare with baseline to choose the baseline."
-                }
-                value={baselineId}
-                onChange={(e) => setBaselineId(e.target.value)}
-              >
-                {baselines.map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </select>
-              <span
-                className={`pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 ${comparing ? "fill-ink" : "fill-[#a0adba]"}`}
-              >
-                <IconChevronDown16 />
-              </span>
-            </span>
-          </div>
-        ) : null}
-        <MetricPicker
-          columns={columns}
-          selected={shown}
-          onChange={(ids) => {
-            setShown(ids);
-            writePicks(ids);
-          }}
-        />
-      </section>
-      {baseline ? (
-        <p className="mx-auto max-w-[1240px] px-5 pt-3 text-right text-[13px] text-ink-2 sm:px-8">
-          Scores compared with the {baseline.name} baseline: positive is
-          better than it, negative worse. Percentages are relative
-          improvements; the rest are in the metric&apos;s units.
+      {/* The caption is always shown and only its text changes, so ticking
+          the comparison does not move the tables. */}
+      <section className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-x-8 gap-y-4 px-5 pt-9 sm:px-8">
+        <p className="min-w-0 max-w-[70ch] flex-[1_1_40ch] text-[14px] leading-[1.55] text-ink-2">
+          {baseline ? (
+            <>
+              Scores compared with the {baseline.name} baseline: positive is
+              better, negative worse. Percentages are relative improvements;
+              the rest are in each metric&apos;s units.
+            </>
+          ) : (
+            <>
+              Scores aggregated across all splits and organisation units.
+              {baselines.length > 0
+                ? " Compare with a baseline to see how much better or worse each model does than it."
+                : null}
+            </>
+          )}
         </p>
-      ) : null}
+        <div className="flex flex-wrap items-center gap-3">
+          {baselines.length > 0 ? (
+            <div className="flex items-center gap-3">
+              <label className="d2-checkbox">
+                <input
+                  type="checkbox"
+                  checked={comparing}
+                  onChange={(e) => setComparing(e.target.checked)}
+                />
+                <CheckboxIcon />
+                Compare with baseline
+              </label>
+              {/* A native select styled as the Metrics button, with its chevron. */}
+              <span className="relative inline-flex">
+                <select
+                  aria-label="Baseline"
+                  className="d2-button appearance-none pr-[34px] [field-sizing:content]"
+                  disabled={!comparing}
+                  title={
+                    comparing
+                      ? undefined
+                      : "Tick Compare with baseline to choose the baseline."
+                  }
+                  value={baselineId}
+                  onChange={(e) => setBaselineId(e.target.value)}
+                >
+                  {baselines.map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </select>
+                <span
+                  className={`pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 ${comparing ? "fill-ink" : "fill-[#a0adba]"}`}
+                >
+                  <IconChevronDown16 />
+                </span>
+              </span>
+            </div>
+          ) : null}
+          <MetricPicker
+            columns={columns}
+            selected={shown}
+            onChange={(ids) => {
+              setShown(ids);
+              writePicks(ids);
+            }}
+          />
+        </div>
+      </section>
       {suites.map((suite) => (
         <section
           key={suite.dataset}
