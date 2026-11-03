@@ -7,7 +7,11 @@ import {
   versionByTag,
   type Registry,
 } from "./registry";
-import { inMetricOrder, type MetricColumn } from "./metrics";
+import {
+  DEFAULT_METRIC_COLUMNS,
+  inMetricOrder,
+  type MetricColumn,
+} from "./metrics";
 import { datasetNameFor, datasetSourceFor } from "./presentation";
 import {
   benchmarkResultsSchema,
@@ -35,7 +39,8 @@ export function loadBenchmarks(
   root: string,
 ): BenchmarkResults {
   const file = path.join(root, RESULTS_FILE);
-  if (!fs.existsSync(file)) return { metrics: [], baselines: [], results: [] };
+  if (!fs.existsSync(file))
+    return { metrics: [], baselines: [], defaultMetrics: null, results: [] };
 
   const parsed = benchmarkResultsSchema.safeParse(
     JSON.parse(fs.readFileSync(file, "utf8")),
@@ -95,6 +100,14 @@ export function getBenchmarks(): Benchmark[] {
 /** chap-core's definitions of the metrics those benchmarks carry. */
 export function getMetricDefinitions(): MetricInfo[] {
   return loaded().metrics;
+}
+
+/**
+ * The metrics shown before a visitor picks their own: chap's setting, or
+ * chap-core's default for servers without it.
+ */
+export function getDefaultMetrics(): string[] {
+  return loaded().defaultMetrics ?? DEFAULT_METRIC_COLUMNS;
 }
 
 /** The built-in baselines the benchmarks are compared with. */

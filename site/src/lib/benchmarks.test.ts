@@ -99,6 +99,7 @@ describe("loadBenchmarks", () => {
     expect(loadBenchmarks(registry, root)).toEqual({
       metrics: [],
       baselines: [],
+      defaultMetrics: null,
       results: [],
     });
   });

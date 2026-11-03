@@ -10,7 +10,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { BenchmarkRowView, BenchmarkSuiteView } from "@/lib/benchmarks";
 import {
-  DEFAULT_METRIC_COLUMNS,
   formatComparison,
   metricRankKey,
   type MetricColumn,
@@ -112,10 +111,12 @@ function Sorter({
 function MetricPicker({
   columns,
   selected,
+  defaults,
   onChange,
 }: {
   columns: MetricColumn[];
   selected: string[];
+  defaults: string[];
   onChange: (ids: string[]) => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -172,13 +173,7 @@ function MetricPicker({
               <button
                 type="button"
                 className="d2-button d2-button-small d2-button-secondary"
-                onClick={() =>
-                  onChange(
-                    DEFAULT_METRIC_COLUMNS.filter((id) =>
-                      columns.some((c) => c.id === id),
-                    ),
-                  )
-                }
+                onClick={() => onChange(defaults)}
               >
                 Default
               </button>
@@ -629,17 +624,21 @@ function SuiteTable({
 export function BenchmarkSuites({
   suites,
   baselines,
+  defaultMetrics,
 }: {
   suites: BenchmarkSuiteView[];
   baselines: Baseline[];
+  /** chap's default metrics, in any order. */
+  defaultMetrics: string[];
 }) {
   // Every metric any suite records, in chap-core's default order.
   const columns = [
     ...new Map(suites.flatMap((s) => s.columns).map((c) => [c.id, c])).values(),
   ];
-  const defaults = DEFAULT_METRIC_COLUMNS.filter((id) =>
-    columns.some((c) => c.id === id),
-  );
+  // In column order, which is chap-core's metric order.
+  const defaults = columns
+    .map((c) => c.id)
+    .filter((id) => defaultMetrics.includes(id));
   const [shown, setShown] = useState(defaults);
   // As in the modeling app: off by default, with chap's default baseline
   // preselected for when it is ticked.
@@ -723,6 +722,7 @@ export function BenchmarkSuites({
           <MetricPicker
             columns={columns}
             selected={shown}
+            defaults={defaults}
             onChange={(ids) => {
               setShown(ids);
               writePicks(ids);

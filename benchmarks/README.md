@@ -84,8 +84,10 @@ backtest is chap-core's expanding-window evaluation, described in
 
 How the suites are ranked is not settled yet. Until it is, the site shows the
 server's results as recorded, provenance rather than a ranking. Each table
-shows the first six metrics of chap-core's `DEFAULT_METRIC_ORDER`
-(`METRIC_ORDER` in `site/src/lib/metrics.ts`) and sorts by the first of them,
+shows the metrics in the server's `selectedMetrics` setting (`GET
+/v1/settings`, chap-core 2.6 and later; before that, the first six of
+chap-core's `DEFAULT_METRIC_ORDER`, copied as `METRIC_ORDER` in
+`site/src/lib/metrics.ts`) and sorts by the first of them, currently
 `crps_log1p`. That is a default ordering, not a verdict on which model is
 best: the datasets are few, more benchmarks are needed, and visitors can sort
 by and show any metric. The site says so on the docs page above.

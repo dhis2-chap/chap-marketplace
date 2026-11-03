@@ -140,9 +140,9 @@ export default function BenchmarkDocsPage() {
         <section>
           <h2 className={H2}>Ranking</h2>
           <p>
-            By default, each table shows six metrics in the Chap
-            platform&apos;s default order, and models are sorted by the first
-            of them: CRPS on log-transformed case counts. This is a default,
+            By default, each table shows the metrics the Chap platform shows
+            by default, in its default order, and models are sorted by the
+            first of them: currently CRPS on log-transformed case counts. This is a default,
             not a verdict on which model is best, so take it with a grain of
             salt. You can sort by any other metric, or pick the metrics shown.
           </p>

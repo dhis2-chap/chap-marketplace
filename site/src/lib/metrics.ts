@@ -36,7 +36,10 @@ export const METRIC_ORDER = [
   "winkler_score_25_75",
 ];
 
-/** The metrics shown before a visitor picks their own. */
+/**
+ * The metrics shown before a visitor picks their own when the server does
+ * not return chap's selectedMetrics setting (before chap-core 2.6).
+ */
 export const DEFAULT_METRIC_COLUMNS = METRIC_ORDER.slice(0, 6);
 
 /**

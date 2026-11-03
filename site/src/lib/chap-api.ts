@@ -180,6 +180,17 @@ export async function fetchBenchmarks(
     return (await res.json()) as T;
   }
 
+  // GET /v1/settings arrived in chap-core 2.6; older servers 404.
+  const settings = await fetch(`${url}/v1/settings`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!settings.ok && settings.status !== 404) {
+    throw new Error(`GET /v1/settings: ${settings.status} ${settings.statusText}`);
+  }
+  const defaultMetrics = settings.ok
+    ? ((await settings.json()) as { selectedMetrics: string[] }).selectedMetrics
+    : null;
+
   const records: Benchmark[] = [];
   const baselines = new Map<string, Baseline>();
   let anyBacktest: number | null = null;
@@ -214,7 +225,7 @@ export async function fetchBenchmarks(
       baselines.set(b.id, { ...b, default: b.default || !!baselines.get(b.id)?.default });
   }
   if (anyBacktest === null)
-    return { metrics: [], baselines: [], results: records };
+    return { metrics: [], baselines: [], defaultMetrics, results: records };
 
   // chap-core's metric registry: the same whichever backtest is asked about.
   const all = await get<MetricInfo[]>(`/v1/visualization/metrics/${anyBacktest}`);
@@ -222,6 +233,7 @@ export async function fetchBenchmarks(
   return {
     metrics: all.filter((m) => used.has(m.id)),
     baselines: [...baselines.values()],
+    defaultMetrics,
     results: records,
   };
 }

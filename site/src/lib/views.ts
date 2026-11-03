@@ -287,13 +287,16 @@ function benchmarksView(
   model: Model,
   benchmarks: Benchmark[],
   metrics: MetricInfo[],
+  defaultMetrics: string[],
 ): BenchmarksView | null {
   const records = recordsFor(model, benchmarks);
   if (records.length === 0) return null;
   return {
     byVersion: [...new Set(records.map((b) => b.dataset))]
       .sort()
-      .map((dataset) => versionComparison(model, dataset, records, metrics)),
+      .map((dataset) =>
+        versionComparison(model, dataset, records, metrics, defaultMetrics),
+      ),
   };
 }
 
@@ -302,6 +305,7 @@ function versionComparison(
   dataset: string,
   records: Benchmark[],
   metrics: MetricInfo[],
+  defaultMetrics: string[],
 ): VersionComparisonView {
   const order = (b: Benchmark) =>
     model.versions.findIndex((v) => v.version === b.version);
@@ -315,7 +319,7 @@ function versionComparison(
   const columns: MetricColumn[] = inMetricOrder(metrics)
     .filter(
       (m) =>
-        DEFAULT_METRIC_COLUMNS.includes(m.id) &&
+        defaultMetrics.includes(m.id) &&
         runs.some((b) => b.metrics[m.id] !== undefined),
     )
     .map((m) => ({
@@ -362,6 +366,7 @@ export function toDetailView(
   benchmarks: Benchmark[],
   metrics: MetricInfo[],
   proposals: Proposals,
+  defaultMetrics: string[] = DEFAULT_METRIC_COLUMNS,
 ): ModelDetailView {
   const pres = presentationFor(model.id);
   const stable = stableVersion(model);
@@ -428,7 +433,7 @@ export function toDetailView(
         curl: configCurl(key, configuration.config),
       }),
     ),
-    benchmarks: benchmarksView(model, benchmarks, metrics),
+    benchmarks: benchmarksView(model, benchmarks, metrics, defaultMetrics),
     verifiedPins,
     reviews: verifiedPins * required,
     installUrl:

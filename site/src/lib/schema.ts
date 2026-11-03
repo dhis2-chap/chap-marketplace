@@ -339,6 +339,11 @@ export const metricInfoSchema = z.object({
 export const benchmarkResultsSchema = z.object({
   metrics: z.array(metricInfoSchema),
   baselines: z.array(baselineSchema).default([]),
+  /**
+   * The metrics chap shows by default — its selectedMetrics setting. Null
+   * when the server predates the setting (chap-core 2.6).
+   */
+  defaultMetrics: z.array(z.string()).nullable().default(null),
   results: z.array(benchmarkSchema),
 });
 
