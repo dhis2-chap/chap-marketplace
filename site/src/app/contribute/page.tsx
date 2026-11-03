@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Link from "next/link";
-import { IconCheckmarkCircle24 } from "@dhis2/ui-icons";
+import { IconCheckmarkCircle24, IconInfo24, IconSync24 } from "@dhis2/ui-icons";
 import { GitHubMark } from "@/components/icons";
 import { CodePanel } from "@/components/CodePanel";
 import { CopyButton } from "@/components/copy";
@@ -9,7 +10,7 @@ import { getRegistry } from "@/lib/registry";
 export const metadata: Metadata = {
   title: "Contribute",
   description:
-    "How to list a model: one YAML file, one pull request and verification.",
+    "How to list a model in the Chap Marketplace: what you need, how review and verification work, and an example file.",
 };
 
 /** Compact version of the real schema documented in models/README.md. */
@@ -79,10 +80,42 @@ const CHECKS = [
   "At least one maintainer GitHub handle is listed.",
 ];
 
-const STEPS = [
-  ["Add one YAML file", "Describe your model in models/<id>.yaml."],
-  ["Open a pull request", "No account or form — just GitHub."],
-  ["Get verified", "Once merged, your model is listed under your name."],
+const LINK = "font-medium text-brand hover:underline";
+const H2 = "mb-4 font-brand text-[22px] font-medium text-ink";
+
+const STEPS: [string, ReactNode][] = [
+  [
+    "You submit",
+    <>
+      You describe your model in a single YAML file and open a pull request in
+      the Chap Marketplace repository on GitHub. The example file and
+      checklist below show what to include.
+    </>,
+  ],
+  [
+    "We review and verify it",
+    <>
+      The Chap team checks that the model works with Chap: that it is a
+      chapkit service whose published image matches the listed code, that it
+      registers with Chap and can train and predict, and that the file is
+      valid. This is what we call verification. Read{" "}
+      <Link href="/docs/verification" className={LINK}>
+        Model verification
+      </Link>{" "}
+      for what it covers and what it does not.
+    </>,
+  ],
+  [
+    "Your model is listed",
+    <>
+      Once the review is approved, the model appears in the marketplace under
+      your name. Listed models are also run in our{" "}
+      <Link href="/benchmarks" className={LINK}>
+        benchmarks
+      </Link>
+      .
+    </>,
+  ],
 ];
 
 export default function ContributePage() {
@@ -93,25 +126,80 @@ export default function ContributePage() {
       <h1 className="max-w-[20ch] font-brand text-[clamp(32px,4vw,46px)] font-medium leading-[1.1] text-ink">
         Submit a model
       </h1>
-      <p className="mt-3 max-w-[52ch] text-[17px] leading-[1.6] text-ink-2">
-        One file, one pull request and verification. Your name is shown on the
-        listing.{" "}
-        <Link href="/verification" className="font-medium text-brand hover:underline">
-          Read what verification covers.
-        </Link>
+      <p className="mt-4 max-w-[64ch] text-[17px] leading-[1.6] text-ink-2">
+        Contributing a model means listing it in the Chap Marketplace, so that
+        anyone running the Chap Modeling Platform can find it, install it and
+        use it from the DHIS2 Modeling App. Your name and organization are
+        shown on the model&apos;s page. The model stays yours: its code lives
+        in your own repository, and you keep developing and maintaining it
+        there.
       </p>
 
-      <ol className="mt-10 grid gap-4 md:grid-cols-3">
-        {STEPS.map(([title, body], i) => (
-          <li key={title} className="d2-card p-5">
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-brand font-medium text-white">
-              {i + 1}
+      <section className="mt-12">
+        <h2 className={H2}>What you need</h2>
+        <ul className="grid gap-4 md:grid-cols-2">
+          <li className="d2-card flex gap-4 p-5 text-[15px] leading-[1.6] text-ink-2">
+            <span className="flex shrink-0">
+              <IconCheckmarkCircle24 color="var(--mp-verified)" />
             </span>
-            <h2 className="mt-3 text-[17px] font-medium text-ink">{title}</h2>
-            <p className="mt-1 text-[15px] text-ink-2">{body}</p>
+            <span>
+              A model packaged as a{" "}
+              <a
+                href="https://chap.dhis2.org/chap-modeling-platform/external_models/chapkit/"
+                target="_blank"
+                rel="noreferrer"
+                className={LINK}
+              >
+                chapkit
+              </a>{" "}
+              service, with its image published. If your model is not packaged
+              yet, the chapkit guide explains how.
+            </span>
           </li>
-        ))}
-      </ol>
+          <li className="d2-card flex gap-4 p-5 text-[15px] leading-[1.6] text-ink-2">
+            <span className="flex shrink-0">
+              <IconCheckmarkCircle24 color="var(--mp-verified)" />
+            </span>
+            <span>
+              A short description of the model: what it does, which disease
+              and setting it was developed for, and what data it needs.
+            </span>
+          </li>
+        </ul>
+      </section>
+
+      <section className="mt-12">
+        <h2 className={H2}>What happens when you submit</h2>
+        <ol className="grid gap-4 md:grid-cols-3">
+          {STEPS.map(([title, body], i) => (
+            <li key={title} className="d2-card p-5">
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-brand font-medium text-white">
+                {i + 1}
+              </span>
+              <h3 className="mt-3 text-[17px] font-medium text-ink">{title}</h3>
+              <p className="mt-1 text-[15px] leading-[1.6] text-ink-2">{body}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="d2-notice [&_svg]:shrink-0 [&_svg]:fill-brand">
+            <IconSync24 />
+            <p className="text-[14px] leading-[1.55]">
+              To publish a new version later, open a pull request that adds it
+              to your file. Each version is verified separately.
+            </p>
+          </div>
+          <div className="d2-notice d2-notice-warning [&_svg]:shrink-0 [&_svg]:fill-exp">
+            <IconInfo24 />
+            <p className="text-[14px] leading-[1.55]">
+              Verification checks that a model runs in Chap. It does not judge
+              how good its forecasts are. Describe honestly in your file what
+              the model was developed and tested for, so users can judge
+              whether it fits their needs.
+            </p>
+          </div>
+        </div>
+      </section>
 
       <div className="mt-12 grid items-start gap-10 lg:grid-cols-[1.3fr_1fr]">
         {/* min-w-0: without it the grid track sizes to the widest YAML line
@@ -126,7 +214,7 @@ export default function ContributePage() {
               href={`${repository}/blob/main/models/README.md`}
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-brand hover:underline"
+              className={LINK}
             >
               models/README.md
             </a>

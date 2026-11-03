@@ -20,8 +20,8 @@ const robotoMono = Roboto_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Chap Hub",
-    template: "%s · Chap Hub",
+    default: "Chap Marketplace",
+    template: "%s · Chap Marketplace",
   },
   description:
     "Discover forecasting models for Chap, the Climate & Health Analytics Platform. Browse models, check their requirements and follow the installation instructions.",

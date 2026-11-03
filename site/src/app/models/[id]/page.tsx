@@ -47,7 +47,7 @@ export default async function ModelPage({
   const header = (
     <>
       <Link
-        href="/"
+        href="/models"
         className="text-[15px] font-medium text-brand hover:underline"
       >
         ← All models

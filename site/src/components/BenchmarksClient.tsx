@@ -23,7 +23,7 @@ import {
  */
 
 /** Remembers the visitor's metric picks; storage may be unavailable. */
-const STORAGE_KEY = "chap-hub:benchmark-metrics";
+const STORAGE_KEY = "chap-marketplace:benchmark-metrics";
 
 function readPicks(): string[] | null {
   try {

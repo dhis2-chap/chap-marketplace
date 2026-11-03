@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
 import { IconSearch16 } from "@dhis2/ui-icons";
-import { Dhis2Mark, GitHubMark } from "./icons";
+import { ChapMark, GitHubMark } from "./icons";
 import { SoonPill } from "./badges";
 
 interface NavItem {
@@ -15,7 +15,7 @@ interface NavItem {
 
 function nav(benchmarksLive: boolean): NavItem[] {
   return [
-    { href: "/", label: "Models", soon: false },
+    { href: "/models", label: "Models", soon: false },
     { href: "/benchmarks", label: "Benchmarks", soon: !benchmarksLive },
     { href: "/contribute", label: "Contribute", soon: false },
     { href: "/docs", label: "Docs", soon: false },
@@ -23,9 +23,7 @@ function nav(benchmarksLive: boolean): NavItem[] {
 }
 
 function isActive(href: string, pathname: string): boolean {
-  return href === "/"
-    ? pathname === "/" || pathname.startsWith("/models")
-    : pathname.startsWith(href);
+  return pathname.startsWith(href);
 }
 
 /** Three rules, folding into a cross — the board's own line weight. */
@@ -61,7 +59,7 @@ function MenuGlyph({ open }: { open: boolean }) {
 
 /**
  * Below `bar` (900px) the nav collapses behind this button into a
- * full-width sheet under the header: the same four destinations, a search
+ * full-width sheet under the header: the same destinations, a search
  * field, and the repo link.
  */
 function MobileNav({
@@ -199,7 +197,7 @@ export function Header({ benchmarksLive }: { benchmarksLive: boolean }) {
   const items = nav(benchmarksLive);
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    router.push(q ? `/?q=${encodeURIComponent(q)}` : "/");
+    router.push(q ? `/models?q=${encodeURIComponent(q)}` : "/models");
   };
   return (
     <>
@@ -208,9 +206,9 @@ export function Header({ benchmarksLive }: { benchmarksLive: boolean }) {
       <header className="sticky top-0 z-40 bg-[#2c6693] text-white">
         <div className="mx-auto flex h-16 max-w-[1240px] items-center gap-4 pl-5 sm:px-8 lg:gap-8">
           <Link href="/" className="flex shrink-0 items-center gap-2.5">
-            <Dhis2Mark className="h-7 w-auto text-white" />
+            <ChapMark className="h-8 w-8 text-white" />
             <span className="text-[17px] font-medium leading-none">
-              Chap Hub
+              Chap Marketplace
             </span>
           </Link>
           <nav className="hidden h-full items-stretch bar:flex">
