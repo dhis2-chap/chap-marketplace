@@ -52,6 +52,7 @@ models:
   - models/chapkit_simple_multistep_model.yaml
   - models/auto_arima_chapkit.yaml
   - models/chapkit_ghr_model.yaml
+  - models/chapkit_timestral_tsfm.yaml
   # Starters — scaffolding for model authors, not models.
   - models/chapkit_minimalist_example_py.yaml
   - models/chapkit_minimalist_example_r.yaml
