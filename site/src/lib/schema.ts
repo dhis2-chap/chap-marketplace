@@ -301,6 +301,22 @@ export const benchmarkSchema = z.object({
   metrics: z
     .object({ crps: z.number().nonnegative() })
     .catchall(z.number()),
+  /**
+   * chap-core's comparison of the run with each baseline, by baseline id
+   * and metric id, oriented so positive is better than the baseline.
+   */
+  comparisons: z
+    .record(z.string(), z.record(z.string(), z.number()))
+    .default({}),
+});
+
+/** A chap-core built-in baseline the runs are compared with. */
+export const baselineSchema = z.object({
+  /** The configured model's name, e.g. "seasonal_median". */
+  id: z.string().min(1),
+  name: z.string().min(1),
+  /** chap's default baseline, preselected when comparing. */
+  default: z.boolean().default(false),
 });
 
 /**
@@ -315,11 +331,19 @@ export const metricInfoSchema = z.object({
   target: z.number().nullable(),
   targetBehavior: z.string(),
   optimizationDirection: z.enum(["minimize", "maximize"]).nullable(),
+  /** How a score is compared with a baseline's, e.g. "skill_ratio". */
+  comparisonOp: z.string().nullable().default(null),
 });
 
-/** benchmarks/results.json: the metric definitions and the records. */
+/** benchmarks/results.json: the metric definitions, baselines and records. */
 export const benchmarkResultsSchema = z.object({
   metrics: z.array(metricInfoSchema),
+  baselines: z.array(baselineSchema).default([]),
+  /**
+   * The metrics chap shows by default — its selectedMetrics setting. Null
+   * when the server predates the setting (chap-core 2.6).
+   */
+  defaultMetrics: z.array(z.string()).nullable().default(null),
   results: z.array(benchmarkSchema),
 });
 
@@ -331,4 +355,5 @@ export type Model = z.infer<typeof modelSchema>;
 export type RegistryIndex = z.infer<typeof registrySchema>;
 export type Benchmark = z.infer<typeof benchmarkSchema>;
 export type MetricInfo = z.infer<typeof metricInfoSchema>;
+export type Baseline = z.infer<typeof baselineSchema>;
 export type BenchmarkResults = z.infer<typeof benchmarkResultsSchema>;

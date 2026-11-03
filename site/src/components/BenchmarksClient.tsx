@@ -3,70 +3,25 @@
 import {
   IconArrowLeft16,
   IconArrowRight16,
-  IconChevronDown16,
   IconCross16,
 } from "@dhis2/ui-icons";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { BenchmarkRowView, BenchmarkSuiteView } from "@/lib/benchmarks";
-import {
-  DEFAULT_METRIC_COLUMNS,
-  metricRankKey,
-  type MetricColumn,
-} from "@/lib/metrics";
+import { formatComparison, metricRankKey } from "@/lib/metrics";
+import type { Baseline } from "@/lib/schema";
+import { BaselineToggle, useBaselineToggle } from "./baseline";
+import { MetricPicker, useMetricPicks } from "./metric-picker";
 
 /**
  * The benchmark suites, one table after another, each row opening its
  * run record in a centred modal so the full metric list stays out of the
- * page flow. The shown metrics, sorting and the open row are the only
- * client state; everything rendered comes from the build-time suite views.
+ * page flow. The shown metrics, the baseline compared with, sorting and
+ * the open row are the only client state; everything rendered comes from the build-time suite views.
  */
-
-/** Remembers the visitor's metric picks; storage may be unavailable. */
-const STORAGE_KEY = "chap-marketplace:benchmark-metrics";
-
-function readPicks(): string[] | null {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : null;
-    return Array.isArray(parsed) &&
-      parsed.every((id) => typeof id === "string")
-      ? parsed
-      : null;
-  } catch {
-    return null;
-  }
-}
-
-function writePicks(ids: string[]) {
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-  } catch {
-    // Not remembered; the picks still apply for this visit.
-  }
-}
 
 function valueOf(row: BenchmarkRowView, id: string): string {
   return row.metrics.find((m) => m.id === id)?.value ?? "—";
-}
-
-/** The @dhis2-ui/checkbox regular icon. */
-function CheckboxIcon() {
-  return (
-    <span className="d2-checkbox-icon" aria-hidden>
-      <svg viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-        <rect className="background" x="0" y="0" width="18" height="18" rx="3" />
-        <path
-          className="border"
-          d="M15,0 C16.6568542,0 18,1.34314575 18,3 L18,15 C18,16.6568542 16.6568542,18 15,18 L3,18 C1.34314575,18 0,16.6568542 0,15 L0,3 C0,1.34314575 1.34314575,0 3,0 L15,0 Z M15,1 L3,1 C1.9456382,1 1.08183488,1.81587779 1.00548574,2.85073766 L1,3 L1,15 C1,16.0543618 1.81587779,16.9181651 2.85073766,16.9945143 L3,17 L15,17 C16.0543618,17 16.9181651,16.1841222 16.9945143,15.1492623 L17,15 L17,3 C17,1.9456382 16.1841222,1.08183488 15.1492623,1.00548574 L15,1 Z"
-        />
-        <path
-          className="checkmark"
-          d="M4.74451387,8.02852516 C4.39595738,8.11985643 4.12375034,8.39235188 4.03251575,8.74127768 C3.94128115,9.09020348 4.04521722,9.46125864 4.30437605,9.71182782 L7.29823844,12.7078028 C7.68753993,13.0973991 8.31859767,13.0973991 8.70789916,12.7078028 L13.695624,6.71585285 C13.9547828,6.46528367 14.0587189,6.09422851 13.9674843,5.74530271 C13.8762497,5.39637691 13.6040426,5.12388146 13.2554861,5.0325502 C12.9069296,4.94121893 12.5362672,5.04526513 12.2859632,5.30469855 L8.0030688,10.5910713 L5.71403676,8.30067351 C5.46373279,8.0412401 5.09307036,7.9371939 4.74451387,8.02852516 Z"
-        />
-      </svg>
-    </span>
-  );
 }
 
 type SortDirection = "asc" | "desc";
@@ -104,109 +59,6 @@ function Sorter({
         <polygon className="bottom" points="4 7 12 7 8 2" />
       </svg>
     </button>
-  );
-}
-
-function MetricPicker({
-  columns,
-  selected,
-  onChange,
-}: {
-  columns: MetricColumn[];
-  selected: string[];
-  onChange: (ids: string[]) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointer = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("pointerdown", onPointer);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onPointer);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
-  // Keep chap-core's metric order whatever order the boxes were ticked in.
-  const toggle = (id: string) =>
-    onChange(
-      columns
-        .map((c) => c.id)
-        .filter((c) => (c === id ? !selected.includes(c) : selected.includes(c))),
-    );
-
-  return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        className="d2-button"
-        aria-expanded={open}
-        aria-haspopup="true"
-        onClick={() => setOpen((o) => !o)}
-      >
-        Metrics ({selected.length} of {columns.length})
-        <IconChevronDown16 />
-      </button>
-      {open ? (
-        <div className="d2-flyout absolute right-0 z-20 mt-1 max-h-[480px] w-[min(360px,calc(100vw-32px))]">
-          <div className="flex items-center justify-between gap-3 pr-3">
-            <h6 className="d2-menu-header">Shown metrics</h6>
-            <span className="flex gap-2">
-              <button
-                type="button"
-                className="d2-button d2-button-small d2-button-secondary"
-                onClick={() => onChange(columns.map((c) => c.id))}
-              >
-                All
-              </button>
-              <button
-                type="button"
-                className="d2-button d2-button-small d2-button-secondary"
-                onClick={() =>
-                  onChange(
-                    DEFAULT_METRIC_COLUMNS.filter((id) =>
-                      columns.some((c) => c.id === id),
-                    ),
-                  )
-                }
-              >
-                Default
-              </button>
-            </span>
-          </div>
-          <ul className="m-0 list-none p-0">
-            {columns.map((c) => (
-              <li key={c.id}>
-                <label className="d2-menu-item d2-checkbox items-start py-2.5">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(c.id)}
-                    onChange={() => toggle(c.id)}
-                  />
-                  <CheckboxIcon />
-                  <span className="ml-1 min-w-0">
-                    <span className="block">{c.label}</span>
-                    {c.description ? (
-                      <span className="mt-0.5 block text-[13px] leading-[1.4] text-ink-2">
-                        {c.description}
-                      </span>
-                    ) : null}
-                  </span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </div>
   );
 }
 
@@ -403,9 +255,11 @@ function RunRecordModal({
 function SuiteTable({
   suite,
   shown,
+  baseline,
 }: {
   suite: BenchmarkSuiteView;
   shown: string[];
+  baseline: Baseline | null;
 }) {
   // Ranked by the first shown metric, best first, until a sorter is used;
   // using the ranked column's sorter again flips the direction.
@@ -418,9 +272,17 @@ function SuiteTable({
   // A sort column the visitor has since hidden falls back to the first shown.
   const sortColumn =
     columns.find((c) => c.id === sortPick) ?? columns[0] ?? null;
+  const comparison = (row: BenchmarkRowView, id: string) =>
+    baseline ? row.comparisons[baseline.id]?.[id] : undefined;
+  // A comparison is signed so positive is better, so it ranks by its negation.
   const rankOf = (row: BenchmarkRowView) => {
-    const v = sortColumn ? row.values[sortColumn.id] : undefined;
-    return v === undefined ? undefined : metricRankKey(sortColumn!, v);
+    if (!sortColumn) return undefined;
+    if (baseline) {
+      const c = comparison(row, sortColumn.id);
+      return c === undefined ? undefined : -c;
+    }
+    const v = row.values[sortColumn.id];
+    return v === undefined ? undefined : metricRankKey(sortColumn, v);
   };
   // Rows without a value for the ranked metric stay last either way.
   const compare = (a: BenchmarkRowView, b: BenchmarkRowView) => {
@@ -564,16 +426,29 @@ function SuiteTable({
                     row.versionTag
                   )}
                 </td>
-                {columns.map((c) => (
-                  <td
-                    key={c.id}
-                    className={`text-right font-mono ${
-                      sortColumn?.id === c.id ? "text-ink" : "text-ink-2"
-                    }`}
-                  >
-                    {valueOf(row, c.id)}
-                  </td>
-                ))}
+                {columns.map((c) => {
+                  const v = comparison(row, c.id);
+                  return (
+                    <td
+                      key={c.id}
+                      className={`text-right font-mono ${
+                        v !== undefined && v > 0
+                          ? "text-verified"
+                          : v !== undefined && v < 0
+                            ? "text-danger"
+                            : sortColumn?.id === c.id
+                              ? "text-ink"
+                              : "text-ink-2"
+                      }`}
+                    >
+                      {baseline
+                        ? v === undefined
+                          ? "—"
+                          : formatComparison(c, v)
+                        : valueOf(row, c.id)}
+                    </td>
+                  );
+                })}
                 <td>
                   <span
                     className={`d2-tag ${
@@ -601,36 +476,62 @@ function SuiteTable({
   );
 }
 
-export function BenchmarkSuites({ suites }: { suites: BenchmarkSuiteView[] }) {
+export function BenchmarkSuites({
+  suites,
+  baselines,
+  defaultMetrics,
+}: {
+  suites: BenchmarkSuiteView[];
+  baselines: Baseline[];
+  /** chap's default metrics, in any order. */
+  defaultMetrics: string[];
+}) {
   // Every metric any suite records, in chap-core's default order.
   const columns = [
     ...new Map(suites.flatMap((s) => s.columns).map((c) => [c.id, c])).values(),
   ];
-  const defaults = DEFAULT_METRIC_COLUMNS.filter((id) =>
-    columns.some((c) => c.id === id),
+  // In column order, which is chap-core's metric order.
+  const defaults = columns
+    .map((c) => c.id)
+    .filter((id) => defaultMetrics.includes(id));
+  const [shown, setShown] = useMetricPicks(
+    columns.map((c) => c.id),
+    defaults,
   );
-  const [shown, setShown] = useState(defaults);
+  const { baseline, ...toggle } = useBaselineToggle(baselines);
 
-  // Restored after hydration so the prerendered table matches the first render.
-  useEffect(() => {
-    const picks = readPicks()?.filter((id) => columns.some((c) => c.id === id));
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (picks) setShown(picks);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (suites.length === 0) return null;
   return (
     <>
-      <section className="mx-auto flex max-w-[1240px] justify-end px-5 pt-9 sm:px-8">
-        <MetricPicker
-          columns={columns}
-          selected={shown}
-          onChange={(ids) => {
-            setShown(ids);
-            writePicks(ids);
-          }}
-        />
+      {/* The caption is always shown and only its text changes, so ticking
+          the comparison does not move the tables. */}
+      <section className="mx-auto flex max-w-[1240px] flex-wrap items-center justify-between gap-x-8 gap-y-4 px-5 pt-9 sm:px-8">
+        <p className="min-w-0 max-w-[70ch] flex-[1_1_40ch] text-[14px] leading-[1.55] text-ink-2">
+          {baseline ? (
+            <>
+              Scores compared with the {baseline.name} baseline: positive is
+              better, negative worse. Percentages are relative improvements;
+              the rest are in each metric&apos;s units.
+            </>
+          ) : (
+            <>
+              Scores aggregated across all splits and organisation units.
+              {baselines.length > 0
+                ? " Compare with a baseline to see how much better or worse each model does than it."
+                : null}
+            </>
+          )}
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <BaselineToggle baselines={baselines} {...toggle} />
+          <MetricPicker
+            columns={columns}
+            selected={shown}
+            defaults={defaults}
+            onChange={setShown}
+          />
+        </div>
       </section>
       {suites.map((suite) => (
         <section
@@ -640,7 +541,7 @@ export function BenchmarkSuites({ suites }: { suites: BenchmarkSuiteView[] }) {
           <h2 className="mb-2 text-[20px] font-medium text-ink">
             {suite.heading}
           </h2>
-          <SuiteTable suite={suite} shown={shown} />
+          <SuiteTable suite={suite} shown={shown} baseline={baseline} />
         </section>
       ))}
     </>

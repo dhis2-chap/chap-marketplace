@@ -7,10 +7,15 @@ import {
   versionByTag,
   type Registry,
 } from "./registry";
-import { inMetricOrder, type MetricColumn } from "./metrics";
+import {
+  DEFAULT_METRIC_COLUMNS,
+  inMetricOrder,
+  type MetricColumn,
+} from "./metrics";
 import { datasetNameFor, datasetSourceFor } from "./presentation";
 import {
   benchmarkResultsSchema,
+  type Baseline,
   type Benchmark,
   type BenchmarkResults,
   type MetricInfo,
@@ -34,7 +39,8 @@ export function loadBenchmarks(
   root: string,
 ): BenchmarkResults {
   const file = path.join(root, RESULTS_FILE);
-  if (!fs.existsSync(file)) return { metrics: [], results: [] };
+  if (!fs.existsSync(file))
+    return { metrics: [], baselines: [], defaultMetrics: null, results: [] };
 
   const parsed = benchmarkResultsSchema.safeParse(
     JSON.parse(fs.readFileSync(file, "utf8")),
@@ -76,7 +82,7 @@ export function loadBenchmarks(
     }
     return bench;
   });
-  return { metrics: parsed.data.metrics, results };
+  return { ...parsed.data, results };
 }
 
 let cached: BenchmarkResults | null = null;
@@ -94,6 +100,19 @@ export function getBenchmarks(): Benchmark[] {
 /** chap-core's definitions of the metrics those benchmarks carry. */
 export function getMetricDefinitions(): MetricInfo[] {
   return loaded().metrics;
+}
+
+/**
+ * The metrics shown before a visitor picks their own: chap's setting, or
+ * chap-core's default for servers without it.
+ */
+export function getDefaultMetrics(): string[] {
+  return loaded().defaultMetrics ?? DEFAULT_METRIC_COLUMNS;
+}
+
+/** The built-in baselines the benchmarks are compared with. */
+export function getBaselines(): Baseline[] {
+  return loaded().baselines;
 }
 
 export function benchmarksFor(
@@ -154,6 +173,8 @@ export interface BenchmarkRowView {
   metrics: MetricView[];
   /** The same metrics' raw values, for sorting; {} when unmeasured. */
   values: Record<string, number>;
+  /** The run compared with each baseline, by baseline and metric id. */
+  comparisons: Record<string, Record<string, number>>;
   /** Run-record panel subtitle: suite + full-ish commit, or the bare pin. */
   suiteLine: string;
 }
@@ -245,6 +266,7 @@ export function buildBenchmarkSuites(
           measured: true,
           metrics: metricViews(b, metrics),
           values: b.metrics,
+          comparisons: b.comparisons,
           suiteLine: `${suiteIdOf(b) ?? b.harness.tool} · ${b.commit.slice(0, 12)}…`,
         };
       })
@@ -279,6 +301,7 @@ export function buildBenchmarkSuites(
             measured: false,
             metrics: [],
             values: {},
+            comparisons: {},
             suiteLine: `${m.id}@${shortCommit(stable.commit)}`,
           }),
         );
@@ -330,6 +353,7 @@ export function buildBenchmarkSuites(
           target: m.target,
           targetBehavior: m.targetBehavior,
           optimizationDirection: m.optimizationDirection,
+          comparisonOp: m.comparisonOp,
         })),
       runContext,
       rows: [...measuredRows, ...pendingRows],
