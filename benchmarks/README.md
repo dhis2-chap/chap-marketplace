@@ -13,7 +13,10 @@ talks to the server at runtime.
 ## How results reach the site
 
 The deploy workflow (`.github/workflows/deploy.yml`) runs on every push to
-`main`, every hour and on manual dispatch. Before the build it runs
+`main`, when the benchmarking server sends a `benchmarks-updated`
+repository_dispatch after a run produces new backtests, on manual dispatch,
+and on an hourly schedule as a fallback (GitHub starts scheduled runs best
+effort, in practice every few hours). Before the build it runs
 `pnpm fetch-benchmarks` (`site/scripts/fetch-benchmarks.ts`), which:
 
 1. looks up each suite in `SUITES` (`site/src/lib/chap-api.ts`) on
