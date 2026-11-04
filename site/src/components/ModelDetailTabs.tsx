@@ -123,6 +123,13 @@ function OverviewTab({
               {view.attribution.citation}
             </p>
           </>
+        ) : view.kind === "model" ? (
+          <>
+            <h2 className={H2}>Citation</h2>
+            <p className="text-[15px] leading-[1.55] text-ink-3">
+              Not stated by the authors yet.
+            </p>
+          </>
         ) : null}
       </div>
 
