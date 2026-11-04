@@ -74,7 +74,7 @@ configurations:
 
 const CHECKS = [
   "It is a chapkit service.",
-  "The image is published with a sha-<short commit> tag.",
+  "The image is published with a sha-<short commit> tag and a build-provenance attestation (actions/attest-build-provenance).",
   "The pin is the full 40-character commit, the image tag built from it and the digest that tag resolves to.",
   "It registers with chap-core and runs a train and a predict.",
   "assessed_status is your own honest rating — we copy it as is.",

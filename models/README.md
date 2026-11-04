@@ -176,10 +176,13 @@ configurations:                  # verified, copy-pasteable configurations
   `<source.image>:<image_tag>@<image_digest>` for running it. The publish
   workflow tags every build `sha-<short commit>`, so a `sha-` tag must agree
   with `commit` — the schema enforces it. A registry tag can still be moved,
-  so `image_digest` is the pin: review approves that digest and chap-admin
-  pulls by it. `docker buildx imagetools inspect <image>:<tag>` prints it
-  (`Digest:`), and CI (`pnpm check-digests`) fails while the tag resolves to
-  anything else. `:latest` moves and is never a pin.
+  so `commit` + `image_digest` is the pin and the tag only names it.
+  `docker buildx imagetools inspect <image>:<tag>` prints the digest
+  (`Digest:`). CI (`pnpm check-digests`) fails unless the image carries a
+  GitHub build-provenance attestation from `source.repository` that the
+  digest was built from `commit` — add `actions/attest-build-provenance` to
+  the publish workflow — and, while chap-admin still installs by tag, unless
+  the tag resolves to the digest. `:latest` moves and is never a pin.
 - A listed service runs on one of chapkit's published base images
   ([dhis2-chap/chapkit-images](https://github.com/dhis2-chap/chapkit-images)),
   recorded as `source.runtime_image`: `chapkit-py` for Python services,

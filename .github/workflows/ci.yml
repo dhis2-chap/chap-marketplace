@@ -24,8 +24,11 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Validate registry YAML
         run: pnpm validate
-      - name: Check image digests against their tags
+      - name: Check image provenance and tags
         run: pnpm check-digests
+        env:
+          # gh attestation verify reads the attestations through the GitHub API.
+          GH_TOKEN: ${{ github.token }}
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test

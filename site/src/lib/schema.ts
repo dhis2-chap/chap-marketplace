@@ -62,14 +62,14 @@ const versionSchema = z.object({
   /**
    * Tag on `source.image` built from `commit`. The publish workflow tags
    * every build `sha-<short>`, so that form has to agree with the commit —
-   * enforced below. Registry tags can be moved, so the tag names the build
-   * and `image_digest` pins it.
+   * enforced below. Registry tags can be moved, so the tag only names the
+   * build; chap-core still installs by it until it pulls by digest.
    */
   image_tag: z.string().min(1),
   /**
-   * Digest the tag resolved to when the pin was reviewed — what the review
-   * approves and what runs. `pnpm check-digests` checks the tag still
-   * resolves to it.
+   * Digest of the image built from `commit` — with `commit`, the pin.
+   * `pnpm check-digests` requires a build-provenance attestation tying the
+   * two together, and that the tag still resolves to it.
    */
   image_digest: z
     .string()
