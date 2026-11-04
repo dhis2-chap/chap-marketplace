@@ -1,7 +1,7 @@
 # Chap Marketplace
 
 A curated, verified catalog of forecasting models for [Chap](https://chap.dhis2.org),
-the Climate & Health Analytics Platform. **This repository is the marketplace**:
+the Chap Modeling Platform. **This repository is the marketplace**:
 the YAML files at the root are the source of truth, and the website is a
 rendering of them.
 
