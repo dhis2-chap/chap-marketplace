@@ -76,18 +76,20 @@ function OverviewTab({
             <h2 className={H2}>Developed for</h2>
             <div className="d2-card mb-8 p-5">
               {view.developedFor ? (
-                <p className="text-[15px] leading-[1.55] text-ink-2">
-                  {view.developedFor}
-                </p>
+                <>
+                  <p className="text-[15px] leading-[1.55] text-ink-2">
+                    {view.developedFor}
+                  </p>
+                  <p className="mt-2 text-[14px] text-ink-3">
+                    Using it for another disease or country may need extra
+                    preparation and tuning.
+                  </p>
+                </>
               ) : (
                 <p className="text-[15px] leading-[1.55] text-ink-3">
                   Not stated by the authors yet.
                 </p>
               )}
-              <p className="mt-2 text-[14px] text-ink-3">
-                Using it for another disease or country may need extra
-                preparation and tuning.
-              </p>
             </div>
           </>
         ) : null}
@@ -119,6 +121,13 @@ function OverviewTab({
             <h2 className={H2}>Citation</h2>
             <p className="max-w-[70ch] text-[15px] leading-[1.65] text-ink-2">
               {view.attribution.citation}
+            </p>
+          </>
+        ) : view.kind === "model" ? (
+          <>
+            <h2 className={H2}>Citation</h2>
+            <p className="text-[15px] leading-[1.55] text-ink-3">
+              Not stated by the authors yet.
             </p>
           </>
         ) : null}
@@ -263,8 +272,8 @@ function ConfigsTab({ view }: { view: ModelDetailView }) {
     <div>
       <h2 className={H2}>Configurations</h2>
       <p className={LEDE}>
-        Reviewed starting points. Copy one as YAML, or as the request that
-        creates it on a running service.
+        Reviewed model configurations you can use as a starting point. Copy
+        one as YAML, or as the request that creates it on a running service.
       </p>
       <div className="flex flex-col gap-5">
         {view.configurations.map((config) => (
@@ -308,6 +317,10 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
       </p>
     );
   }
+  // Mention the bold only when a shown column has one.
+  const anyBest = b.byVersion.some((t) =>
+    t.rows.some((r) => r.best.some((best, i) => best && shown.includes(t.columns[i].id))),
+  );
   return (
     <div>
       <h2 className={H2}>Benchmarks</h2>
@@ -320,12 +333,13 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
               Compared with the {baseline.name} baseline: positive is better,
               negative worse. Percentages are relative improvements; the rest
               are in each metric&apos;s units.
+              {anyBest ? " The best value in each column is in bold." : null}
             </>
           ) : (
             <>
               Every recorded run of this model, newest version first, scored
-              with chap-core&apos;s default metrics. The best value in each
-              column is in bold; hover a metric for its definition.
+              with chap-core&apos;s default metrics.
+              {anyBest ? " The best value in each column is in bold." : null}
             </>
           )}
         </p>
@@ -385,6 +399,8 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
                           <td
                             key={t.columns[i].id}
                             className={`text-right font-mono ${
+                              r.best[i] && (!baseline || c !== null) ? "font-bold" : ""
+                            } ${
                               baseline
                                 ? c !== null && c > 0
                                   ? "text-verified"
@@ -392,7 +408,7 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
                                     ? "text-danger"
                                     : "text-ink-2"
                                 : r.best[i]
-                                  ? "font-bold text-ink"
+                                  ? "text-ink"
                                   : "text-ink-2"
                             }`}
                           >

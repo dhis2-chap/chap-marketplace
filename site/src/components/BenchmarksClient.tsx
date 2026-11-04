@@ -8,7 +8,7 @@ import {
 import Link from "next/link";
 import { useRef, useState } from "react";
 import type { BenchmarkRowView, BenchmarkSuiteView } from "@/lib/benchmarks";
-import { formatComparison, metricRankKey } from "@/lib/metrics";
+import { bestRankKey, formatComparison, metricRankKey } from "@/lib/metrics";
 import type { Baseline } from "@/lib/schema";
 import { BaselineToggle, useBaselineToggle } from "./baseline";
 import { MetricPicker, useMetricPicks } from "./metric-picker";
@@ -292,6 +292,18 @@ function SuiteTable({
       return (ka === undefined ? 1 : 0) - (kb === undefined ? 1 : 0);
     return sortDirection === "asc" ? ka - kb : kb - ka;
   };
+  const bestKey = Object.fromEntries(
+    columns.map((c) => [
+      c.id,
+      bestRankKey(
+        c,
+        suite.rows.flatMap((r) => (r.values[c.id] === undefined ? [] : [r.values[c.id]])),
+      ),
+    ]),
+  );
+  const isBest = (row: BenchmarkRowView, c: (typeof columns)[number]) =>
+    row.values[c.id] !== undefined &&
+    metricRankKey(c, row.values[c.id]) === bestKey[c.id];
   const sortBy = (id: string) => {
     if (sortColumn?.id === id)
       setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
@@ -432,11 +444,15 @@ function SuiteTable({
                     <td
                       key={c.id}
                       className={`text-right font-mono ${
+                        isBest(row, c) && (!baseline || v !== undefined)
+                          ? "font-bold"
+                          : ""
+                      } ${
                         v !== undefined && v > 0
                           ? "text-verified"
                           : v !== undefined && v < 0
                             ? "text-danger"
-                            : sortColumn?.id === c.id
+                            : sortColumn?.id === c.id || isBest(row, c)
                               ? "text-ink"
                               : "text-ink-2"
                       }`}
@@ -512,11 +528,13 @@ export function BenchmarkSuites({
             <>
               Scores compared with the {baseline.name} baseline: positive is
               better, negative worse. Percentages are relative improvements;
-              the rest are in each metric&apos;s units.
+              the rest are in each metric&apos;s units. The best in each
+              column is in bold.
             </>
           ) : (
             <>
-              Scores aggregated across all splits and organisation units.
+              Scores aggregated across all splits and organisation units; the
+              best in each column is in bold.
               {baselines.length > 0
                 ? " Compare with a baseline to see how much better or worse each model does than it."
                 : null}
