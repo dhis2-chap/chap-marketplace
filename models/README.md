@@ -141,6 +141,8 @@ versions:                        # newest first
   - version: 1.2.0               # the service's own MLServiceInfo.version
     commit: 0000000000000000000000000000000000000000
     image_tag: sha-0000000       # the tag built from this commit
+    image_digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+                                 # what that tag resolves to
     chapkit: ">=2.0.0,<3"        # what the pinned revision requires
     status: unstable             # verified | unstable | deprecated | yanked
     verified_by: []              # empty until three maintainers approve
@@ -149,6 +151,7 @@ versions:                        # newest first
   - version: 1.1.0
     commit: 1111111111111111111111111111111111111111
     image_tag: sha-1111111
+    image_digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
     chapkit: ">=2.0.0,<3"
     status: verified
     verified_by: [maintainer-a, maintainer-b, maintainer-c]
@@ -170,9 +173,13 @@ configurations:                  # verified, copy-pasteable configurations
 
 - A version pin resolves to two halves of one revision:
   `<source.repository>@<commit>` for reading the code, and
-  `<source.image>:<image_tag>` for running it. The publish workflow tags every
-  build `sha-<short commit>`, so a `sha-` tag must agree with `commit` —
-  the schema enforces it. `:latest` moves and is never a pin.
+  `<source.image>:<image_tag>@<image_digest>` for running it. The publish
+  workflow tags every build `sha-<short commit>`, so a `sha-` tag must agree
+  with `commit` — the schema enforces it. A registry tag can still be moved,
+  so `image_digest` is the pin: review approves that digest and chap-admin
+  pulls by it. `docker buildx imagetools inspect <image>:<tag>` prints it
+  (`Digest:`), and CI (`pnpm check-digests`) fails while the tag resolves to
+  anything else. `:latest` moves and is never a pin.
 - A listed service runs on one of chapkit's published base images
   ([dhis2-chap/chapkit-images](https://github.com/dhis2-chap/chapkit-images)),
   recorded as `source.runtime_image`: `chapkit-py` for Python services,

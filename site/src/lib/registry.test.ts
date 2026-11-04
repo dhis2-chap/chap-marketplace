@@ -56,7 +56,7 @@ describe("the real registry", () => {
   it("derives the deployable image pin from the same commit", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
     expect(imageRef(ghr, stableVersion(ghr))).toBe(
-      "ghcr.io/chap-models/chapkit_ghr_model:sha-84fbe77",
+      "ghcr.io/chap-models/chapkit_ghr_model:sha-84fbe77@sha256:c92c17d38fc5eaadf85b10d180e33bb52bb0ca418fa7e448a55aa38f484a9b77",
     );
   });
 
@@ -104,6 +104,7 @@ describe("schema refinements", () => {
         version: "1.0.0",
         commit: "1111111111111111111111111111111111111111",
         image_tag: "sha-1111111",
+        image_digest: `sha256:${"1".repeat(64)}`,
         chapkit: ">=2.0.0,<3",
         status: "verified",
         verified_by: [],

@@ -24,6 +24,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Validate registry YAML
         run: pnpm validate
+      - name: Check image digests against their tags
+        run: pnpm check-digests
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test

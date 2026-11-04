@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "validate": "tsx scripts/validate.ts",
+    "check-digests": "tsx scripts/check-digests.ts",
     "fetch-benchmarks": "tsx scripts/fetch-benchmarks.ts"
   },
   "dependencies": {
