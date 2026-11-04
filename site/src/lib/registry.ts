@@ -140,11 +140,11 @@ export function displayPin(model: Model, version: ModelVersion): string {
 
 /**
  * The deployable pin: the published image at the tag built from this
- * commit. This is what chap-admin runs — the `sha-` tag is
- * immutable, unlike `:latest`.
+ * commit, fixed by the reviewed digest. Docker pulls by the digest and
+ * ignores the tag, which stays only to name the build.
  */
 export function imageRef(model: Model, version: ModelVersion): string {
-  return `${model.source.image}:${version.image_tag}`;
+  return `${model.source.image}:${version.image_tag}@${version.image_digest}`;
 }
 
 export function verifiedCount(model: Model): number {

@@ -61,10 +61,19 @@ const versionSchema = z.object({
     .regex(/^[0-9a-f]{40}$/, "commit must be a full 40-char git sha"),
   /**
    * Tag on `source.image` built from `commit`. The publish workflow tags
-   * every build `sha-<short>`, so that form is the immutable image pin and
-   * has to agree with the commit — enforced below.
+   * every build `sha-<short>`, so that form has to agree with the commit —
+   * enforced below. Registry tags can be moved, so the tag only names the
+   * build; chap-core still installs by it until it pulls by digest.
    */
   image_tag: z.string().min(1),
+  /**
+   * Digest of the image built from `commit` — with `commit`, the pin.
+   * `pnpm check-digests` requires a build-provenance attestation tying the
+   * two together, and that the tag still resolves to it.
+   */
+  image_digest: z
+    .string()
+    .regex(/^sha256:[0-9a-f]{64}$/, "image_digest must be sha256:<64 hex chars>"),
   /** The chapkit requirement the pinned revision declares. */
   chapkit: z.string().min(1),
   status: z.enum(VERSION_STATUSES),

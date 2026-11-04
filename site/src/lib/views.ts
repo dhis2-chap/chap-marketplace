@@ -160,7 +160,7 @@ export interface ChannelView {
   status: string;
   pinDisplay: string;
   pinFull: string;
-  image: string;
+  imageTag: string;
 }
 
 export interface VersionRowView {
@@ -278,7 +278,7 @@ function toChannelView(
     status: version.status,
     pinDisplay: displayPin(model, version),
     pinFull: fullPin(model, version),
-    image: imageRef(model, version),
+    imageTag: version.image_tag,
   };
 }
 

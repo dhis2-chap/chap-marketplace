@@ -51,6 +51,7 @@ versions:
   - version: 1.0.3
     commit: cfa45633e2966ae2336297ec41b400c4db5c13fe
     image_tag: sha-cfa4563
+    image_digest: sha256:e83f8caaf66bee7a4ef598a277ae6bcada3d9cabee3395e41fee370f77b3fddd
     chapkit: ">=2.2.0,<3"
     status: verified
     # Pinned by the maintainers without the three-approval round (security fix).
@@ -60,6 +61,7 @@ versions:
   - version: 1.0.2
     commit: 3824ad74ea5869513b7cbaabd5100317c2b757b7
     image_tag: sha-3824ad7
+    image_digest: sha256:7145e6c289fb7ce6f5b0d1ae96989f3241ee8587f31787d4dd0c3d7bc1d8048d
     chapkit: ">=2.2.0,<3"
     status: verified
     # Pinned by the maintainers without the three-approval round.
@@ -69,6 +71,7 @@ versions:
   - version: 1.0.1
     commit: 73557efb865fe9960e37bbbf4999624fa949e235
     image_tag: sha-73557ef
+    image_digest: sha256:9b57b1b4d1fe05702c21f4efa01870e1560815e0a4bb7179cdfe2ed7a7d95d9b
     chapkit: ">=2.1.2,<3"
     status: verified
     # Verified by the merge gate. Part of the chapkit 2.0.0 seed import.

@@ -468,7 +468,7 @@ function InstallTab({ view }: { view: ModelDetailView }) {
           </div>
           <p className="mt-8 text-[15px] text-ink-2">
             Installs the verified stable version, {view.stable.tag} (
-            <Code>{view.stable.image}</Code>).{" "}
+            <Code>{`${view.imageBase}:${view.stable.imageTag}`}</Code>).{" "}
             <Code>chap-admin install-all</Code> installs every listed model.{" "}
             <a
               href={view.installUrl}
