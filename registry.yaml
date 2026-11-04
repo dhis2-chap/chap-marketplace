@@ -18,7 +18,7 @@ schema_version: 2
 marketplace:
   name: Chap Marketplace
   description: >-
-    Discover forecasting models for Chap, the Climate & Health Analytics
+    Discover forecasting models for the Chap Modeling
     Platform. Browse models, check their requirements and follow the
     installation instructions.
   # The marketplace's own repository. The site build ingests this repo's open
