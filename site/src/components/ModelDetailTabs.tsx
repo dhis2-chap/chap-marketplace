@@ -333,6 +333,7 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
               Compared with the {baseline.name} baseline: positive is better,
               negative worse. Percentages are relative improvements; the rest
               are in each metric&apos;s units.
+              {anyBest ? " The best value in each column is in bold." : null}
             </>
           ) : (
             <>
@@ -398,6 +399,8 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
                           <td
                             key={t.columns[i].id}
                             className={`text-right font-mono ${
+                              r.best[i] && (!baseline || c !== null) ? "font-bold" : ""
+                            } ${
                               baseline
                                 ? c !== null && c > 0
                                   ? "text-verified"
@@ -405,7 +408,7 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
                                     ? "text-danger"
                                     : "text-ink-2"
                                 : r.best[i]
-                                  ? "font-bold text-ink"
+                                  ? "text-ink"
                                   : "text-ink-2"
                             }`}
                           >

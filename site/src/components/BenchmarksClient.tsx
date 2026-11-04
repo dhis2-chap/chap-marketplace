@@ -444,15 +444,17 @@ function SuiteTable({
                     <td
                       key={c.id}
                       className={`text-right font-mono ${
+                        isBest(row, c) && (!baseline || v !== undefined)
+                          ? "font-bold"
+                          : ""
+                      } ${
                         v !== undefined && v > 0
                           ? "text-verified"
                           : v !== undefined && v < 0
                             ? "text-danger"
-                            : !baseline && isBest(row, c)
-                              ? "font-bold text-ink"
-                              : sortColumn?.id === c.id
-                                ? "text-ink"
-                                : "text-ink-2"
+                            : sortColumn?.id === c.id || isBest(row, c)
+                              ? "text-ink"
+                              : "text-ink-2"
                       }`}
                     >
                       {baseline
@@ -526,7 +528,8 @@ export function BenchmarkSuites({
             <>
               Scores compared with the {baseline.name} baseline: positive is
               better, negative worse. Percentages are relative improvements;
-              the rest are in each metric&apos;s units.
+              the rest are in each metric&apos;s units. The best in each
+              column is in bold.
             </>
           ) : (
             <>
