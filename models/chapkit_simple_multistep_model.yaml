@@ -24,6 +24,9 @@ source:
 
 attribution:
   author: HISP Oslo and HISP West and Central Africa
+  citation: >-
+    Chap Modeling Platform. 2026. "Simple Multistep". HISP Oslo and HISP West
+    and Central Africa.
 
 compatibility:
   period_types: [monthly]

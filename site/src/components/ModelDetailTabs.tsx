@@ -76,18 +76,20 @@ function OverviewTab({
             <h2 className={H2}>Developed for</h2>
             <div className="d2-card mb-8 p-5">
               {view.developedFor ? (
-                <p className="text-[15px] leading-[1.55] text-ink-2">
-                  {view.developedFor}
-                </p>
+                <>
+                  <p className="text-[15px] leading-[1.55] text-ink-2">
+                    {view.developedFor}
+                  </p>
+                  <p className="mt-2 text-[14px] text-ink-3">
+                    Using it for another disease or country may need extra
+                    preparation and tuning.
+                  </p>
+                </>
               ) : (
                 <p className="text-[15px] leading-[1.55] text-ink-3">
                   Not stated by the authors yet.
                 </p>
               )}
-              <p className="mt-2 text-[14px] text-ink-3">
-                Using it for another disease or country may need extra
-                preparation and tuning.
-              </p>
             </div>
           </>
         ) : null}
@@ -263,8 +265,8 @@ function ConfigsTab({ view }: { view: ModelDetailView }) {
     <div>
       <h2 className={H2}>Configurations</h2>
       <p className={LEDE}>
-        Reviewed starting points. Copy one as YAML, or as the request that
-        creates it on a running service.
+        Reviewed model configurations you can use as a starting point. Copy
+        one as YAML, or as the request that creates it on a running service.
       </p>
       <div className="flex flex-col gap-5">
         {view.configurations.map((config) => (
@@ -324,8 +326,7 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
           ) : (
             <>
               Every recorded run of this model, newest version first, scored
-              with chap-core&apos;s default metrics. The best value in each
-              column is in bold; hover a metric for its definition.
+              with chap-core&apos;s default metrics.
             </>
           )}
         </p>

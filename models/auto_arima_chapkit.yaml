@@ -25,6 +25,8 @@ source:
 attribution:
   author: Harsha Halgamuwe Hewage (adapted by Chap team)
   organization: Cardiff University
+  citation: >-
+    Chap Modeling Platform. 2026. "Auto-ARIMA". Cardiff University.
 
 compatibility:
   period_types: [monthly]
