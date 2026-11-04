@@ -24,6 +24,7 @@ import { benchmarksFor, metricViews } from "./benchmarks";
 import {
   DEFAULT_METRIC_COLUMNS,
   inMetricOrder,
+  bestRankKey,
   metricRankKey,
   type MetricColumn,
 } from "./metrics";
@@ -353,14 +354,12 @@ function versionComparison(
       optimizationDirection: m.optimizationDirection,
       comparisonOp: m.comparisonOp,
     }));
-  // A column's best rank key, or null when every run ties (nothing to mark).
-  const bestKey = columns.map((c) => {
-    const keys = runs
-      .filter((b) => b.metrics[c.id] !== undefined)
-      .map((b) => metricRankKey(c, b.metrics[c.id]));
-    const min = Math.min(...keys);
-    return keys.some((k) => k !== min) ? min : null;
-  });
+  const bestKey = columns.map((c) =>
+    bestRankKey(
+      c,
+      runs.flatMap((b) => (b.metrics[c.id] === undefined ? [] : [b.metrics[c.id]])),
+    ),
+  );
 
   return {
     datasetName: datasetNameFor(dataset),

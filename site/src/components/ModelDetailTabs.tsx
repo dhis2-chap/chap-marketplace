@@ -310,6 +310,10 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
       </p>
     );
   }
+  // Mention the bold only when a shown column has one.
+  const anyBest = b.byVersion.some((t) =>
+    t.rows.some((r) => r.best.some((best, i) => best && shown.includes(t.columns[i].id))),
+  );
   return (
     <div>
       <h2 className={H2}>Benchmarks</h2>
@@ -327,6 +331,7 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
             <>
               Every recorded run of this model, newest version first, scored
               with chap-core&apos;s default metrics.
+              {anyBest ? " The best value in each column is in bold." : null}
             </>
           )}
         </p>
