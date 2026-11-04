@@ -39,25 +39,37 @@ async function resolveDigest(image: string, tag: string): Promise<string> {
   return digest;
 }
 
+/** Lookups in flight at once; keeps the check quick without hammering the registry. */
+const CONCURRENCY = 8;
+
 async function main() {
+  const pins = loadRegistry().models.flatMap((model) =>
+    model.versions.map((v) => ({ image: model.source.image, tag: v.image_tag, pinned: v.image_digest })),
+  );
+  const results: string[] = new Array(pins.length);
+  let next = 0;
   let failed = 0;
-  for (const model of loadRegistry().models) {
-    for (const v of model.versions) {
-      const ref = `${model.source.image}:${v.image_tag}`;
+  const worker = async () => {
+    while (next < pins.length) {
+      const i = next++;
+      const { image, tag, pinned } = pins[i];
+      const ref = `${image}:${tag}`;
       try {
-        const digest = await resolveDigest(model.source.image, v.image_tag);
-        if (digest === v.image_digest) {
-          console.log(`  ✓ ${ref}`);
+        const digest = await resolveDigest(image, tag);
+        if (digest === pinned) {
+          results[i] = `  ✓ ${ref}`;
         } else {
           failed++;
-          console.error(`  ✗ ${ref} resolves to ${digest}, pinned ${v.image_digest}`);
+          results[i] = `  ✗ ${ref} resolves to ${digest}, pinned ${pinned}`;
         }
       } catch (error) {
         failed++;
-        console.error(`  ✗ ${ref} could not be resolved: ${error instanceof Error ? error.message : error}`);
+        results[i] = `  ✗ ${ref} could not be resolved: ${error instanceof Error ? error.message : error}`;
       }
     }
-  }
+  };
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+  console.log(results.join("\n"));
 
   if (failed > 0) {
     console.error(`\n${failed} image pin${failed === 1 ? "" : "s"} failed.`);
