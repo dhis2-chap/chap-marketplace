@@ -44,10 +44,20 @@ covariates:
   allow_free_additional: false
 
 channels:
-  stable: 1.0.3
-  latest: 1.0.3
+  stable: 1.0.4
+  latest: 1.0.4
 
 versions:
+  - version: 1.0.4
+    commit: 9d201c12599d71f7737cd7a8228f7f424ec4e58f
+    image_tag: sha-9d201c1
+    image_digest: sha256:fb32d6709c3173d83e95715fecf0b96877247d911ca035ae32306a477e761101
+    chapkit: ">=2.2.0,<3"
+    status: verified
+    # Pinned by the maintainers without the three-approval round (CLIM-1745).
+    verified_by: []
+    changelog: >-
+      Builds on the chapkit-py base image pinned by digest in the Dockerfile, so the commit fixes the base image it was built on. No change to the model.
   - version: 1.0.3
     commit: cfa45633e2966ae2336297ec41b400c4db5c13fe
     image_tag: sha-cfa4563

@@ -57,10 +57,20 @@ covariates:
   allow_free_additional: true
 
 channels:
-  stable: 0.1.8
-  latest: 0.1.8
+  stable: 0.1.9
+  latest: 0.1.9
 
 versions:
+  - version: 0.1.9
+    commit: bb661b02ab20c35b09d70b7bd4fa38a191cafc94
+    image_tag: sha-bb661b0
+    image_digest: sha256:cee89ce8f4c64de67d3d7d9f024aec39b79acbf94a4420ba285d54ab0f321bec
+    chapkit: ">=2.4.0,<3"
+    status: verified
+    # Pinned by the maintainers without the three-approval round (CLIM-1745).
+    verified_by: []
+    changelog: >-
+      Builds on the chapkit-r-inla base image pinned by digest in the Dockerfile, so the commit fixes the base image it was built on. No change to the model.
   - version: 0.1.8
     commit: 84fbe77734f51a592a215f34b2b8731c3acbed2f
     image_tag: sha-84fbe77

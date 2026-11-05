@@ -42,10 +42,20 @@ covariates:
   allow_free_additional: false
 
 channels:
-  stable: 1.0.3
-  latest: 1.0.3
+  stable: 1.0.4
+  latest: 1.0.4
 
 versions:
+  - version: 1.0.4
+    commit: 49ee939ae6841f449abf43b62a61606555135bf5
+    image_tag: sha-49ee939
+    image_digest: sha256:49f2b0ecce17cdb908606f4797bc93b6ac8b8c19e444a1f768226f764ff3314f
+    chapkit: ">=2.2.0,<3"
+    status: verified
+    # Pinned by the maintainers without the three-approval round (CLIM-1745).
+    verified_by: []
+    changelog: >-
+      Builds on the chapkit-r-tidyverse base image pinned by digest in the Dockerfile, so the commit fixes the base image it was built on. No change to the model.
   - version: 1.0.3
     commit: c445da979bb3c29d041118335f34f79ffca2e01c
     image_tag: sha-c445da9
