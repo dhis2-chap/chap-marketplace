@@ -18,8 +18,8 @@ import { toDetailView } from "./views";
 import type { Benchmark, MetricInfo } from "./schema";
 
 const registry = loadRegistry();
-const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
-const ghrStable = stableVersion(ghr);
+const arima = registry.models.find((m) => m.id === "auto_arima_chapkit")!;
+const arimaStable = stableVersion(arima);
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
 const multistepStable = stableVersion(multistep);
 
@@ -45,9 +45,9 @@ const METRICS = [
 
 function benchmark(overrides: Partial<Benchmark> = {}): Benchmark {
   return {
-    model: ghr.id,
-    version: ghrStable.version,
-    commit: ghrStable.commit,
+    model: arima.id,
+    version: arimaStable.version,
+    commit: arimaStable.commit,
     dataset: "dengue-brazil-monthly",
     evaluated_at: "2026-08-31",
     harness: { tool: "chap evaluate-ensemble" },
@@ -233,8 +233,6 @@ describe("buildBenchmarkSuites", () => {
   });
 
   it("ranks measured rows by normalised CRPS ascending", () => {
-    const arima = registry.models.find((m) => m.id === "auto_arima_chapkit")!;
-    const arimaStable = stableVersion(arima);
     const suite = buildBenchmarkSuites(registry, [
       smokeRun(),
       smokeRun({

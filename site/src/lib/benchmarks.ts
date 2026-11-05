@@ -166,7 +166,7 @@ export interface BenchmarkRowView {
   versionTag: string;
   /** Whether versionTag is the model's stable pin; the table shows "stable" then. */
   isStable: boolean;
-  /** "monthly_climate · chapkit_ghr_model@dfb2e3f" */
+  /** "monthly_climate · chapkit_simple_multistep_model@dfb2e3f" */
   pinLine: string;
   measured: boolean;
   /** Every metric of the run, formatted, in chap-core's default order; [] when unmeasured. */
