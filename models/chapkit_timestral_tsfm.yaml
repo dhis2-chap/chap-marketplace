@@ -1,0 +1,77 @@
+schema_version: 2
+
+id: chapkit_timestral_tsfm
+service_id: chapkit-timestral-tsfm
+display_name: Timestral
+kind: model
+
+# The author's own chapkit AssessedStatus, copied from the service — not a
+# marketplace verdict. orange = shows promise on limited data, needs careful
+# evaluation. See models/README.md for the full scale.
+assessed_status: orange
+
+summary: >-
+  Zero-shot time-series foundation model (Mistral AI's Timestral, 209M
+  parameters). Nothing is fitted to the data: each forecast conditions on the
+  case history, on log(1 + cases), with optional covariates known over the
+  past and the forecast horizon. Upper quantiles are capped at 10x each
+  location's training-data maximum reconverting from log scale caused some extreme highs.
+  Takes covariates but declares none required, so it also runs on case history alone.
+  
+developed_for: >-
+  Not developed for a disease: Timestral is a general-purpose forecaster. The
+  Chap version was tested on monthly province-level dengue in Laos, Thailand
+  and Vietnam (horizon 3, 6 and 36 backtest splits).
+
+source:
+  repository: https://github.com/hansand02/timestral_chapkit
+  image: ghcr.io/hansand02/timestral_chapkit
+  # Python + CPU torch, model weights baked into the image. amd64 only.
+  runtime_image: ghcr.io/dhis2-chap/chapkit-py
+
+attribution:
+  author: Mistral AI (packaged by Hans Andersen)
+  organization: Mistral AI
+  original_source: https://huggingface.co/mistralai/Timestral-209M
+
+compatibility:
+  period_types: [monthly]
+  min_prediction_periods: 0
+  max_prediction_periods: 1024
+  requires_geo: false
+
+covariates:
+  required: []
+  defaults: []
+  allow_free_additional: true
+
+channels:
+  stable: 0.1.0
+  latest: 0.1.0
+
+versions:
+  - version: 0.1.0
+    commit: 4a51fed2c97ab174fb4ec196466663f0fc937836
+    image_tag: sha-4a51fed
+    chapkit: ">=2.5.0,<3"
+    status: verified
+    verified_by: []
+    changelog: >-
+      First release.
+
+configurations:
+  monthly_climate:
+    description: >-
+      Rainfall and mean temperature as covariates known over the past and the
+      forecast horizon, at a three-period horizon.
+    config:
+      prediction_periods: 3
+      additional_continuous_covariates:
+        - rainfall
+        - mean_temperature
+  monthly_selfhistory:
+    description: >-
+      Covariate-free variant: case history only.
+    config:
+      prediction_periods: 3
+      additional_continuous_covariates: []
