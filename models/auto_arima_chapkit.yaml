@@ -4,6 +4,8 @@ id: auto_arima_chapkit
 service_id: auto-arima-chapkit
 display_name: Auto-ARIMA
 kind: model
+# The authors opt the model in to the marketplace benchmarks.
+benchmarking: true
 
 # The author's own chapkit AssessedStatus, copied from the service — not a
 # marketplace verdict. red = highly experimental prototype, not validated.

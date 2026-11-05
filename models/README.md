@@ -78,6 +78,13 @@ chap-core and run automatically, so they are not marketplace entries and
 `comparison` is the only role an entry can set. Starters cannot have a role.
 `chap-admin install` passes the role to chap-core with the model template.
 
+## Benchmarking is opt-in
+
+`benchmarking: true` opts a forecasting model in to the marketplace
+benchmarks. Only opted-in models' backtests are read from the benchmarking
+server and shown on the site; without the flag the model page says its
+authors have not opted in. Leave it out to stay out. Starters cannot opt in.
+
 ## Annotated example
 
 ```yaml
@@ -92,6 +99,8 @@ display_name: My Model           # human-readable name for the catalog,
 kind: model                      # model | starter
 # role: comparison               # optional; only for models others are
                                  # compared against (see Comparison models)
+benchmarking: true               # optional, default false: opt in to the
+                                 # marketplace benchmarks
 assessed_status: orange          # the AUTHOR's own AssessedStatus:
                                  #   green | yellow | orange | red | gray
 
@@ -230,8 +239,8 @@ configurations:                  # verified, copy-pasteable configurations
 
 Benchmark results do not live in these files: they are read from Chap's
 benchmarking server at deploy time and cross-checked against the pins here
-(see [`../benchmarks/README.md`](../benchmarks/README.md)). None of the
-listed pins has been run yet, and how they will be ranked is still being
+(see [`../benchmarks/README.md`](../benchmarks/README.md)). Only models with
+`benchmarking: true` are included, and how they will be ranked is still being
 decided.
 
 ## Open questions for this draft

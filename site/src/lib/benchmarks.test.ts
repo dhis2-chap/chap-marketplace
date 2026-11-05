@@ -138,6 +138,15 @@ describe("loadBenchmarks", () => {
     expect(() => loadBenchmarks(registry, root)).toThrow(/not in the registry/);
   });
 
+  it("rejects a model that has not opted in to benchmarking", () => {
+    const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
+    const ghrStable = stableVersion(ghr);
+    write(benchmark({ model: ghr.id, version: ghrStable.version, commit: ghrStable.commit }));
+    expect(() => loadBenchmarks(registry, root)).toThrow(
+      /chapkit_ghr_model\.yaml has not opted in to benchmarking/,
+    );
+  });
+
   it("rejects a commit that does not match the registry pin", () => {
     write(benchmark({ commit: "0".repeat(40) }));
     expect(() => loadBenchmarks(registry, root)).toThrow(/commit does not match the pin/);
@@ -162,7 +171,7 @@ describe("buildBenchmarkSuites", () => {
     const suite = suites[0];
 
     expect(suite.heading).toBe("Vietnam monthly · horizon 3");
-    expect(suite.countLine).toBe("1 of 5 configured models evaluated");
+    expect(suite.countLine).toBe("1 of 4 configured models evaluated");
     // Columns are the metrics the suite's runs record, in chap-core's default order.
     expect(suite.columns.map((c) => c.id)).toEqual(["mae", "rmse", "crps", "crps_norm"]);
     expect(suite.runContext).toContainEqual({ k: "Observations", v: "2,808 rows" });
@@ -173,11 +182,13 @@ describe("buildBenchmarkSuites", () => {
       href: "https://github.com/dhis2/climate-health-data/tree/af362d5260c6/vnm",
     });
 
-    // Starters are scaffolding, never listed as a model awaiting a run.
-    // One row per configured model of every listed (non-starter) model.
+    // Only opted-in models are listed as awaiting a run: never a starter,
+    // never a model whose authors have not opted in.
+    // One row per configured model of every opted-in model.
+    expect(suite.rows.some((r) => r.modelId === "chapkit_ghr_model")).toBe(false);
     expect(suite.rows).toHaveLength(
       registry.models
-        .filter((m) => m.kind !== "starter")
+        .filter((m) => m.benchmarking)
         .reduce((n, m) => n + Math.max(1, Object.keys(m.configurations).length), 0),
     );
     expect(suite.rows.map((r) => r.pinLine.split(" · ")[0])).toContain(
@@ -247,7 +258,7 @@ describe("buildBenchmarkSuites", () => {
       "auto_arima_chapkit",
       "chapkit_simple_multistep_model",
     ]);
-    expect(suite.countLine).toBe("2 of 5 configured models evaluated");
+    expect(suite.countLine).toBe("2 of 4 configured models evaluated");
   });
 });
 

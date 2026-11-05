@@ -4,6 +4,8 @@ id: chapkit_simple_multistep_model
 service_id: chapkit-simple-multistep-model
 display_name: Simple Multistep
 kind: model
+# The authors opt the model in to the marketplace benchmarks.
+benchmarking: true
 
 # The author's own chapkit AssessedStatus, copied from the service — not a
 # marketplace verdict. orange = shows promise on limited data, needs careful

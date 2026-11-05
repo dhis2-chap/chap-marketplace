@@ -132,6 +132,21 @@ describe("schema refinements", () => {
     expect(modelSchema.safeParse(bad).success).toBe(false);
   });
 
+  it("leaves benchmarking off unless the model opts in", () => {
+    expect(modelSchema.parse(base).benchmarking).toBe(false);
+    expect(modelSchema.parse({ ...base, benchmarking: true }).benchmarking).toBe(true);
+  });
+
+  it("rejects a starter that opts in to benchmarking", () => {
+    const bad = { ...base, kind: "starter", benchmarking: true };
+    expect(modelSchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("keeps GHRmodel out of the benchmarks", () => {
+    const ghr = loadRegistry().models.find((m) => m.id === "chapkit_ghr_model")!;
+    expect(ghr.benchmarking).toBe(false);
+  });
+
   it("rejects a service id that is not the kebab-case model id", () => {
     const bad = { ...base, service_id: "something-else" };
     expect(modelSchema.safeParse(bad).success).toBe(false);

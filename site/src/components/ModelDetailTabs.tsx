@@ -313,7 +313,18 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
   if (!b) {
     return (
       <p className="text-[15px] text-ink-2">
-        No benchmark results for this model yet.
+        {view.benchmarking ? (
+          "No benchmark results for this model yet."
+        ) : (
+          <>
+            This model is not benchmarked: its authors have not opted in to
+            the{" "}
+            <Link href="/docs/benchmarks" className="font-medium text-brand hover:underline">
+              benchmarks
+            </Link>
+            .
+          </>
+        )}
       </p>
     );
   }
