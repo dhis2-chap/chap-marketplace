@@ -108,6 +108,12 @@ export const modelSchema = z
     kind: z.enum(MODEL_KINDS),
     /** Absent for ordinary models. */
     role: z.enum(MODEL_ROLES).optional(),
+    /**
+     * The authors opt the model in to the marketplace benchmarks. Off by
+     * default: only opted-in models' backtests are read from the
+     * benchmarking server and shown.
+     */
+    benchmarking: z.boolean().default(false),
     /** The author's own AssessedStatus, not a marketplace verdict. */
     assessed_status: z.enum(ASSESSED_STATUSES),
     summary: z.string().min(1),
@@ -159,6 +165,13 @@ export const modelSchema = z
         code: "custom",
         path: ["role"],
         message: "a starter is not a forecasting model and cannot be a comparison model",
+      });
+    }
+    if (model.benchmarking && model.kind === "starter") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["benchmarking"],
+        message: "a starter is not a forecasting model and cannot be benchmarked",
       });
     }
 

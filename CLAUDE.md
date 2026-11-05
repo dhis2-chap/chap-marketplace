@@ -53,7 +53,8 @@ site in `site/` is a build-time rendering of it. No auth, no server state.
 - **Benchmark results come from the benchmarking server, at deploy time.**
   Only backtests of listed pins (template = `service_id`, `sourceDigest` = a
   pinned commit, configured model = `<service_id>:<configuration key>`) are
-  kept. Starters never appear in the benchmarks.
+  kept, and only of models that opt in with `benchmarking: true` (off by
+  default; GHRmodel is out). Starters never appear in the benchmarks.
   `CHAP_API_TOKEN` can write to that server: it is used only in
   `deploy.yml`, which must never run on `pull_request`. The deploy fails if
   the fetch fails — never ship empty benchmarks in place of the real ones.

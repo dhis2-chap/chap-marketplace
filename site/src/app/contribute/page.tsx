@@ -20,6 +20,7 @@ id: my_model
 service_id: my-model          # MLServiceInfo.id — kebab-case of id
 display_name: My Model
 kind: model                   # model | starter
+benchmarking: true            # opt in to the benchmarks (default false)
 assessed_status: red          # YOUR OWN chapkit AssessedStatus
 
 summary: >-
@@ -110,7 +111,8 @@ const STEPS: [string, ReactNode][] = [
     "Your model is listed",
     <>
       Once the review is approved, the model appears in the marketplace under
-      your name. Listed models are also run in our{" "}
+      your name. If you opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      in the model file, it is also run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
       </Link>

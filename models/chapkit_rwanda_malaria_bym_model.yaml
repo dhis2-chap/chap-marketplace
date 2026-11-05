@@ -4,6 +4,8 @@ id: chapkit_rwanda_malaria_bym_model
 service_id: chapkit-rwanda-malaria-bym-model
 display_name: Rwanda Malaria BYM
 kind: model
+# The authors opt the model in to the marketplace benchmarks.
+benchmarking: true
 
 # The author's own chapkit AssessedStatus, copied from the service — not a
 # marketplace verdict. gray = not intended for use — deprecated, or kept only

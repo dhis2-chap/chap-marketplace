@@ -261,6 +261,8 @@ export interface ModelDetailView {
   inReview: InReviewPinView[];
   inReviewAsOf: string | null;
   configurations: ConfigurationView[];
+  /** Whether the authors opted the model in to the benchmarks. */
+  benchmarking: boolean;
   benchmarks: BenchmarksView | null;
   verifiedPins: number;
   reviews: number;
@@ -466,6 +468,7 @@ export function toDetailView(
         curl: configCurl(key, configuration.config),
       }),
     ),
+    benchmarking: model.benchmarking,
     benchmarks: benchmarksView(
       model,
       benchmarks,
