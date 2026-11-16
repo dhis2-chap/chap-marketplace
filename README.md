@@ -1,5 +1,10 @@
 # Chap Marketplace
 
+[![Site](https://img.shields.io/badge/site-chap--marketplace.dhis2.org-blue)](https://chap-marketplace.dhis2.org/)
+[![CI](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/ci.yml/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/ci.yml)
+[![Deploy](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/deploy.yml/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/deploy.yml)
+[![CodeQL](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/security/code-scanning)
+[![Node 24](https://img.shields.io/badge/node-24-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/dhis2-chap/chap-marketplace/badge)](https://scorecard.dev/viewer/?uri=github.com/dhis2-chap/chap-marketplace)
 
 A curated, verified catalog of forecasting models for [Chap](https://chap.dhis2.org),
