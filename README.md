@@ -1,5 +1,7 @@
 # Chap Marketplace
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/dhis2-chap/chap-marketplace/badge)](https://scorecard.dev/viewer/?uri=github.com/dhis2-chap/chap-marketplace)
+
 A curated, verified catalog of forecasting models for [Chap](https://chap.dhis2.org),
 the Chap Modeling Platform. **This repository is the marketplace**:
 the YAML files at the root are the source of truth, and the website is a
