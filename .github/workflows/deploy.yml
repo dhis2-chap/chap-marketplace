@@ -67,7 +67,7 @@ jobs:
           package_json_file: site/package.json
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Matches the Vercel project's Node version.
           node-version: 24.22.1
