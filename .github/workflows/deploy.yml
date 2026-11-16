@@ -10,8 +10,13 @@ name: deploy
 # It also bakes in the benchmark results, read from the benchmarking server's
 # chap API with CHAP_API_TOKEN. That token can write to the server, so it is
 # only ever used here: this workflow never runs on pull requests, forked or
-# not. The server runs pending benchmarks every 15 minutes; the hourly
-# schedule keeps the published leaderboard at most an hour behind it.
+# not.
+#
+# The benchmarking server sends a `benchmarks-updated` repository_dispatch
+# when a run produces new backtests, so the leaderboard refreshes within
+# minutes of new results instead of waiting for a schedule. The hourly cron is
+# only a fallback for a dispatch that never arrives: GitHub runs schedules best
+# effort, and in practice they start every four to eight hours, not hourly.
 #
 # workflow_dispatch is the manual fallback for when GitHub drops a push event
 # and a merge never deploys (`gh workflow run deploy`), without needing a
@@ -21,6 +26,9 @@ on:
   push:
     branches:
       - main
+  repository_dispatch:
+    types:
+      - benchmarks-updated
   schedule:
     - cron: "17 * * * *"
   workflow_dispatch:
@@ -38,6 +46,7 @@ jobs:
     name: deploy to vercel
     runs-on: ubuntu-latest
     # A manual run can be started on any branch; only main is production.
+    # A repository_dispatch always runs on the default branch, so it passes.
     if: github.ref == 'refs/heads/main'
     # Naming an environment is what puts each run in the Deployments view;
     # `url` is that record's "View deployment" link. It resolves after the job,

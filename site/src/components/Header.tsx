@@ -190,6 +190,35 @@ function MobileNav({
   );
 }
 
+const DOMAIN_LINKS = [
+  { href: "https://chap.dhis2.org", label: "Chap" },
+  { href: "https://dhis2.org", label: "DHIS2.org" },
+  { href: "https://community.dhis2.org/c/development/chap/84", label: "Community" },
+  { href: "https://github.com/dhis2-chap", label: "GitHub" },
+];
+
+/** The global DHIS2 domain bar, as on chap.dhis2.org. */
+function DomainBar() {
+  return (
+    <div className="flex h-[30px] items-center justify-end gap-5 bg-[#f8fafc] px-5 text-[12px] text-[#051841]">
+      {DOMAIN_LINKS.map((link) => (
+        <a
+          key={link.href}
+          href={link.href}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1 hover:underline"
+        >
+          {link.label}
+          <svg width="7" height="7" viewBox="0 0 7 7" aria-hidden>
+            <path fill="#293F6F" d="M7 0v4H6V1.707L1.353 6.354l-.708-.708L5.292 1H3V0z" />
+          </svg>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 export function Header({ benchmarksLive }: { benchmarksLive: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -201,6 +230,7 @@ export function Header({ benchmarksLive }: { benchmarksLive: boolean }) {
   };
   return (
     <>
+      <DomainBar />
       {/* The DHIS2 HeaderBar colour and type, taller than its 48px — this is
           a site, not an app shell. */}
       <header className="sticky top-0 z-40 bg-[#2c6693] text-white">

@@ -72,6 +72,13 @@ export function metricRankKey(column: MetricColumn, value: number): number {
   return column.optimizationDirection === "maximize" ? -value : value;
 }
 
+/** The best rank key among values, or null when they all tie (nothing to mark). */
+export function bestRankKey(column: MetricColumn, values: number[]): number | null {
+  const keys = values.map((v) => metricRankKey(column, v));
+  const min = Math.min(...keys);
+  return keys.some((k) => k !== min) ? min : null;
+}
+
 /**
  * A comparison with a baseline, signed so positive is better whatever the
  * metric's direction: a skill ratio as a percentage, anything else in the

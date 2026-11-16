@@ -78,6 +78,13 @@ chap-core and run automatically, so they are not marketplace entries and
 `comparison` is the only role an entry can set. Starters cannot have a role.
 `chap-admin install` passes the role to chap-core with the model template.
 
+## Benchmarking is opt-in
+
+`benchmarking: true` opts a forecasting model in to the marketplace
+benchmarks. Only opted-in models' backtests are read from the benchmarking
+server and shown on the site; without the flag the model page says its
+authors have not opted in. Leave it out to stay out. Starters cannot opt in.
+
 ## Annotated example
 
 ```yaml
@@ -92,6 +99,8 @@ display_name: My Model           # human-readable name for the catalog,
 kind: model                      # model | starter
 # role: comparison               # optional; only for models others are
                                  # compared against (see Comparison models)
+benchmarking: true               # optional, default false: opt in to the
+                                 # marketplace benchmarks
 assessed_status: orange          # the AUTHOR's own AssessedStatus:
                                  #   green | yellow | orange | red | gray
 
@@ -141,6 +150,8 @@ versions:                        # newest first
   - version: 1.2.0               # the service's own MLServiceInfo.version
     commit: 0000000000000000000000000000000000000000
     image_tag: sha-0000000       # the tag built from this commit
+    image_digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+                                 # what that tag resolves to
     chapkit: ">=2.0.0,<3"        # what the pinned revision requires
     status: unstable             # verified | unstable | deprecated | yanked
     verified_by: []              # empty until three maintainers approve
@@ -149,6 +160,7 @@ versions:                        # newest first
   - version: 1.1.0
     commit: 1111111111111111111111111111111111111111
     image_tag: sha-1111111
+    image_digest: sha256:1111111111111111111111111111111111111111111111111111111111111111
     chapkit: ">=2.0.0,<3"
     status: verified
     verified_by: [maintainer-a, maintainer-b, maintainer-c]
@@ -170,9 +182,16 @@ configurations:                  # verified, copy-pasteable configurations
 
 - A version pin resolves to two halves of one revision:
   `<source.repository>@<commit>` for reading the code, and
-  `<source.image>:<image_tag>` for running it. The publish workflow tags every
-  build `sha-<short commit>`, so a `sha-` tag must agree with `commit` —
-  the schema enforces it. `:latest` moves and is never a pin.
+  `<source.image>:<image_tag>@<image_digest>` for running it. The publish
+  workflow tags every build `sha-<short commit>`, so a `sha-` tag must agree
+  with `commit` — the schema enforces it. A registry tag can still be moved,
+  so `commit` + `image_digest` is the pin and the tag only names it.
+  `docker buildx imagetools inspect <image>:<tag>` prints the digest
+  (`Digest:`). CI (`pnpm check-digests`) fails unless the image carries a
+  GitHub build-provenance attestation from `source.repository` that the
+  digest was built from `commit` — add `actions/attest-build-provenance` to
+  the publish workflow — and, while chap-admin still installs by tag, unless
+  the tag resolves to the digest. `:latest` moves and is never a pin.
 - A listed service runs on one of chapkit's published base images
   ([dhis2-chap/chapkit-images](https://github.com/dhis2-chap/chapkit-images)),
   recorded as `source.runtime_image`: `chapkit-py` for Python services,
@@ -220,8 +239,8 @@ configurations:                  # verified, copy-pasteable configurations
 
 Benchmark results do not live in these files: they are read from Chap's
 benchmarking server at deploy time and cross-checked against the pins here
-(see [`../benchmarks/README.md`](../benchmarks/README.md)). None of the
-listed pins has been run yet, and how they will be ranked is still being
+(see [`../benchmarks/README.md`](../benchmarks/README.md)). Only models with
+`benchmarking: true` are included, and how they will be ranked is still being
 decided.
 
 ## Open questions for this draft

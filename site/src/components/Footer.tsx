@@ -21,7 +21,7 @@ export function Footer() {
             </span>
           </div>
           <p className="mt-4 max-w-[44ch] text-[15px] leading-[1.7] text-board-ink-2">
-            Climate &amp; Health Analytics Platform, by the HISP Centre at the
+            Chap Modeling Platform, by the HISP Centre at the
             University of Oslo.
           </p>
         </div>

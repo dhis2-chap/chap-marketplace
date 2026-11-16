@@ -6,6 +6,7 @@ const registry = loadRegistry();
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
 const stable = stableVersion(multistep);
 const starter = registry.models.find((m) => m.kind === "starter")!;
+const optedOut = registry.models.find((m) => m.kind === "model" && !m.benchmarking)!;
 const suite = SUITES[0];
 
 type Backtest = Specification["backtests"][number];
@@ -104,6 +105,25 @@ describe("toBenchmarks", () => {
       ),
     );
     expect(records.map((r) => r.metrics.crps)).toEqual([1]);
+  });
+
+  it("skips a model that has not opted in to benchmarking", () => {
+    const key = Object.keys(optedOut.configurations)[0];
+    const { records, skipped } = toBenchmarks(
+      registry,
+      suite,
+      spec(
+        backtest({
+          template: optedOut.service_id,
+          name: key,
+          digest: stableVersion(optedOut).commit,
+        }),
+      ),
+    );
+    expect(records).toEqual([]);
+    expect(skipped).toEqual([
+      `${optedOut.service_id}:${key}: not opted in to benchmarking`,
+    ]);
   });
 
   it("skips what is not a listed pin and configuration, a starter, or has no metrics", () => {

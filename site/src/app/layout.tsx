@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s · Chap Marketplace",
   },
   description:
-    "Discover forecasting models for Chap, the Climate & Health Analytics Platform. Browse models, check their requirements and follow the installation instructions.",
+    "Discover forecasting models for the Chap Modeling Platform. Browse models, check their requirements and follow the installation instructions.",
 };
 
 export default function RootLayout({

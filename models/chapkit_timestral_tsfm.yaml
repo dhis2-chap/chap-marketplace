@@ -53,6 +53,7 @@ versions:
   - version: 0.1.0
     commit: 4a51fed2c97ab174fb4ec196466663f0fc937836
     image_tag: sha-4a51fed
+    image_digest: sha256:61545ad234116a00fc662dfd4d106ba5025d86311488c07bf52a03e5b4174af9
     chapkit: ">=2.5.0,<3"
     status: verified
     verified_by: []

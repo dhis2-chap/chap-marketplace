@@ -1,0 +1,89 @@
+schema_version: 2
+
+id: deep_auto_regressive
+service_id: deep-auto-regressive
+display_name: Deep Auto Regressive
+kind: model
+
+# The author's own chapkit AssessedStatus, copied from the service — not a
+# marketplace verdict. red = highly experimental prototype, not validated.
+# See models/README.md for the full scale.
+assessed_status: red
+
+summary: >-
+  An ensemble of recurrent neural networks (GRU, flax/jax) that forecasts
+  disease cases from each location's own history and climate covariates, with
+  a negative binomial output. One service for weekly and monthly data: the
+  period type is read from the data. Replaces the separate weekly and monthly
+  auto-regressive models.
+
+source:
+  repository: https://github.com/chap-models/chapkit_deep_auto_regressive_model
+  image: ghcr.io/chap-models/chapkit_deep_auto_regressive_model
+  # Pure Python (jax, flax, optax) on the chapkit Python base. Multi-arch.
+  runtime_image: ghcr.io/dhis2-chap/chapkit-py
+
+attribution:
+  author: Knut Rand
+  organization: HISP Centre, University of Oslo
+  citation: >-
+    Rand, Knut. 2025. "Deep Auto Regressive model". HISP Centre, University
+    of Oslo.
+    https://dhis2-chap.github.io/chap-core/external_models/overview_of_supported_models.html
+
+compatibility:
+  period_types: [weekly, monthly]
+  min_prediction_periods: 1
+  max_prediction_periods: 12
+  requires_geo: false
+
+covariates:
+  required:
+    - rainfall
+    - mean_temperature
+    - population
+  defaults: []
+  allow_free_additional: true
+
+channels:
+  stable: 0.1.0
+  latest: 0.1.0
+
+versions:
+  - version: 0.1.0
+    commit: 89fe6a9c20b8bdbcc8edaaef6a355ccb56106ae2
+    image_tag: sha-89fe6a9
+    image_digest: sha256:c97ada641018f1be670ca0237bd796159c01396a7ab52204b37606b2033c38ee
+    chapkit: ">=2.5.0,<3"
+    status: verified
+    verified_by: []
+    changelog: >-
+      First listing. Merges auto_regressive_weekly_v2 and
+      auto_regressive_monthly_v2 into one chapkit service for weekly and
+      monthly data.
+    notes: >-
+      On jax 0.12. With the jax 0.10 the earlier models pinned, the forecasts
+      were identical to theirs; on jax 0.12 some configurations differ at full
+      training length, in every measured case by less than a change of random
+      seed does. Details in the repository README.
+
+configurations:
+  monthly:
+    description: >-
+      The service's defaults, which suit monthly data: 36 months of context,
+      a three-month horizon, a five-member ensemble trained for 400 epochs.
+    config:
+      prediction_periods: 3
+      additional_continuous_covariates: []
+  weekly:
+    description: >-
+      The recommended weekly values: 52 weeks of context, a twelve-week
+      horizon, learning rate 1e-5 and 1000 epochs per ensemble member. Slower
+      to train than the monthly configuration.
+    config:
+      prediction_periods: 12
+      context_length: 52
+      prediction_length: 12
+      learning_rate: 0.00001
+      n_iter: 1000
+      additional_continuous_covariates: []

@@ -46,17 +46,17 @@ describe("the real registry", () => {
     expect(ghr).toBeDefined();
     const stable = stableVersion(ghr!);
     expect(displayPin(ghr!, stable)).toBe(
-      "github.com/chap-models/chapkit_ghr_model@84fbe77",
+      "github.com/chap-models/chapkit_ghr_model@bb661b0",
     );
     expect(fullPin(ghr!, stable)).toBe(
-      "https://github.com/chap-models/chapkit_ghr_model@84fbe77734f51a592a215f34b2b8731c3acbed2f",
+      "https://github.com/chap-models/chapkit_ghr_model@bb661b02ab20c35b09d70b7bd4fa38a191cafc94",
     );
   });
 
   it("derives the deployable image pin from the same commit", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
     expect(imageRef(ghr, stableVersion(ghr))).toBe(
-      "ghcr.io/chap-models/chapkit_ghr_model:sha-84fbe77",
+      "ghcr.io/chap-models/chapkit_ghr_model:sha-bb661b0@sha256:cee89ce8f4c64de67d3d7d9f024aec39b79acbf94a4420ba285d54ab0f321bec",
     );
   });
 
@@ -104,6 +104,7 @@ describe("schema refinements", () => {
         version: "1.0.0",
         commit: "1111111111111111111111111111111111111111",
         image_tag: "sha-1111111",
+        image_digest: `sha256:${"1".repeat(64)}`,
         chapkit: ">=2.0.0,<3",
         status: "verified",
         verified_by: [],
@@ -129,6 +130,21 @@ describe("schema refinements", () => {
   it("rejects a starter flagged as a comparison model", () => {
     const bad = { ...base, kind: "starter", role: "comparison" };
     expect(modelSchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("leaves benchmarking off unless the model opts in", () => {
+    expect(modelSchema.parse(base).benchmarking).toBe(false);
+    expect(modelSchema.parse({ ...base, benchmarking: true }).benchmarking).toBe(true);
+  });
+
+  it("rejects a starter that opts in to benchmarking", () => {
+    const bad = { ...base, kind: "starter", benchmarking: true };
+    expect(modelSchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("keeps GHRmodel out of the benchmarks", () => {
+    const ghr = loadRegistry().models.find((m) => m.id === "chapkit_ghr_model")!;
+    expect(ghr.benchmarking).toBe(false);
   });
 
   it("rejects a service id that is not the kebab-case model id", () => {

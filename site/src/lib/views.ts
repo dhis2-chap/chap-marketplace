@@ -24,6 +24,7 @@ import { benchmarksFor, metricViews } from "./benchmarks";
 import {
   DEFAULT_METRIC_COLUMNS,
   inMetricOrder,
+  bestRankKey,
   metricRankKey,
   type MetricColumn,
 } from "./metrics";
@@ -159,7 +160,7 @@ export interface ChannelView {
   status: string;
   pinDisplay: string;
   pinFull: string;
-  image: string;
+  imageTag: string;
 }
 
 export interface VersionRowView {
@@ -260,6 +261,8 @@ export interface ModelDetailView {
   inReview: InReviewPinView[];
   inReviewAsOf: string | null;
   configurations: ConfigurationView[];
+  /** Whether the authors opted the model in to the benchmarks. */
+  benchmarking: boolean;
   benchmarks: BenchmarksView | null;
   verifiedPins: number;
   reviews: number;
@@ -277,7 +280,7 @@ function toChannelView(
     status: version.status,
     pinDisplay: displayPin(model, version),
     pinFull: fullPin(model, version),
-    image: imageRef(model, version),
+    imageTag: version.image_tag,
   };
 }
 
@@ -353,14 +356,12 @@ function versionComparison(
       optimizationDirection: m.optimizationDirection,
       comparisonOp: m.comparisonOp,
     }));
-  // A column's best rank key, or null when every run ties (nothing to mark).
-  const bestKey = columns.map((c) => {
-    const keys = runs
-      .filter((b) => b.metrics[c.id] !== undefined)
-      .map((b) => metricRankKey(c, b.metrics[c.id]));
-    const min = Math.min(...keys);
-    return keys.some((k) => k !== min) ? min : null;
-  });
+  const bestKey = columns.map((c) =>
+    bestRankKey(
+      c,
+      runs.flatMap((b) => (b.metrics[c.id] === undefined ? [] : [b.metrics[c.id]])),
+    ),
+  );
 
   return {
     datasetName: datasetNameFor(dataset),
@@ -467,6 +468,7 @@ export function toDetailView(
         curl: configCurl(key, configuration.config),
       }),
     ),
+    benchmarking: model.benchmarking,
     benchmarks: benchmarksView(
       model,
       benchmarks,

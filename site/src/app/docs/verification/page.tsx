@@ -29,7 +29,7 @@ export default function VerificationPage() {
           <ul className="list-disc space-y-2 pl-6">
             <li>
               The model is a chapkit service with a published image tied to
-              the listed source-code commit.
+              the listed source-code commit, pinned by its digest.
             </li>
             <li>
               The service registers with Chap and can run training and

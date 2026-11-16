@@ -27,8 +27,9 @@ import {
  * benchmarking server's chap API at deploy time (`pnpm fetch-benchmarks`) into
  * the gitignored <repo>/benchmarks/results.json; a build without that file —
  * CI, local dev — has no results. Every record is validated like the registry,
- * and any violation throws and fails the build: model, version, commit and
- * configuration must resolve against the registry, and every metric must be
+ * and any violation throws and fails the build: the model must have opted in
+ * to benchmarking, its version, commit and configuration must resolve
+ * against the registry, and every metric must be
  * one chap-core's definitions (stored alongside) describe.
  */
 
@@ -56,6 +57,11 @@ export function loadBenchmarks(
     const model = byId.get(bench.model);
     if (!model) {
       throw new Error(`${label}: model "${bench.model}" is not in the registry`);
+    }
+    if (!model.benchmarking) {
+      throw new Error(
+        `${label}: models/${bench.model}.yaml has not opted in to benchmarking`,
+      );
     }
     const version = versionByTag(model, bench.version);
     if (!version) {
@@ -166,7 +172,7 @@ export interface BenchmarkRowView {
   versionTag: string;
   /** Whether versionTag is the model's stable pin; the table shows "stable" then. */
   isStable: boolean;
-  /** "monthly_climate · chapkit_ghr_model@dfb2e3f" */
+  /** "monthly_climate · chapkit_simple_multistep_model@dfb2e3f" */
   pinLine: string;
   measured: boolean;
   /** Every metric of the run, formatted, in chap-core's default order; [] when unmeasured. */
@@ -232,7 +238,7 @@ function newestRuns(byId: Map<string, Model>, runs: Benchmark[]): Benchmark[] {
  * One suite per dataset that has recorded runs: one row per model and
  * configuration (see newestRuns), measured rows first (best normalised CRPS
  * first, plain CRPS as fallback), then every other configuration of a
- * listed model at its stable pin as an unmeasured row.
+ * benchmarked model at its stable pin as an unmeasured row.
  */
 export function buildBenchmarkSuites(
   registry: Registry,
@@ -240,8 +246,8 @@ export function buildBenchmarkSuites(
   metrics: MetricInfo[],
 ): BenchmarkSuiteView[] {
   const byId = new Map(registry.models.map((m) => [m.id, m]));
-  // Starters are scaffolding, not something to forecast with.
-  const models = registry.models.filter((m) => m.kind !== "starter");
+  // Only models that opted in are benchmarked (never a starter).
+  const models = registry.models.filter((m) => m.benchmarking);
   const datasets = [...new Set(records.map((b) => b.dataset))].sort();
 
   return datasets.map((dataset) => {

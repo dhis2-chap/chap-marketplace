@@ -20,6 +20,7 @@ id: my_model
 service_id: my-model          # MLServiceInfo.id — kebab-case of id
 display_name: My Model
 kind: model                   # model | starter
+benchmarking: true            # opt in to the benchmarks (default false)
 assessed_status: red          # YOUR OWN chapkit AssessedStatus
 
 summary: >-
@@ -57,6 +58,7 @@ versions:
   - version: 1.0.0            # your MLServiceInfo.version
     commit: 1111111111111111111111111111111111111111
     image_tag: sha-1111111    # the tag built from that commit
+    image_digest: sha256:…    # what that tag resolves to
     chapkit: ">=2.0.0,<3"
     status: verified          # set by maintainers on approval
     verified_by: []           # the reviewers
@@ -73,8 +75,8 @@ configurations:
 
 const CHECKS = [
   "It is a chapkit service.",
-  "The image is published with a sha-<short commit> tag.",
-  "The pin is the full 40-character commit and the image tag built from it.",
+  "The image is published with a sha-<short commit> tag and a build-provenance attestation (actions/attest-build-provenance).",
+  "The pin is the full 40-character commit, the image tag built from it and the digest that tag resolves to.",
   "It registers with chap-core and runs a train and a predict.",
   "assessed_status is your own honest rating — we copy it as is.",
   "At least one maintainer GitHub handle is listed.",
@@ -109,7 +111,8 @@ const STEPS: [string, ReactNode][] = [
     "Your model is listed",
     <>
       Once the review is approved, the model appears in the marketplace under
-      your name. Listed models are also run in our{" "}
+      your name. If you opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      in the model file, it is also run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
       </Link>

@@ -13,7 +13,10 @@ talks to the server at runtime.
 ## How results reach the site
 
 The deploy workflow (`.github/workflows/deploy.yml`) runs on every push to
-`main`, every hour and on manual dispatch. Before the build it runs
+`main`, when the benchmarking server sends a `benchmarks-updated`
+repository_dispatch after a run produces new backtests, on manual dispatch,
+and on an hourly schedule as a fallback (GitHub starts scheduled runs best
+effort, in practice every few hours). Before the build it runs
 `pnpm fetch-benchmarks` (`site/scripts/fetch-benchmarks.ts`), which:
 
 1. looks up each suite in `SUITES` (`site/src/lib/chap-api.ts`) on
@@ -23,7 +26,8 @@ The deploy workflow (`.github/workflows/deploy.yml`) runs on every push to
 2. reads that specification's backtests from
    `GET /v1/crud/backtest-specifications/{id}`;
 3. keeps the newest backtest per configured model that belongs to a listed
-   pin — its model template is a listed model's `service_id`, its
+   pin of a model that opted in with `benchmarking: true` — its model
+   template is that model's `service_id`, its
    `sourceDigest` is one of that model's pinned commits and the configured
    model is named `<service_id>:<configuration key>` for one of its
    configurations — and drops every other backtest;
@@ -74,8 +78,11 @@ computation failed (no `crps`) is skipped.
 
 ## How models are run
 
+Benchmarking is opt-in: a model is benchmarked only when its file sets
+`benchmarking: true` (see [`../models/README.md`](../models/README.md)).
 The server's cron installs every listed pin with `chap-admin` and submits a
-backtest for each model on each suite's dataset it can run on (see
+backtest for each model on each suite's dataset it can run on, so it may
+still run a model that has not opted in; the fetch drops those results (see
 [chap_benchmarking](https://github.com/dhis2-chap/chap_benchmarking)). The
 datasets come from
 [climate-health-data](https://github.com/dhis2/climate-health-data); a

@@ -25,7 +25,7 @@ export default function BenchmarkDocsPage() {
           <Link href="/benchmarks" className={LINK}>
             Benchmarks
           </Link>{" "}
-          page shows how the listed models perform on a few public datasets.
+          page shows how the benchmarked models perform on a few public datasets.
           It gives a quick, rough picture of model performance. It is not a
           guide to which model to choose.
         </p>
@@ -77,8 +77,9 @@ export default function BenchmarkDocsPage() {
               benchmarking server
             </a>
             , in the same way for every model. No results are self-reported by
-            model authors. New model versions are benchmarked automatically
-            once they are listed.
+            model authors. Benchmarking is opt-in: only models whose authors
+            have opted in are benchmarked, and their new versions are
+            benchmarked automatically once they are listed.
           </p>
         </section>
 
