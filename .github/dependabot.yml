@@ -9,6 +9,11 @@ updates:
     directory: "/site"
     schedule:
       interval: "weekly"
+    ignore:
+      # Types track the Node major the site runs on (24, see .nvmrc); bump
+      # them together with Node, not ahead of it.
+      - dependency-name: "@types/node"
+        versions: [">=25"]
     groups:
       # One PR a week for routine bumps; majors still come one at a time.
       minor-and-patch:
