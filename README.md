@@ -1,6 +1,5 @@
 # Chap Marketplace
 
-[![Site](https://img.shields.io/badge/site-chap--marketplace.dhis2.org-blue)](https://chap-marketplace.dhis2.org/)
 [![CI](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/ci.yml/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/ci.yml)
 [![Deploy](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/deploy.yml/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/deploy.yml)
 [![CodeQL](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/security/code-scanning)
