@@ -5,6 +5,7 @@
 [![Deploy](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/deploy.yml/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/deploy.yml)
 [![CodeQL](https://github.com/dhis2-chap/chap-marketplace/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/dhis2-chap/chap-marketplace/security/code-scanning)
 [![Node 24](https://img.shields.io/badge/node-24-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/dhis2-chap/chap-marketplace/badge)](https://scorecard.dev/viewer/?uri=github.com/dhis2-chap/chap-marketplace)
 
 A curated, verified catalog of forecasting models for [Chap](https://chap.dhis2.org),
@@ -170,3 +171,8 @@ Results are read from Chap's benchmarking server at each deploy (and hourly)
 and only backtests of listed pins are kept. How the models are run is in
 [benchmarks/README.md](benchmarks/README.md); how the suites are ranked is not
 settled yet.
+
+## License
+
+[GNU Affero General Public License v3.0](LICENSE), as the rest of the Chap
+platform. Each listed model keeps its own license, in its own repository.
