@@ -15,7 +15,7 @@ export function AuthorLine({
         {author}
       </div>
       {organization ? (
-        <div className="truncate text-[13px] text-ink-2">{organization}</div>
+        <div className="whitespace-pre-line text-[13px] text-ink-2">{organization}</div>
       ) : null}
     </div>
   );
@@ -43,7 +43,7 @@ export function AuthorPanel({
         {author}
       </div>
       {organization ? (
-        <div className="mt-1 text-[15px] text-ink-2">{organization}</div>
+        <div className="mt-1 whitespace-pre-line text-[15px] text-ink-2">{organization}</div>
       ) : null}
       {originalSource ? (
         <a

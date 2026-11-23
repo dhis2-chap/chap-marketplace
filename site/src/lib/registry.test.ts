@@ -29,6 +29,17 @@ describe("the real registry", () => {
     }
   });
 
+  it("preserves BSC's requested GHRmodel credit and affiliation lines", () => {
+    const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
+    expect(ghr.attribution.author).toBe(
+      "Carles Milà¹, Ania B. Kawiecki¹, Rachel Lowe¹,² on behalf of the BSC Global Health Resilience group",
+    );
+    expect(ghr.attribution.organization).toBe(
+      "¹ Barcelona Supercomputing Center (BSC), Barcelona, Spain\n" +
+        "² Catalan Institution for Research & Advanced Studies (ICREA), Barcelona, Spain",
+    );
+  });
+
   it("lists chapkit services only — every model has a published image", () => {
     for (const model of registry.models) {
       expect(model.source.image).toMatch(/^ghcr\.io\//);
