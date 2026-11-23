@@ -222,10 +222,13 @@ configurations:                  # verified, copy-pasteable configurations
 - `display_name` is normalised for the catalog: no `(chapkit)` suffix (every
   listed model is a chapkit service), and never a raw repository name.
 - `channels.stable` must point at a version with `status: verified`.
-- `attribution.author` credits the people who built the model. When the Chap
-  team packaged someone else's model as a chapkit service, say so in the
-  author line — `Author (adapted by Chap team)`. No personal contact
-  details: the listing carries no e-mail addresses or GitHub handles.
+- `attribution.author` credits the people who built the model. Preserve an
+  author's requested wording. Otherwise, when the Chap team packaged someone
+  else's model as a chapkit service, use `Author (adapted by Chap team)`.
+  Affiliation markers can be Unicode superscripts (¹, ²); multiple affiliation
+  lines go in `attribution.organization` as a YAML literal block (`|-`).
+  No personal contact details: the listing carries no e-mail addresses or
+  GitHub handles.
 - `versions[].verified_by` lists the three approving maintainers of the PR
   that added the pin. `[]` on a verified pin means the pin was verified by
   the merge gate itself without named approvals on record — true for the
