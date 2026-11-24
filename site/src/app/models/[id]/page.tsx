@@ -78,6 +78,9 @@ export default async function ModelPage({
               <span className="d2-tag ml-2">Not open source</span>
             ) : null}
           </p>
+          {view.license.restrictions ? (
+            <p className="mt-2 max-w-[64ch] text-[13px] text-ink-3">{view.license.restrictions}</p>
+          ) : null}
           <a
             href={view.repoUrl}
             target="_blank"

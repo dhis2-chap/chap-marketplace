@@ -113,7 +113,6 @@ export function CatalogClient({
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get("q") ?? "";
   const [q, setQ] = useState(urlQuery);
-  const [licenseFilter, setLicenseFilter] = useState("");
   // Adopt a new header-search query mid-session (state adjusted during render).
   const [prevUrlQuery, setPrevUrlQuery] = useState(urlQuery);
   if (prevUrlQuery !== urlQuery) {
@@ -121,8 +120,7 @@ export function CatalogClient({
     setQ(urlQuery);
   }
 
-  const hits = models.filter((m) => matches(m, q) &&
-    (!licenseFilter || m.license.status === licenseFilter));
+  const hits = models.filter((m) => matches(m, q));
   const forecasting = hits.filter((m) => m.kind === "model");
   const starters = hits.filter((m) => m.kind === "starter");
 
@@ -160,29 +158,16 @@ export function CatalogClient({
           className="d2-input pl-10 text-[16px]"
         />
       </div>
-      <label className="mt-4 block max-w-[280px] text-[14px] text-ink-2">
-        License
-        <select
-          value={licenseFilter}
-          onChange={(e) => setLicenseFilter(e.target.value)}
-          className="d2-input mt-1 w-full"
-        >
-          <option value="">All licenses</option>
-          <option>Open source</option>
-          <option>Not open source</option>
-          <option>No license</option>
-        </select>
-      </label>
 
       {hits.length === 0 ? (
         <div className="d2-card mt-6 p-12 text-center">
           <p className="text-[16px] font-medium text-ink">No matches</p>
           <button
             type="button"
-            onClick={() => { setQ(""); setLicenseFilter(""); }}
+            onClick={() => setQ("")}
             className="d2-button mt-4"
           >
-            Clear filters
+            Clear search
           </button>
         </div>
       ) : forecasting.length > 0 ? (

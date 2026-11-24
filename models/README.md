@@ -100,8 +100,9 @@ for example a revenue cap on commercial use.
 Custom code licenses can use an SPDX `LicenseRef-...` identifier, with the
 terms explained in `restrictions`.
 
-Open-source filtering uses OSI-approved code licenses (all terms for `AND`,
-at least one for `OR`) and requires any declared weights to be open source.
+A licensed listing is tagged "Not open source" unless its code license is
+OSI-approved (all terms for `AND`, at least one for `OR`) and any declared
+weights are open source.
 This describes the declared code and weights, not every dependency in the
 image, and verification does not provide legal clearance.
 
