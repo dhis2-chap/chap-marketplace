@@ -39,6 +39,9 @@ function ModelCard({ m }: { m: ModelCardView }) {
           </span>
         ))}
         <span className="d2-tag">{m.license.code ?? "No license"}</span>
+        {m.license.status === "Not open source" ? (
+          <span className="d2-tag">Not open source</span>
+        ) : null}
       </div>
       <div className="border-t border-line pt-4">
         <AuthorLine
@@ -141,8 +144,7 @@ export function CatalogClient({
         <Link href="/docs/verification" className="font-medium text-brand hover:underline">
           verified
         </Link>{" "}
-        to run in Chap. Verification does not provide legal clearance;
-        check the code and weights licenses before use.
+        to run in Chap.
       </p>
 
       <div className="relative mt-8 max-w-[560px]">

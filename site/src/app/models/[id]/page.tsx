@@ -74,6 +74,9 @@ export default async function ModelPage({
           </p>
           <p className="mt-5 text-[14px] text-ink-2">
             License: <span className="d2-tag">{view.license.code ?? "No license"}</span>
+            {view.license.status === "Not open source" ? (
+              <span className="d2-tag ml-2">Not open source</span>
+            ) : null}
           </p>
           <a
             href={view.repoUrl}

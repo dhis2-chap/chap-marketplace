@@ -1,10 +1,7 @@
 import type { LicenseView } from "@/lib/licenses";
 
 /** A version's full license details, for the Versions tab. */
-export function LicenseSummary({ license, linkWeights = false }: {
-  license: LicenseView;
-  linkWeights?: boolean;
-}) {
+export function LicenseSummary({ license }: { license: LicenseView }) {
   return (
     <div className="space-y-2 text-[14px] leading-relaxed text-ink-2">
       <p className="flex flex-wrap items-center gap-2">
@@ -17,11 +14,10 @@ export function LicenseSummary({ license, linkWeights = false }: {
       </p>
       {license.weights ? (
         <p>
-          Weights license: {linkWeights ? (
-            <a href={license.weights.url} target="_blank" rel="noreferrer" className="text-brand hover:underline">
-              {license.weights.name}
-            </a>
-          ) : license.weights.name}
+          Weights license:{" "}
+          <a href={license.weights.url} target="_blank" rel="noreferrer" className="text-brand hover:underline">
+            {license.weights.name}
+          </a>
           {!license.weights.open_source ? (
             <span className="d2-tag ml-2">Not open source</span>
           ) : null}

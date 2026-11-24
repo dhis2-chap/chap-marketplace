@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { LicenseSummary } from "./license";
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { IconWarningFilled24 } from "@dhis2/ui-icons";
 import { BENCHMARKS_LIVE } from "@/lib/flags";
@@ -12,6 +11,7 @@ import { BaselineToggle, useBaselineToggle } from "./baseline";
 import { MetricPicker, useMetricPicks } from "./metric-picker";
 import { CodePanel } from "./CodePanel";
 import { CopyButton } from "./copy";
+import { LicenseSummary } from "./license";
 
 type Tab = "overview" | "versions" | "configs" | "benchmarks" | "install";
 
@@ -256,7 +256,7 @@ function VersionsTab({ view }: { view: ModelDetailView }) {
                   {v.changelog ?? "—"}
                 </td>
                 <td className="min-w-[220px] max-w-[40ch] px-5 py-4">
-                  <LicenseSummary license={v.license} linkWeights />
+                  <LicenseSummary license={v.license} />
                 </td>
                 {installable ? (
                   <td className="px-5 py-4">
