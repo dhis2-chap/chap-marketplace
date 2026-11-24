@@ -6,62 +6,39 @@
  *  - the tag: `<source.image>:<image_tag>` still resolves to `image_digest`.
  *    chap-admin installs by tag until chap-core pulls by digest, so a moved
  *    tag means installs run something nobody reviewed.
+ *  - the license: each runnable image config agrees with license.code;
+ *    an empty label asks for manual review of the pinned source.
  * Network-bound, so it stays out of `pnpm validate`.
  */
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { loadRegistry } from "../src/lib/registry";
+import { checkLicenseLabel, licenseFor } from "../src/lib/licenses";
+import { imageLicenseLabels, resolveDigest } from "./lib/image-registry";
 
 const run = promisify(execFile);
-
-const MANIFEST_TYPES = [
-  "application/vnd.oci.image.index.v1+json",
-  "application/vnd.docker.distribution.manifest.list.v2+json",
-  "application/vnd.oci.image.manifest.v1+json",
-  "application/vnd.docker.distribution.manifest.v2+json",
-].join(", ");
 
 /** Lookups in flight at once; keeps the check quick without hammering the registry. */
 const CONCURRENCY = 8;
 const TIMEOUT_MS = 30_000;
 
-/** Runs `fn` once more after a failure, so one registry blip does not fail CI. */
-async function retryOnce<T>(fn: () => Promise<T>): Promise<T> {
-  try {
-    return await fn();
-  } catch {
-    return fn();
-  }
-}
+/**
+ * Pauses before each retry. In CI a `gh attestation verify` now and then
+ * fails, on a different image each time, and passes on a re-run; an immediate
+ * retry tends to fail too, so the retries back off.
+ */
+const RETRY_DELAYS_MS = [2_000, 8_000];
 
-/** The digest a tag resolves to, via the registry's anonymous token flow. */
-async function resolveDigest(image: string, tag: string): Promise<string> {
-  const [host, ...rest] = image.split("/");
-  const url = `https://${host}/v2/${rest.join("/")}/manifests/${tag}`;
-  const head = (headers: Record<string, string>) =>
-    fetch(url, {
-      method: "HEAD",
-      headers: { Accept: MANIFEST_TYPES, ...headers },
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-    });
-  let res = await head({});
-  if (res.status === 401) {
-    // Bearer realm="…",service="…",scope="…"
-    const challenge = res.headers.get("www-authenticate") ?? "";
-    const params = Object.fromEntries(
-      [...challenge.matchAll(/(\w+)="([^"]*)"/g)].map((m) => [m[1], m[2]]),
-    );
-    const tokenUrl = new URL(params.realm);
-    if (params.service) tokenUrl.searchParams.set("service", params.service);
-    if (params.scope) tokenUrl.searchParams.set("scope", params.scope);
-    const tokenRes = await fetch(tokenUrl, { signal: AbortSignal.timeout(TIMEOUT_MS) });
-    if (!tokenRes.ok) throw new Error(`token request: HTTP ${tokenRes.status}`);
-    const { token } = (await tokenRes.json()) as { token: string };
-    res = await head({ Authorization: `Bearer ${token}` });
+/** Runs `fn`, retrying after each delay, so a transient failure does not fail CI. */
+async function withRetries<T>(fn: () => Promise<T>): Promise<T> {
+  for (const delay of RETRY_DELAYS_MS) {
+    try {
+      return await fn();
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
   }
-  const digest = res.headers.get("docker-content-digest");
-  if (!res.ok || !digest) throw new Error(`HTTP ${res.status}`);
-  return digest;
+  return fn();
 }
 
 /** Throws unless the repository attested that `digest` was built from `commit`. */
@@ -75,8 +52,14 @@ async function verifyProvenance(image: string, digest: string, repository: strin
   );
 }
 
-const message = (error: unknown) =>
-  error instanceof Error ? error.message.split("\n")[0] : String(error);
+/** The error's first line plus, for a failed command, the last line it wrote to stderr. */
+const message = (error: unknown) => {
+  if (!(error instanceof Error)) return String(error);
+  const first = error.message.split("\n")[0];
+  const stderr = (error as { stderr?: unknown }).stderr;
+  const last = typeof stderr === "string" ? stderr.trim().split("\n").at(-1) : undefined;
+  return last ? `${first}: ${last}` : first;
+};
 
 async function main() {
   const pins = loadRegistry().models.flatMap((model) =>
@@ -91,23 +74,35 @@ async function main() {
       const { model, v } = pins[i];
       const ref = `${model.source.image}:${v.image_tag}`;
       const problems: string[] = [];
+      const warnings: string[] = [];
       try {
-        await retryOnce(() =>
+        await withRetries(() =>
           verifyProvenance(model.source.image, v.image_digest, model.source.repository, v.commit),
         );
       } catch (error) {
         problems.push(`no attestation that ${v.image_digest} was built from ${v.commit} (${message(error)})`);
       }
       try {
-        const digest = await retryOnce(() => resolveDigest(model.source.image, v.image_tag));
+        const digest = await withRetries(() => resolveDigest(model.source.image, v.image_tag));
         if (digest !== v.image_digest) problems.push(`tag resolves to ${digest}, pinned ${v.image_digest}`);
       } catch (error) {
         problems.push(`tag could not be resolved (${message(error)})`);
+      }
+      try {
+        const labels = await withRetries(() => imageLicenseLabels(model.source.image, v.image_digest));
+        for (const label of labels) {
+          if (checkLicenseLabel(label, licenseFor(model, v).code) === "missing") {
+            warnings.push(`empty org.opencontainers.image.licenses; review the LICENSE file at ${model.source.repository}/tree/${v.commit}`);
+          }
+        }
+      } catch (error) {
+        problems.push(`license check failed (${message(error)})`);
       }
       if (problems.length > 0) failed++;
       results[i] = problems.length === 0
         ? `  ✓ ${ref}`
         : [`  ✗ ${ref}`, ...problems.map((p) => `      ${p}`)].join("\n");
+      for (const warning of new Set(warnings)) results[i] += `\n      ⚠ ${warning}`;
     }
   };
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));

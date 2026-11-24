@@ -17,6 +17,9 @@ summary: >-
   period type is read from the data. Replaces the separate weekly and monthly
   auto-regressive models.
 
+license:
+  code: AGPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_deep_auto_regressive_model
   image: ghcr.io/chap-models/chapkit_deep_auto_regressive_model

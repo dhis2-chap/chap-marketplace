@@ -18,13 +18,12 @@ export function KindBadge({ kind }: { kind: ModelKind }) {
 }
 
 /**
- * A version's status, shown only when it is not `verified`. Every listed
- * version is verified, so the tag marks the exceptions alone.
+ * A version's status, shown only when it is not `verified`.
  */
 export function StatusBadge({ status }: { status: string }) {
   if (status === "verified") return null;
   const tone =
-    status === "unstable" || status === "in review"
+    status === "unverified" || status === "unstable" || status === "in review"
       ? "bg-as-yellow-tint text-as-yellow"
       : "";
   return <span className={`d2-tag ${tone}`}>{status}</span>;

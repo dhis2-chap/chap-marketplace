@@ -79,8 +79,8 @@ function toBaselines(spec: Specification): Baseline[] {
 
 /**
  * The records of one specification that belong to a listed pin: the template
- * is the service of a listed model that opted in to benchmarking, its digest is one of that model's pinned
- * commits and the configured model is one of its configurations (chap-admin
+ * is the service of a listed model that opted in to benchmarking, its digest is one of that model's verified
+ * pinned commits and the configured model is one of its configurations (chap-admin
  * names them "<service id>:<configuration key>"). Backtests come newest first and
  * only the newest per configured model is kept. Skipped backtests are
  * reported, not recorded.
@@ -108,7 +108,7 @@ export function toBenchmarks(
       (m) => m.service_id === cm.modelTemplate.name,
     );
     const version = model?.versions.find(
-      (v) => v.commit === cm.modelTemplate.sourceDigest,
+      (v) => v.commit === cm.modelTemplate.sourceDigest && v.status === "verified",
     );
     const configuration = cm.name.slice(cm.modelTemplate.name.length + 1);
     const metrics = backtest.aggregateMetrics;
@@ -119,7 +119,7 @@ export function toBenchmarks(
         : !model.benchmarking
         ? "not opted in to benchmarking"
         : !version
-        ? `commit ${cm.modelTemplate.sourceDigest} is not a pin`
+        ? `commit ${cm.modelTemplate.sourceDigest} is not a verified pin`
         : !cm.name.startsWith(`${cm.modelTemplate.name}:`) ||
           !(configuration in model.configurations)
           ? "not a listed configuration"

@@ -21,6 +21,9 @@ developed_for: >-
   Laos dengue data, and ships with dengue data from 11 Brazilian
   microregions as its example.
 
+license:
+  code: GPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_ghr_model
   image: ghcr.io/chap-models/chapkit_ghr_model
@@ -28,8 +31,11 @@ source:
   runtime_image: ghcr.io/dhis2-chap/chapkit-r-inla
 
 attribution:
-  author: Global Health Resilience group, BSC (adapted by Chap team)
-  organization: Barcelona Supercomputing Center
+  author: >-
+    Carles Milà¹, Ania B. Kawiecki¹, Rachel Lowe¹,² on behalf of the BSC Global Health Resilience group
+  organization: |-
+    ¹ Barcelona Supercomputing Center (BSC), Barcelona, Spain
+    ² Catalan Institution for Research & Advanced Studies (ICREA), Barcelona, Spain
   citation: >-
     Lowe R, Lee SA, O'Reilly KM et al. (2021) Combined effects of
     hydrometeorological hazards and urbanisation on dengue risk in Brazil: a

@@ -32,17 +32,21 @@ site in `site/` is a build-time rendering of it. No auth, no server state.
   the stable pin, waits for self-registration and adds the entry's
   configurations. Not hand-written compose overlays, and not
   `chapkit mlproject run` — that was the schema_version 1 world.
-- **Verification semantics.** Merging a pin to `main` IS the 3/3 maintainer
-  verification. Open-PR pins render as in-review with n/3 approvals; the site
-  never invents proposals.
+- **Verification semantics.** Versions start `unverified`: one maintainer
+  merges them without a code review. A version becomes verified through a PR
+  that sets `status: verified` (and `channels.stable`), reviewed, code
+  included, and approved by three maintainers; authors open it or ask us.
+  `channels.stable` is optional and verified-only. Listings
+  without stable appear separately as Unverified. Open-PR pins render as
+  in-review with n/3 approvals; the site never invents proposals.
 - **Two independent signals, never merged.** The review gate verifies the
   *pin* (it is the revision it claims to be and runs as a chapkit service).
   `assessed_status` is the *authors'* own chapkit `AssessedStatus`, copied
   verbatim — the marketplace never assigns, upgrades or reinterprets it. It
-  stays in the registry as data but is not shown on the site. Every listed version
-  is verified, so no "Verified" badges: the `/models` intro says so once, with
-  "verified" linking to `/docs/verification`; version tables tag only the
-  non-verified exceptions (unstable, deprecated, yanked). No listed model is
+  stays in the registry as data but is not shown on the site. Version tables
+  label non-verified statuses (unverified, unstable, deprecated, yanked).
+  Unverified pages carry a notice on every tab; custom-image installs require
+  the user to add `--accept-risk` explicitly. No listed model is
   self-assessed `green`; three of the four forecasting models are `red`
   or `gray`.
 - **Starters are not models.** `kind: starter` marks scaffolding (the two
@@ -51,10 +55,11 @@ site in `site/` is a build-time rendering of it. No auth, no server state.
   every installed model is a model template (`ModelTemplateDB`), configured
   into configured models.
 - **Benchmark results come from the benchmarking server, at deploy time.**
-  Only backtests of listed pins (template = `service_id`, `sourceDigest` = a
+  Only backtests of verified listed pins (template = `service_id`, `sourceDigest` = a
   pinned commit, configured model = `<service_id>:<configuration key>`) are
   kept, and only of models that opt in with `benchmarking: true` (off by
-  default; GHRmodel is out). Starters never appear in the benchmarks.
+  default; GHRmodel is out). Starters and listings without a verified stable
+  version cannot opt in.
   `CHAP_API_TOKEN` can write to that server: it is used only in
   `deploy.yml`, which must never run on `pull_request`. The deploy fails if
   the fetch fails — never ship empty benchmarks in place of the real ones.

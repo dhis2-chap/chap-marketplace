@@ -1,3 +1,10 @@
 allowBuilds:
   esbuild: true
   unrs-resolver: true
+
+# Security floors for transitive dev dependencies (eslint) that their
+# parents have not picked up yet. Drop each once the lockfile resolves past it
+# without the override.
+overrides:
+  brace-expansion@<1.1.21: ^1.1.21
+  minimatch@>=7.0.0 <11.0.1: ^11.0.1

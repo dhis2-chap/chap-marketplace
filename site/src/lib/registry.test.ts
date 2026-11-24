@@ -3,11 +3,13 @@ import {
   displayPin,
   fullPin,
   imageRef,
+  latestVersion,
   loadRegistry,
   marketplaceStats,
   stableVersion,
 } from "./registry";
 import { modelSchema } from "./schema";
+import { toCardView, toDetailView } from "./views";
 
 describe("the real registry", () => {
   const registry = loadRegistry();
@@ -23,10 +25,22 @@ describe("the real registry", () => {
     );
   });
 
-  it("resolves both channels for every model", () => {
+  it("resolves latest and any verified stable channel for every model", () => {
     for (const model of registry.models) {
-      expect(stableVersion(model).status).toBe("verified");
+      expect(latestVersion(model).version).toBe(model.channels.latest);
+      if (model.channels.stable) expect(stableVersion(model)?.status).toBe("verified");
     }
+  });
+
+  it("preserves BSC's requested GHRmodel credit and affiliation lines", () => {
+    const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
+    expect(ghr.attribution.author).toBe(
+      "Carles Milà¹, Ania B. Kawiecki¹, Rachel Lowe¹,² on behalf of the BSC Global Health Resilience group",
+    );
+    expect(ghr.attribution.organization).toBe(
+      "¹ Barcelona Supercomputing Center (BSC), Barcelona, Spain\n" +
+        "² Catalan Institution for Research & Advanced Studies (ICREA), Barcelona, Spain",
+    );
   });
 
   it("lists chapkit services only — every model has a published image", () => {
@@ -44,7 +58,7 @@ describe("the real registry", () => {
   it("derives the source pin in both display and chap-consumable form", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model");
     expect(ghr).toBeDefined();
-    const stable = stableVersion(ghr!);
+    const stable = stableVersion(ghr!)!;
     expect(displayPin(ghr!, stable)).toBe(
       "github.com/chap-models/chapkit_ghr_model@bb661b0",
     );
@@ -55,7 +69,7 @@ describe("the real registry", () => {
 
   it("derives the deployable image pin from the same commit", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
-    expect(imageRef(ghr, stableVersion(ghr))).toBe(
+    expect(imageRef(ghr, stableVersion(ghr)!)).toBe(
       "ghcr.io/chap-models/chapkit_ghr_model:sha-bb661b0@sha256:cee89ce8f4c64de67d3d7d9f024aec39b79acbf94a4420ba285d54ab0f321bec",
     );
   });
@@ -64,11 +78,6 @@ describe("the real registry", () => {
     const stats = marketplaceStats(registry);
     expect(stats.models + stats.starters).toBe(registry.models.length);
     expect(stats.starters).toBeGreaterThan(0);
-  });
-
-  it("counts reviews as verified pins × required approvals", () => {
-    const stats = marketplaceStats(registry);
-    expect(stats.reviews).toBe(stats.verifiedPins * 3);
   });
 });
 
@@ -81,6 +90,7 @@ describe("schema refinements", () => {
     kind: "model",
     assessed_status: "red",
     summary: "A test model.",
+    license: { code: "MIT" },
     source: {
       repository: "https://github.com/org/my_model",
       image: "ghcr.io/org/my_model",
@@ -142,6 +152,11 @@ describe("schema refinements", () => {
     expect(modelSchema.safeParse(bad).success).toBe(false);
   });
 
+  it("rejects an unverified listing that opts in to benchmarking", () => {
+    const bad = { ...base, channels: { latest: "1.0.0" }, benchmarking: true };
+    expect(modelSchema.safeParse(bad).success).toBe(false);
+  });
+
   it("keeps GHRmodel out of the benchmarks", () => {
     const ghr = loadRegistry().models.find((m) => m.id === "chapkit_ghr_model")!;
     expect(ghr.benchmarking).toBe(false);
@@ -160,9 +175,46 @@ describe("schema refinements", () => {
   it("rejects a stable channel pointing at an unverified version", () => {
     const bad = {
       ...base,
-      versions: [{ ...base.versions[0], status: "unstable" }],
+      versions: [{ ...base.versions[0], status: "unverified" }],
     };
     expect(modelSchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("accepts an unverified listing without stable, but not with reviewers", () => {
+    const unverified = {
+      ...base,
+      channels: { latest: "1.0.0" },
+      versions: [{ ...base.versions[0], status: "unverified" }],
+    };
+    expect(modelSchema.safeParse(unverified).success).toBe(true);
+    const reviewed = {
+      ...unverified,
+      versions: [{ ...unverified.versions[0], verified_by: ["reviewer"] }],
+    };
+    expect(modelSchema.safeParse(reviewed).success).toBe(false);
+  });
+
+  it("lists a model without a verified stable pin as unverified", () => {
+    const model = modelSchema.parse({
+      ...base,
+      channels: { latest: "1.0.0" },
+      versions: [{ ...base.versions[0], status: "unverified" }],
+    });
+    expect(toCardView(model).unverified).toBe(true);
+    expect(toDetailView(model, loadRegistry(), [], [], { proposals: [], fetchedAt: null }))
+      .toMatchObject({ stable: null, latest: { status: "unverified" } });
+  });
+
+  it("keeps a verified stable pin while latest is unverified", () => {
+    const model = modelSchema.parse({
+      ...base,
+      channels: { stable: "0.9.0", latest: "1.0.0" },
+      versions: [
+        { ...base.versions[0], status: "unverified" },
+        { ...base.versions[0], version: "0.9.0" },
+      ],
+    });
+    expect(toCardView(model).unverified).toBe(false);
   });
 
   it("rejects a short commit hash", () => {

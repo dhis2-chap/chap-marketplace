@@ -1,4 +1,5 @@
 import { stringify } from "yaml";
+import { licenseFor, toLicenseView, type LicenseView } from "./licenses";
 import {
   displayPin,
   fullPin,
@@ -9,7 +10,6 @@ import {
   repoSlug,
   shortCommit,
   stableVersion,
-  verifiedCount,
   type Registry,
 } from "./registry";
 import type {
@@ -42,11 +42,14 @@ import {
  * catalog needs, nothing more.
  */
 export interface ModelCardView {
+  license: LicenseView;
   id: string;
   name: string;
   shortName: string;
   repo: string;
   kind: ModelKind;
+  /** Listings without a verified stable pin stay outside the main catalog. */
+  unverified: boolean;
   summary: string;
   framework: string;
   language: string;
@@ -80,11 +83,13 @@ export function horizonLabel(model: Model): string {
 export function toCardView(model: Model): ModelCardView {
   const pres = presentationFor(model.id);
   return {
+    license: toLicenseView(licenseFor(model, stableVersion(model) ?? latestVersion(model))),
     id: model.id,
     name: model.display_name,
     shortName: pres.shortName,
     repo: repoPath(model),
     kind: model.kind,
+    unverified: !stableVersion(model),
     summary: model.summary,
     framework: pres.framework,
     language: pres.language,
@@ -164,6 +169,7 @@ export interface ChannelView {
 }
 
 export interface VersionRowView {
+  license: LicenseView;
   tag: string;
   pinDisplay: string;
   pinFull: string;
@@ -225,6 +231,7 @@ export interface VersionComparisonView {
 }
 
 export interface ModelDetailView {
+  license: LicenseView;
   id: string;
   serviceId: string;
   name: string;
@@ -254,7 +261,7 @@ export interface ModelDetailView {
   imageBase: string;
   runtimeImage: string;
   chapkitRequirement: string;
-  stable: ChannelView;
+  stable: ChannelView | null;
   latest: ChannelView;
   latestSameAsStable: boolean;
   versions: VersionRowView[];
@@ -264,8 +271,6 @@ export interface ModelDetailView {
   /** Whether the authors opted the model in to the benchmarks. */
   benchmarking: boolean;
   benchmarks: BenchmarksView | null;
-  verifiedPins: number;
-  reviews: number;
   installUrl: string;
 }
 
@@ -407,9 +412,9 @@ export function toDetailView(
   const stable = stableVersion(model);
   const latest = latestVersion(model);
   const required = registry.index.review_policy.required_approvals;
-  const verifiedPins = verifiedCount(model);
 
   return {
+    license: toLicenseView(licenseFor(model, stable ?? latest)),
     id: model.id,
     serviceId: model.service_id,
     name: model.display_name,
@@ -438,11 +443,12 @@ export function toDetailView(
     defaultCovariates: model.covariates.defaults,
     imageBase: model.source.image,
     runtimeImage: model.source.runtime_image,
-    chapkitRequirement: stable.chapkit,
-    stable: toChannelView(model, "stable", stable),
+    chapkitRequirement: (stable ?? latest).chapkit,
+    stable: stable ? toChannelView(model, "stable", stable) : null,
     latest: toChannelView(model, "latest", latest),
     latestSameAsStable: model.channels.stable === model.channels.latest,
     versions: model.versions.map((v) => ({
+      license: toLicenseView(licenseFor(model, v)),
       tag: v.version,
       pinDisplay: displayPin(model, v),
       pinFull: fullPin(model, v),
@@ -476,8 +482,6 @@ export function toDetailView(
       defaultMetrics,
       baselines,
     ),
-    verifiedPins,
-    reviews: verifiedPins * required,
     installUrl:
       registry.index.marketplace.documentation.install ??
       "https://chap.dhis2.org",

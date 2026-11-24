@@ -1,0 +1,20 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  # The site is a pnpm project; Dependabot covers pnpm under "npm".
+  - package-ecosystem: "npm"
+    directory: "/site"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # Types track the Node major the site runs on (24, see .nvmrc); bump
+      # them together with Node, not ahead of it.
+      - dependency-name: "@types/node"
+        versions: [">=25"]
+    groups:
+      # One PR a week for routine bumps; majors still come one at a time.
+      minor-and-patch:
+        update-types: ["minor", "patch"]

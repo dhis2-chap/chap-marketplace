@@ -17,6 +17,9 @@ summary: >-
   chapkit ML service. Copy the repository and replace the regressor in
   scripts/train_model.py with the real model.
 
+license:
+  code: GPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_minimalist_example_py
   image: ghcr.io/chap-models/chapkit_minimalist_example_py
