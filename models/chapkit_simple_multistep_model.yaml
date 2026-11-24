@@ -18,6 +18,11 @@ summary: >-
   at a time. Takes climate covariates but declares none required, so it also
   runs on lagged case history alone.
 
+license:
+  # The authors added the GPL-3.0 LICENSE in e61947a, after the listed pins;
+  # it covers the unchanged code at those revisions.
+  code: GPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_simple_multistep_model
   image: ghcr.io/chap-models/chapkit_simple_multistep_model

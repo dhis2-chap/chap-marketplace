@@ -95,6 +95,7 @@ describe("schema refinements", () => {
     kind: "model",
     assessed_status: "red",
     summary: "A test model.",
+    license: { code: "MIT" },
     source: {
       repository: "https://github.com/org/my_model",
       image: "ghcr.io/org/my_model",

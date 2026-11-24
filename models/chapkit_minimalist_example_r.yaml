@@ -16,6 +16,9 @@ summary: >-
   chapkit model authors: a base-R lm() served as a chapkit ML service. Copy
   the repository and replace the lm() in scripts/train.R with the real model.
 
+license:
+  code: GPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_minimalist_example_r
   image: ghcr.io/chap-models/chapkit_minimalist_example_r
