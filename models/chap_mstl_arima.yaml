@@ -1,0 +1,79 @@
+schema_version: 2
+
+id: chap_mstl_arima
+service_id: chap-mstl-arima
+display_name: MSTL + AutoARIMA
+kind: model
+
+# The author's own chapkit AssessedStatus, copied from the service — not a
+# marketplace verdict. yellow = ready for more rigorous testing on diverse
+# data. See models/README.md for the full scale.
+assessed_status: yellow
+
+summary: >-
+  Two-step statistical forecaster for small, noisy, highly seasonal
+  surveillance series. MSTL removes the seasonal component, AutoARIMA
+  forecasts the trend and remainder, and the last seasonal cycle is carried
+  forward. Fits on log1p(disease_cases) and draws probabilistic samples from
+  the ARIMA predictive distribution. Uses no covariates, and reads weekly or
+  monthly from the data.
+
+license:
+  code: MIT
+
+source:
+  repository: https://github.com/chap-models/mstl_arima
+  image: ghcr.io/chap-models/mstl_arima
+  # Pure Python (statsforecast) on the chapkit Python base. Multi-arch.
+  runtime_image: ghcr.io/dhis2-chap/chapkit-py
+
+attribution:
+  author: Knut Rand
+  organization: HISP Centre, University of Oslo
+  citation: >-
+    Climate Health Analytics Platform. 2026. "MSTL + AutoARIMA Model".
+    HISP Centre, University of Oslo.
+
+compatibility:
+  period_types: [weekly, monthly]
+  min_prediction_periods: 1
+  max_prediction_periods: 104
+  requires_geo: false
+
+covariates:
+  required: []
+  defaults: []
+  allow_free_additional: false
+
+channels:
+  latest: 0.2.0
+
+versions:
+  - version: 0.2.0
+    commit: a8198eb5a56ee4af95174621426d7dc40fec45ff
+    image_tag: sha-a8198eb
+    image_digest: sha256:352ad784c6edf6906809873c5424fbf87f567563408229e764b025fc535ac313
+    chapkit: ">=2.5.0,<3"
+    status: unverified
+    verified_by: []
+    changelog: >-
+      First listing: the MLproject model converted to a chapkit service. Its
+      predictions match the MLproject version exactly on monthly and weekly
+      example data.
+
+configurations:
+  monthly:
+    description: >-
+      The service's defaults for monthly data: a three-month horizon, 100
+      samples and a 12-month season. For DHIS2 data where missing weeks or
+      months mean zero reported cases, set treat_missing_as_zero to true.
+    config:
+      prediction_periods: 3
+      additional_continuous_covariates: []
+  weekly:
+    description: >-
+      The service's defaults for weekly data, at a twelve-week horizon with a
+      52-week season. The same treat_missing_as_zero advice applies.
+    config:
+      prediction_periods: 12
+      additional_continuous_covariates: []
