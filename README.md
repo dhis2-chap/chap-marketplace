@@ -59,6 +59,7 @@ and the format is documented with an annotated example in
 | [Simple Multistep](models/chapkit_simple_multistep_model.yaml) | orange | Python · scikit-learn + skpro | 1–100 |
 | [Auto-ARIMA](models/auto_arima_chapkit.yaml) | red | R · fable | 0–12 |
 | [GHRmodel](models/chapkit_ghr_model.yaml) | red | R · INLA | 1–12 |
+| [MSTL + AutoARIMA](models/chap_mstl_arima.yaml) | yellow | Python · statsforecast | 1–104 |
 
 Starters — scaffolding, not forecasting models:
 
