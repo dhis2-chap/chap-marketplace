@@ -22,6 +22,9 @@ summary: >-
 developed_for: >-
   Monthly malaria cases in Rwanda at sector (ADM3) level.
 
+license:
+  code: GPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_rwanda_malaria_bym_model
   image: ghcr.io/chap-models/chapkit_rwanda_malaria_bym_model

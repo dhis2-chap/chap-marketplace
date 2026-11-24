@@ -18,6 +18,12 @@ summary: >-
   at a time. Takes climate covariates but declares none required, so it also
   runs on lagged case history alone.
 
+license:
+  code: null
+  restrictions: >-
+    No LICENSE file was found in the repository at the listed revisions.
+    No license grants permission to copy, modify or redistribute the code.
+
 source:
   repository: https://github.com/chap-models/chapkit_simple_multistep_model
   image: ghcr.io/chap-models/chapkit_simple_multistep_model

@@ -1,4 +1,5 @@
 import { stringify } from "yaml";
+import { licenseFor, toLicenseView, type LicenseView } from "./licenses";
 import {
   displayPin,
   fullPin,
@@ -42,6 +43,7 @@ import {
  * catalog needs, nothing more.
  */
 export interface ModelCardView {
+  license: LicenseView;
   id: string;
   name: string;
   shortName: string;
@@ -80,6 +82,7 @@ export function horizonLabel(model: Model): string {
 export function toCardView(model: Model): ModelCardView {
   const pres = presentationFor(model.id);
   return {
+    license: toLicenseView(licenseFor(model, stableVersion(model))),
     id: model.id,
     name: model.display_name,
     shortName: pres.shortName,
@@ -164,6 +167,7 @@ export interface ChannelView {
 }
 
 export interface VersionRowView {
+  license: LicenseView;
   tag: string;
   pinDisplay: string;
   pinFull: string;
@@ -225,6 +229,7 @@ export interface VersionComparisonView {
 }
 
 export interface ModelDetailView {
+  license: LicenseView;
   id: string;
   serviceId: string;
   name: string;
@@ -410,6 +415,7 @@ export function toDetailView(
   const verifiedPins = verifiedCount(model);
 
   return {
+    license: toLicenseView(licenseFor(model, stable)),
     id: model.id,
     serviceId: model.service_id,
     name: model.display_name,
@@ -443,6 +449,7 @@ export function toDetailView(
     latest: toChannelView(model, "latest", latest),
     latestSameAsStable: model.channels.stable === model.channels.latest,
     versions: model.versions.map((v) => ({
+      license: toLicenseView(licenseFor(model, v)),
       tag: v.version,
       pinDisplay: displayPin(model, v),
       pinFull: fullPin(model, v),

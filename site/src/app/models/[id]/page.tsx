@@ -5,6 +5,7 @@ import { KindBadge } from "@/components/badges";
 import { AuthorPanel } from "@/components/author";
 import { GitHubMark } from "@/components/icons";
 import { ModelDetailTabs } from "@/components/ModelDetailTabs";
+import { LicenseSummary } from "@/components/license";
 import {
   getBaselines,
   getBenchmarks,
@@ -72,6 +73,10 @@ export default async function ModelPage({
           <p className="mt-5 max-w-[64ch] text-[17px] leading-[1.65] text-ink-2">
             {view.summary}
           </p>
+          <section className="mt-5 max-w-[64ch]" aria-label="License">
+            <h2 className="mb-2 font-medium text-ink">License · stable {view.stable.tag}</h2>
+            <LicenseSummary license={view.license} linkWeights />
+          </section>
           <a
             href={view.repoUrl}
             target="_blank"

@@ -60,6 +60,12 @@ export default function VerificationPage() {
             before using its forecasts to inform decisions.
           </p>
           <p className="mt-3">
+            Verification does not provide legal clearance. The listed code
+            and weights licenses are disclosures, not an audit of every
+            dependency in the image. Review the licenses and restrictions
+            before use.
+          </p>
+          <p className="mt-3">
             Verification is a limited compatibility review, not exhaustive
             testing or a security audit. Authors remain responsible for
             testing and maintaining their models.

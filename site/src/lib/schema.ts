@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isOpenSourceCode, normalizeSpdx } from "./licenses";
 
 /**
  * Zod encoding of the registry format (schema_version 2) documented in
@@ -54,6 +55,26 @@ export const MODEL_KINDS = ["model", "starter"] as const;
  */
 export const MODEL_ROLES = ["comparison"] as const;
 
+export const licenseSchema = z.object({
+  code: z.string().trim().min(1).refine((value) => {
+    try { normalizeSpdx(value); return true; } catch { return false; }
+  }, "code must be an SPDX expression, or null when there is no license").nullable(),
+  weights: z.object({
+    name: z.string().trim().min(1),
+    url: z.string().url(),
+    open_source: z.boolean(),
+  }).optional(),
+  restrictions: z.string().trim().min(1).optional(),
+}).superRefine((license, ctx) => {
+  if ((!isOpenSourceCode(license.code) || license.weights?.open_source === false) && !license.restrictions) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["restrictions"],
+      message: "restrictions must explain missing or non-open-source code or weights licenses",
+    });
+  }
+});
+
 const versionSchema = z.object({
   version: z.string().min(1),
   commit: z
@@ -80,6 +101,8 @@ const versionSchema = z.object({
   verified_by: z.array(z.string()).default([]),
   changelog: z.string().nullable().default(null),
   notes: z.string().optional(),
+  /** Full replacement, only when licensing changed between versions. */
+  license: licenseSchema.optional(),
 });
 
 /**
@@ -117,6 +140,7 @@ export const modelSchema = z
     /** The author's own AssessedStatus, not a marketplace verdict. */
     assessed_status: z.enum(ASSESSED_STATUSES),
     summary: z.string().min(1),
+    license: licenseSchema,
     /**
      * The disease and setting the authors developed and tested the model on,
      * in their words. An assessment only holds for this context.
@@ -215,6 +239,14 @@ export const modelSchema = z
         });
       }
       seen.add(v.version);
+      if (v.license && v.license.code === model.license.code &&
+        JSON.stringify(v.license.weights) === JSON.stringify(model.license.weights)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["versions", i, "license"],
+          message: "a version license override requires a change to the code or weights license",
+        });
+      }
       // A sha- tag is the commit; anything else (a semver release tag) is
       // taken at face value.
       const shortCommit = v.commit.slice(0, 7);
@@ -372,6 +404,7 @@ export const benchmarkResultsSchema = z.object({
 export type AssessedStatus = (typeof ASSESSED_STATUSES)[number];
 export type ModelKind = (typeof MODEL_KINDS)[number];
 export type ModelVersion = z.infer<typeof versionSchema>;
+export type ModelLicense = z.infer<typeof licenseSchema>;
 export type ModelConfiguration = z.infer<typeof configurationSchema>;
 export type Model = z.infer<typeof modelSchema>;
 export type RegistryIndex = z.infer<typeof registrySchema>;
