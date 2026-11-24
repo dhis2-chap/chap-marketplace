@@ -152,6 +152,13 @@ describe("loadBenchmarks", () => {
     expect(() => loadBenchmarks(registry, root)).toThrow(/commit does not match the pin/);
   });
 
+  it("rejects a result for an unverified version", () => {
+    const unverified = loadRegistry();
+    stableVersion(unverified.models.find((m) => m.id === arima.id)!)!.status = "unverified";
+    write(benchmark());
+    expect(() => loadBenchmarks(unverified, root)).toThrow(/is not verified/);
+  });
+
   it("rejects a run configuration the model file does not declare", () => {
     write(smokeRun({ run: { configuration: "nightly" } }));
     expect(() => loadBenchmarks(registry, root)).toThrow(
@@ -220,19 +227,6 @@ describe("buildBenchmarkSuites", () => {
       expect(row.measured).toBe(false);
       expect(row.metrics).toEqual([]);
       expect(row.values).toEqual({});
-    }
-  });
-
-  it("uses latest for pending benchmark rows without labelling unverified pins stable", () => {
-    const unverified = loadRegistry();
-    for (const model of unverified.models) {
-      delete model.channels.stable;
-    }
-    const rows = buildBenchmarkSuites(unverified, [smokeRun()], METRICS)[0].rows;
-    expect(rows.length).toBeGreaterThan(1);
-    expect(rows.every((row) => !row.isStable)).toBe(true);
-    for (const row of rows.filter((r) => !r.measured)) {
-      expect(row.versionTag).toBe(unverified.models.find((m) => m.id === row.modelId)!.channels.latest);
     }
   });
 

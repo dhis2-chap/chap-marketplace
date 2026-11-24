@@ -126,6 +126,16 @@ describe("toBenchmarks", () => {
     ]);
   });
 
+  it("skips a backtest of an unverified pin", () => {
+    const unverified = loadRegistry();
+    latestVersion(unverified.models.find((m) => m.id === multistep.id)!).status = "unverified";
+    const { records, skipped } = toBenchmarks(unverified, suite, spec(backtest()));
+    expect(records).toEqual([]);
+    expect(skipped).toEqual([
+      `${multistep.service_id}:monthly_climate: commit ${stable.commit} is not a verified pin`,
+    ]);
+  });
+
   it("skips what is not a listed pin and configuration, a starter, or has no metrics", () => {
     const { records, skipped } = toBenchmarks(
       registry,
@@ -146,7 +156,7 @@ describe("toBenchmarks", () => {
     expect(records).toEqual([]);
     expect(skipped).toEqual([
       "naive_model:naive_model: not a listed model",
-      `${multistep.service_id}:monthly_climate: commit ${"0".repeat(40)} is not a pin`,
+      `${multistep.service_id}:monthly_climate: commit ${"0".repeat(40)} is not a verified pin`,
       `${multistep.service_id}:nightly: not a listed configuration`,
       `${multistep.service_id}:monthly_climate: no metrics`,
       `${starter.service_id}:${Object.keys(starter.configurations)[0]}: a starter, not benchmarked`,

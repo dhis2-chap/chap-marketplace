@@ -53,7 +53,7 @@ site in `site/` is a build-time rendering of it. No auth, no server state.
   every installed model is a model template (`ModelTemplateDB`), configured
   into configured models.
 - **Benchmark results come from the benchmarking server, at deploy time.**
-  Only backtests of listed pins (template = `service_id`, `sourceDigest` = a
+  Only backtests of verified listed pins (template = `service_id`, `sourceDigest` = a
   pinned commit, configured model = `<service_id>:<configuration key>`) are
   kept, and only of models that opt in with `benchmarking: true` (off by
   default; GHRmodel is out). Starters and listings without a verified stable

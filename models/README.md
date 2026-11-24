@@ -260,7 +260,7 @@ configurations:                  # copy-pasteable configurations
 Benchmark results do not live in these files: they are read from Chap's
 benchmarking server at deploy time and cross-checked against the pins here
 (see [`../benchmarks/README.md`](../benchmarks/README.md)). Only models with
-`benchmarking: true` are included, and how they will be ranked is still being
+`benchmarking: true` and only their verified versions are included, and how they will be ranked is still being
 decided.
 
 ## Open questions for this draft

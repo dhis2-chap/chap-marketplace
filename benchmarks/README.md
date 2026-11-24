@@ -25,10 +25,10 @@ effort, in practice every few hours). Before the build it runs
    has no stable name, so no specification id is stored here;
 2. reads that specification's backtests from
    `GET /v1/crud/backtest-specifications/{id}`;
-3. keeps the newest backtest per configured model that belongs to a listed
+3. keeps the newest backtest per configured model that belongs to a verified
    pin of a model that opted in with `benchmarking: true` — its model
    template is that model's `service_id`, its
-   `sourceDigest` is one of that model's pinned commits and the configured
+   `sourceDigest` is one of that model's verified pinned commits and the configured
    model is named `<service_id>:<configuration key>` for one of its
    configurations — and drops every other backtest;
 4. reads chap-core's metric definitions (name, description, unit, target,
@@ -80,7 +80,9 @@ computation failed (no `crps`) is skipped.
 
 Benchmarking is opt-in: a model is benchmarked only when its file sets
 `benchmarking: true` (see [`../models/README.md`](../models/README.md)).
-The server's cron installs every listed pin with `chap-admin` and submits a
+Unverified code is never benchmarked: only models with a verified stable
+version can opt in, and only verified pins' results are kept. The server's
+cron installs the verified stable pins with `chap-admin` and submits a
 backtest for each model on each suite's dataset it can run on, so it may
 still run a model that has not opted in; the fetch drops those results (see
 [chap_benchmarking](https://github.com/dhis2-chap/chap_benchmarking)). The

@@ -4,7 +4,6 @@ import {
   getRegistry,
   shortCommit,
   stableVersion,
-  latestVersion,
   versionByTag,
   type Registry,
 } from "./registry";
@@ -74,6 +73,9 @@ export function loadBenchmarks(
       throw new Error(
         `${label}: commit does not match the pin for ${bench.model}@${bench.version} (${version.commit})`,
       );
+    }
+    if (version.status !== "verified") {
+      throw new Error(`${label}: ${bench.model}@${bench.version} is not verified`);
     }
     const config = bench.run?.configuration;
     if (config && !(config in model.configurations)) {
@@ -293,7 +295,7 @@ export function buildBenchmarkSuites(
           (key === null || !b.run?.configuration || b.run.configuration === key),
       );
     const pendingRows = models.flatMap((m) => {
-      const pin = stableVersion(m) ?? latestVersion(m);
+      const pin = stableVersion(m)!;
       const keys = Object.keys(m.configurations);
       return (keys.length > 0 ? keys : [null])
         .filter((key) => !covered(m, key))
@@ -303,7 +305,7 @@ export function buildBenchmarkSuites(
             modelId: m.id,
             name: m.display_name,
             versionTag: pin.version,
-            isStable: pin.version === m.channels.stable,
+            isStable: true,
             pinLine: `${key ? `${key} · ` : ""}${m.id}@${shortCommit(pin.commit)}`,
             measured: false,
             metrics: [],
