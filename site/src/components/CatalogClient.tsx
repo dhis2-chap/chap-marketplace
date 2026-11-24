@@ -7,7 +7,6 @@ import { IconSearch24 } from "@dhis2/ui-icons";
 import type { InReviewPinView, ModelCardView } from "@/lib/views";
 import { KindBadge } from "./badges";
 import { AuthorLine } from "./author";
-import { LicenseSummary } from "./license";
 
 
 function matches(m: ModelCardView, q: string): boolean {
@@ -39,8 +38,8 @@ function ModelCard({ m }: { m: ModelCardView }) {
             {tag}
           </span>
         ))}
+        <span className="d2-tag">{m.license.code ?? "No license"}</span>
       </div>
-      <LicenseSummary license={m.license} />
       <div className="border-t border-line pt-4">
         <AuthorLine
           author={m.author}
