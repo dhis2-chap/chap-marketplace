@@ -4,6 +4,8 @@ id: chap_mstl_arima
 service_id: chap-mstl-arima
 display_name: MSTL + AutoARIMA
 kind: model
+# The authors opt the model in to the marketplace benchmarks.
+benchmarking: true
 
 # The author's own chapkit AssessedStatus, copied from the service — not a
 # marketplace verdict. yellow = ready for more rigorous testing on diverse
@@ -46,6 +48,7 @@ covariates:
   allow_free_additional: false
 
 channels:
+  stable: 0.2.0
   latest: 0.2.0
 
 versions:
@@ -54,7 +57,8 @@ versions:
     image_tag: sha-a8198eb
     image_digest: sha256:352ad784c6edf6906809873c5424fbf87f567563408229e764b025fc535ac313
     chapkit: ">=2.5.0,<3"
-    status: unverified
+    status: verified
+    # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
       First listing: the MLproject model converted to a chapkit service. Its

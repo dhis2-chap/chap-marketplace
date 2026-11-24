@@ -178,7 +178,7 @@ describe("buildBenchmarkSuites", () => {
     const suite = suites[0];
 
     expect(suite.heading).toBe("Vietnam monthly · horizon 3");
-    expect(suite.countLine).toBe("1 of 4 configured models evaluated");
+    expect(suite.countLine).toBe("1 of 6 configured models evaluated");
     // Columns are the metrics the suite's runs record, in chap-core's default order.
     expect(suite.columns.map((c) => c.id)).toEqual(["mae", "rmse", "crps", "crps_norm"]);
     expect(suite.runContext).toContainEqual({ k: "Observations", v: "2,808 rows" });
@@ -265,7 +265,7 @@ describe("buildBenchmarkSuites", () => {
       "auto_arima_chapkit",
       "chapkit_simple_multistep_model",
     ]);
-    expect(suite.countLine).toBe("2 of 4 configured models evaluated");
+    expect(suite.countLine).toBe("2 of 6 configured models evaluated");
   });
 });
 
