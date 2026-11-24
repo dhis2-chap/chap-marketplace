@@ -23,6 +23,18 @@ developed_for: >-
   Chap version was tested on monthly province-level dengue in Laos, Thailand
   and Vietnam (horizon 3, 6 and 36 backtest splits).
 
+license:
+  code: null
+  weights:
+    name: Mistral AI Modified MIT License
+    url: https://huggingface.co/mistralai/Timestral-209M/blob/main/LICENSE
+    open_source: false
+  restrictions: >-
+    The wrapper repository grants no license. The Timestral weights in the
+    image are under Mistral AI's Modified MIT license, which grants no rights
+    to companies whose consolidated monthly revenue exceeds USD 20 million;
+    they need a commercial license from Mistral AI.
+
 source:
   repository: https://github.com/hansand02/timestral_chapkit
   image: ghcr.io/hansand02/timestral_chapkit
