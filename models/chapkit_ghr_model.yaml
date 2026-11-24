@@ -21,6 +21,9 @@ developed_for: >-
   Laos dengue data, and ships with dengue data from 11 Brazilian
   microregions as its example.
 
+license:
+  code: GPL-3.0
+
 source:
   repository: https://github.com/chap-models/chapkit_ghr_model
   image: ghcr.io/chap-models/chapkit_ghr_model

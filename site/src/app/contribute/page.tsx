@@ -34,6 +34,11 @@ source:
   image: ghcr.io/org/my_model                  # published, no tag
   runtime_image: ghcr.io/dhis2-chap/chapkit-py # the chapkit base
 
+license:
+  code: <SPDX id>             # from your LICENSE file, or null if none
+  # restrictions: >-          # required if code or weights are not open source
+  #   Free for organisations with annual revenue under USD 1 million.
+
 attribution:
   author: Your Name
   organization: Your Institute

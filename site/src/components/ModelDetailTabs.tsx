@@ -11,6 +11,7 @@ import { BaselineToggle, useBaselineToggle } from "./baseline";
 import { MetricPicker, useMetricPicks } from "./metric-picker";
 import { CodePanel } from "./CodePanel";
 import { CopyButton } from "./copy";
+import { LicenseSummary } from "./license";
 
 type Tab = "overview" | "versions" | "configs" | "benchmarks" | "install";
 
@@ -227,6 +228,7 @@ function VersionsTab({ view }: { view: ModelDetailView }) {
               <th scope="col" className="px-5 py-3 font-medium">Version</th>
               <th scope="col" className="px-5 py-3 font-medium">Image</th>
               <th scope="col" className="px-5 py-3 font-medium">Changes</th>
+              <th scope="col" className="px-5 py-3 font-medium">License</th>
               {installable ? (
                 <th scope="col" className="px-5 py-3 font-medium">Install command</th>
               ) : null}
@@ -252,6 +254,9 @@ function VersionsTab({ view }: { view: ModelDetailView }) {
                 </td>
                 <td className="max-w-[48ch] px-5 py-4 text-ink-2">
                   {v.changelog ?? "—"}
+                </td>
+                <td className="min-w-[220px] max-w-[40ch] px-5 py-4">
+                  <LicenseSummary license={v.license} />
                 </td>
                 {installable ? (
                   <td className="px-5 py-4">

@@ -38,6 +38,10 @@ function ModelCard({ m }: { m: ModelCardView }) {
             {tag}
           </span>
         ))}
+        <span className="d2-tag">{m.license.code ?? "No license"}</span>
+        {m.license.status === "Not open source" ? (
+          <span className="d2-tag">Not open source</span>
+        ) : null}
       </div>
       <div className="border-t border-line pt-4">
         <AuthorLine

@@ -85,6 +85,38 @@ benchmarks. Only opted-in models' backtests are read from the benchmarking
 server and shown on the site; without the flag the model page says its
 authors have not opted in. Leave it out to stay out. Starters cannot opt in.
 
+## Licenses
+
+Every listing requires `license.code`: an SPDX expression matching the source
+at the pinned commits, or explicit `null` when no license is granted. Do not
+infer a license from the base image or dependencies. The existing GPL-3.0 and
+AGPL-3.0 identifiers preserve the reviewed repository and image declarations;
+do not choose `-only` or `-or-later` without supporting source notices.
+
+Add `license.weights` only when the image ships weights, recording their
+license name, URL and `open_source` flag. `license.restrictions` must explain
+any missing or non-open-source code or weights license in plain language,
+for example a revenue cap on commercial use.
+Custom code licenses can use an SPDX `LicenseRef-...` identifier, with the
+terms explained in `restrictions`.
+
+A licensed listing is tagged "Not open source" unless its code license is
+OSI-approved (all terms for `AND`, at least one for `OR`) and any declared
+weights are open source.
+This describes the declared code and weights, not every dependency in the
+image, and verification does not provide legal clearance.
+
+Use a full `versions[].license` replacement only when licensing changes
+between versions; do not repeat the default block. Cards and the model-page
+header show the stable pin's license, and the Versions tab shows each pin's.
+
+On every PR, `pnpm check-digests` reads `org.opencontainers.image.licenses`
+from every runnable platform's config at each pinned digest. A nonempty label
+must match the effective `license.code` after SPDX formatting and term-order
+normalization. License IDs and exceptions remain distinct, including `-only`
+and `-or-later`. An empty label warns the reviewer to read the LICENSE file
+at the pinned commit. The label is a cross-check, not proof of a license.
+
 ## Annotated example
 
 ```yaml
@@ -116,6 +148,16 @@ source:
   repository: https://github.com/chap-models/my_model
   image: ghcr.io/chap-models/my_model        # published service image, no tag
   runtime_image: ghcr.io/dhis2-chap/chapkit-py   # the chapkit base it builds on
+
+license:
+  code: GPL-3.0-or-later         # SPDX expression from the pinned source, or null
+  # weights:                    # only when the image ships weights
+  #   name: Example weight license
+  #   url: https://example.org/weights/LICENSE
+  #   open_source: false
+  # restrictions: >-            # required for missing or non-open-source terms
+  #   Free for organisations with annual revenue under USD 1 million;
+  #   others need a commercial license.
 
 attribution:                     # from MLServiceInfo.model_metadata
   author: Somebody

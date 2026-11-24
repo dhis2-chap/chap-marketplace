@@ -17,6 +17,12 @@ summary: >-
   geometry — which makes it the natural weak baseline to compare a
   covariate-driven model against.
 
+license:
+  code: null
+  restrictions: >-
+    No LICENSE file was found in the repository at the listed revisions.
+    No license grants permission to copy, modify or redistribute the code.
+
 source:
   repository: https://github.com/chap-models/auto_arima_chapkit
   image: ghcr.io/chap-models/auto_arima_chapkit
