@@ -19,10 +19,9 @@ summary: >-
   runs on lagged case history alone.
 
 license:
-  code: null
-  restrictions: >-
-    No LICENSE file was found in the repository at the listed revisions.
-    No license grants permission to copy, modify or redistribute the code.
+  # The authors added the GPL-3.0 LICENSE in e61947a, after the listed pins;
+  # it covers the unchanged code at those revisions.
+  code: GPL-3.0
 
 source:
   repository: https://github.com/chap-models/chapkit_simple_multistep_model
