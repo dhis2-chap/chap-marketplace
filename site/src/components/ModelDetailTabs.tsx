@@ -457,9 +457,9 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
 }
 
 function InstallTab({ view }: { view: ModelDetailView }) {
-  const version = view.versions.find((v) => v.isStable) ??
-    view.versions.find((v) => v.isLatest)!;
-  const cmd = installCommand(view.id, version);
+  const cmd = view.stable
+    ? `chap-admin install ${view.id}`
+    : installCommand(view.id, view.versions.find((v) => v.isLatest)!);
   return (
     <div className="max-w-[820px]">
       <h2 className={H2}>Install</h2>
@@ -489,8 +489,9 @@ function InstallTab({ view }: { view: ModelDetailView }) {
             <CopyButton text={cmd} />
           </div>
           <p className="mt-8 text-[15px] text-ink-2">
-            {view.stable ? `Installs the verified stable version, ${view.stable.tag}. ` :
-              `Selects the ${view.latest.status} latest version, ${view.latest.tag}. `}
+            {view.stable
+              ? `Installs the verified stable version, ${view.stable.tag}. `
+              : `Installs the latest version, ${view.latest.tag}, as a custom image. `}
             <Code>chap-admin install-all</Code> only installs models with a verified stable version.{" "}
             <a
               href={view.installUrl}

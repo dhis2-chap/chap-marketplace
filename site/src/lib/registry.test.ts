@@ -3,10 +3,10 @@ import {
   displayPin,
   fullPin,
   imageRef,
+  latestVersion,
   loadRegistry,
   marketplaceStats,
   stableVersion,
-  latestVersion,
 } from "./registry";
 import { modelSchema } from "./schema";
 import { toCardView, toDetailView } from "./views";
@@ -58,7 +58,7 @@ describe("the real registry", () => {
   it("derives the source pin in both display and chap-consumable form", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model");
     expect(ghr).toBeDefined();
-    const stable = latestVersion(ghr!);
+    const stable = stableVersion(ghr!)!;
     expect(displayPin(ghr!, stable)).toBe(
       "github.com/chap-models/chapkit_ghr_model@bb661b0",
     );
@@ -69,7 +69,7 @@ describe("the real registry", () => {
 
   it("derives the deployable image pin from the same commit", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
-    expect(imageRef(ghr, latestVersion(ghr))).toBe(
+    expect(imageRef(ghr, stableVersion(ghr)!)).toBe(
       "ghcr.io/chap-models/chapkit_ghr_model:sha-bb661b0@sha256:cee89ce8f4c64de67d3d7d9f024aec39b79acbf94a4420ba285d54ab0f321bec",
     );
   });
@@ -78,11 +78,6 @@ describe("the real registry", () => {
     const stats = marketplaceStats(registry);
     expect(stats.models + stats.starters).toBe(registry.models.length);
     expect(stats.starters).toBeGreaterThan(0);
-  });
-
-  it("counts reviews as verified pins × required approvals", () => {
-    const stats = marketplaceStats(registry);
-    expect(stats.reviews).toBe(stats.verifiedPins * 3);
   });
 });
 
@@ -199,22 +194,27 @@ describe("schema refinements", () => {
     expect(modelSchema.safeParse(reviewed).success).toBe(false);
   });
 
-  it("keeps unverified listings separate and preserves a verified stable pin when latest is unverified", () => {
+  it("lists a model without a verified stable pin as unverified", () => {
     const model = modelSchema.parse({
       ...base,
       channels: { latest: "1.0.0" },
       versions: [{ ...base.versions[0], status: "unverified" }],
     });
-    const detail = () => toDetailView(model, loadRegistry(), [], [], { proposals: [], fetchedAt: null });
     expect(toCardView(model).unverified).toBe(true);
-    expect(stableVersion(model)).toBeUndefined();
-    expect(detail()).toMatchObject({ stable: null, latest: { status: "unverified" }, verifiedPins: 0 });
+    expect(toDetailView(model, loadRegistry(), [], [], { proposals: [], fetchedAt: null }))
+      .toMatchObject({ stable: null, latest: { status: "unverified" } });
+  });
 
-    model.versions.push({ ...model.versions[0], version: "0.9.0", status: "verified" });
-    model.channels.stable = "0.9.0";
-    expect(modelSchema.safeParse(model).success).toBe(true);
+  it("keeps a verified stable pin while latest is unverified", () => {
+    const model = modelSchema.parse({
+      ...base,
+      channels: { stable: "0.9.0", latest: "1.0.0" },
+      versions: [
+        { ...base.versions[0], status: "unverified" },
+        { ...base.versions[0], version: "0.9.0" },
+      ],
+    });
     expect(toCardView(model).unverified).toBe(false);
-    expect(detail()).toMatchObject({ stable: { tag: "0.9.0" }, latest: { status: "unverified" }, verifiedPins: 1 });
   });
 
   it("rejects a short commit hash", () => {

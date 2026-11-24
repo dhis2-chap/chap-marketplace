@@ -167,6 +167,5 @@ export function marketplaceStats(registry: Registry) {
     models: registry.models.length - starters,
     starters,
     verifiedPins,
-    reviews: verifiedPins * registry.index.review_policy.required_approvals,
   };
 }

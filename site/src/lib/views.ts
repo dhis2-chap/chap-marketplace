@@ -10,7 +10,6 @@ import {
   repoSlug,
   shortCommit,
   stableVersion,
-  verifiedCount,
   type Registry,
 } from "./registry";
 import type {
@@ -272,8 +271,6 @@ export interface ModelDetailView {
   /** Whether the authors opted the model in to the benchmarks. */
   benchmarking: boolean;
   benchmarks: BenchmarksView | null;
-  verifiedPins: number;
-  reviews: number;
   installUrl: string;
 }
 
@@ -415,7 +412,6 @@ export function toDetailView(
   const stable = stableVersion(model);
   const latest = latestVersion(model);
   const required = registry.index.review_policy.required_approvals;
-  const verifiedPins = verifiedCount(model);
 
   return {
     license: toLicenseView(licenseFor(model, stable ?? latest)),
@@ -486,8 +482,6 @@ export function toDetailView(
       defaultMetrics,
       baselines,
     ),
-    verifiedPins,
-    reviews: verifiedPins * required,
     installUrl:
       registry.index.marketplace.documentation.install ??
       "https://chap.dhis2.org",

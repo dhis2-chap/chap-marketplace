@@ -9,9 +9,9 @@ import { loadBenchmarks, RESULTS_FILE } from "../src/lib/benchmarks";
 import {
   displayPin,
   imageRef,
+  latestVersion,
   loadRegistry,
   stableVersion,
-  latestVersion,
   verifiedCount,
 } from "../src/lib/registry";
 

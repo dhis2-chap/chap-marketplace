@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { SUITES, toBenchmarks, type Specification } from "./chap-api";
-import { loadRegistry, latestVersion } from "./registry";
+import { loadRegistry, stableVersion } from "./registry";
 
 const registry = loadRegistry();
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
-const stable = latestVersion(multistep);
+const stable = stableVersion(multistep)!;
 const starter = registry.models.find((m) => m.kind === "starter")!;
 const optedOut = registry.models.find((m) => m.kind === "model" && !m.benchmarking)!;
 const suite = SUITES[0];
@@ -116,7 +116,7 @@ describe("toBenchmarks", () => {
         backtest({
           template: optedOut.service_id,
           name: key,
-          digest: latestVersion(optedOut).commit,
+          digest: stableVersion(optedOut)!.commit,
         }),
       ),
     );
@@ -128,7 +128,7 @@ describe("toBenchmarks", () => {
 
   it("skips a backtest of an unverified pin", () => {
     const unverified = loadRegistry();
-    latestVersion(unverified.models.find((m) => m.id === multistep.id)!).status = "unverified";
+    stableVersion(unverified.models.find((m) => m.id === multistep.id)!)!.status = "unverified";
     const { records, skipped } = toBenchmarks(unverified, suite, spec(backtest()));
     expect(records).toEqual([]);
     expect(skipped).toEqual([
@@ -149,7 +149,7 @@ describe("toBenchmarks", () => {
           id: 5,
           template: starter.service_id,
           name: Object.keys(starter.configurations)[0],
-          digest: latestVersion(starter).commit,
+          digest: stableVersion(starter)!.commit,
         }),
       ),
     );

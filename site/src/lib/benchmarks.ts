@@ -295,23 +295,23 @@ export function buildBenchmarkSuites(
           (key === null || !b.run?.configuration || b.run.configuration === key),
       );
     const pendingRows = models.flatMap((m) => {
-      const pin = stableVersion(m)!;
+      const stable = stableVersion(m)!;
       const keys = Object.keys(m.configurations);
       return (keys.length > 0 ? keys : [null])
         .filter((key) => !covered(m, key))
         .map(
           (key): BenchmarkRowView => ({
-            id: `${m.id}@${pin.version}${key ? `.${key}` : ""}`,
+            id: `${m.id}@${stable.version}${key ? `.${key}` : ""}`,
             modelId: m.id,
             name: m.display_name,
-            versionTag: pin.version,
+            versionTag: stable.version,
             isStable: true,
-            pinLine: `${key ? `${key} · ` : ""}${m.id}@${shortCommit(pin.commit)}`,
+            pinLine: `${key ? `${key} · ` : ""}${m.id}@${shortCommit(stable.commit)}`,
             measured: false,
             metrics: [],
             values: {},
             comparisons: {},
-            suiteLine: `${m.id}@${shortCommit(pin.commit)}`,
+            suiteLine: `${m.id}@${shortCommit(stable.commit)}`,
           }),
         );
     });

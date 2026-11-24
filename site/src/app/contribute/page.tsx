@@ -99,24 +99,28 @@ const STEPS: [string, ReactNode][] = [
     </>,
   ],
   [
-    "Automatic checks run",
+    "It is checked and listed",
     <>
-      CI validates the file, pinned commit and image digest, and build
-      attestation. Passing these checks does not mean the Chap maintainers
-      have reviewed the model. Read{" "}
-      <Link href="/docs/verification" className={LINK}>
-        Model verification
-      </Link>{" "}
-      for what it covers and what it does not.
+      CI validates the file, pinned commit, image digest and build
+      attestation, and three maintainers approve the pull request. Once it
+      merges, the model appears under your name in Unverified. Listing is not
+      verification, and a listing may stay unverified indefinitely.
     </>,
   ],
   [
-    "Your model is listed",
+    "We verify it",
     <>
-      Once the pull request merges, the model appears under your name in
-      Unverified. A listing may stay there indefinitely. Once it has a
-      verified version, you can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
-      in the model file, to have it run in our{" "}
+      A version becomes verified only after a review in{" "}
+      <a href="https://github.com/dhis2-chap/chap-marketplace-review" className={LINK}>
+        chap-marketplace-review
+      </a>
+      . Read{" "}
+      <Link href="/docs/verification" className={LINK}>
+        Model verification
+      </Link>{" "}
+      for what it covers and what it does not. A model with a verified
+      version can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      in the model file, to be run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
       </Link>
