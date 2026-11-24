@@ -95,7 +95,8 @@ do not choose `-only` or `-or-later` without supporting source notices.
 
 Add `license.weights` only when the image ships weights, recording their
 license name, URL and `open_source` flag. `license.restrictions` must explain
-any missing or non-open-source code or weights license in plain language.
+any missing or non-open-source code or weights license in plain language,
+for example a revenue cap on commercial use.
 Custom code licenses can use an SPDX `LicenseRef-...` identifier, with the
 terms explained in `restrictions`.
 
@@ -154,7 +155,8 @@ license:
   #   url: https://example.org/weights/LICENSE
   #   open_source: false
   # restrictions: >-            # required for missing or non-open-source terms
-  #   Plain-language summary of the restrictions.
+  #   Free for organisations with annual revenue under USD 1 million;
+  #   others need a commercial license.
 
 attribution:                     # from MLServiceInfo.model_metadata
   author: Somebody
