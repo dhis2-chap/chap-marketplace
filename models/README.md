@@ -76,9 +76,9 @@ as `channels.stable` in a pull request. Merging alone does not confer verificati
 If a verified version later loses its status, mark it `deprecated` or `yanked`
 and remove or replace its stable pointer; do not silently relabel it unverified.
 
-As a one-time correction in CLIM-1995, the existing pins are marked unverified
-and their stable pointers removed because they have not passed this review
-process. Future promotions require a review verdict.
+The pins listed before this review process existed stay verified: they were
+verified by the earlier three-approval merge gate or pinned by the
+maintainers. New pins start unverified and need a review verdict.
 
 `chap-admin install <id>` and `install-all` only use verified stable pins.
 An unverified version can be installed as a custom image with
@@ -263,7 +263,9 @@ configurations:                  # copy-pasteable configurations
   No personal contact details: the listing carries no e-mail addresses or
   GitHub handles.
 - `versions[].verified_by` records the maintainers who completed the model
-  review. It must be empty on unverified versions.
+  review. It must be empty on unverified versions. `[]` on a verified pin
+  means it was verified before reviewers were recorded by name (the chapkit
+  2.0.0 seed import and the maintainer pins that followed).
 - `version` keys are the service's own `MLServiceInfo.version`; we do not
   rename them, the channel pointers provide the uniform interface.
 - `changelog` is per-version, free text. `null` until we have one.

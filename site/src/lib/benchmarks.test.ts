@@ -13,17 +13,11 @@ import {
   metricRankKey,
   type MetricColumn,
 } from "./metrics";
-import { loadRegistry, latestVersion, shortCommit, stableVersion } from "./registry";
+import { loadRegistry, shortCommit, stableVersion } from "./registry";
 import { toDetailView } from "./views";
 import type { Benchmark, MetricInfo } from "./schema";
 
-// Keep verified fixtures for the stable-channel cases even when real listings
-// are waiting for review.
 const registry = loadRegistry();
-for (const model of registry.models) {
-  model.channels.stable = model.channels.latest;
-  latestVersion(model).status = "verified";
-}
 const arima = registry.models.find((m) => m.id === "auto_arima_chapkit")!;
 const arimaStable = stableVersion(arima)!;
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;

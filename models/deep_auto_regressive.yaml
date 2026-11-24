@@ -46,6 +46,7 @@ covariates:
   allow_free_additional: true
 
 channels:
+  stable: 0.1.0
   latest: 0.1.0
 
 versions:
@@ -54,7 +55,7 @@ versions:
     image_tag: sha-89fe6a9
     image_digest: sha256:c97ada641018f1be670ca0237bd796159c01396a7ab52204b37606b2033c38ee
     chapkit: ">=2.5.0,<3"
-    status: unverified
+    status: verified
     verified_by: []
     changelog: >-
       First listing. Merges auto_regressive_weekly_v2 and
