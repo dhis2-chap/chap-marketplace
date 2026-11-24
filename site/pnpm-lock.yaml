@@ -13,8 +13,8 @@ importers:
   .:
     dependencies:
       '@dhis2/ui-icons':
-        specifier: 10.20.0
-        version: 10.20.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+        specifier: 10.21.1
+        version: 10.21.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       next:
         specifier: 16.4.6
         version: 16.4.6(@babel/core@7.29.13)(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -38,8 +38,8 @@ importers:
         version: 4.6.7
     devDependencies:
       '@dhis2/ui-constants':
-        specifier: 10.20.0
-        version: 10.20.0
+        specifier: 10.21.1
+        version: 10.21.1
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.3.5
@@ -150,11 +150,11 @@ packages:
     resolution: {integrity: sha512-UjI/dKmwJwT9pOszJitq2G6EObZPnsZUfdCr92z2TlF3EZK9J3EdfOKUrCzHl6wFthbzwhzl1Soc/UIwxRiq6w==}
     engines: {node: '>=6.9.0'}
 
-  '@dhis2/ui-constants@10.20.0':
-    resolution: {integrity: sha512-9MWofbeAPPMneTRb3kImAFgfBpixi7hs8RBSMP0W9QTuR78CKtralcWt6IYiiQgOhRExlPfC0UDmq2JU+/WeZA==}
+  '@dhis2/ui-constants@10.21.1':
+    resolution: {integrity: sha512-RYUjwi6VhoBRajtF0f7HqTrLojhdfHA42xus5disI1sZkz2moGrW7er8+0p0h7pvYAVhElWudTzCTNO7vyt01Q==}
 
-  '@dhis2/ui-icons@10.20.0':
-    resolution: {integrity: sha512-oQ/0UeK6X31Nr5lErwQ3jm8hKEGXfaDVMARBChfdF/NR2Mb95XKih7O2esDPy/h8NBKQ7bl+J/cevaZ+37jn0A==}
+  '@dhis2/ui-icons@10.21.1':
+    resolution: {integrity: sha512-/znSepo5TfCnj5hwBYStNt9+yer6s7BVhD5xcN0dhV0AV3rbaolNEHsNm8s/lfXtZxdUxdgDMqy3JR8nYpkYBw==}
     peerDependencies:
       react: ^16.13 || ^18
       react-dom: ^16.13 || ^18
@@ -2635,11 +2635,11 @@ snapshots:
       '@babel/helper-string-parser': 7.29.14
       '@babel/helper-validator-identifier': 7.29.7
 
-  '@dhis2/ui-constants@10.20.0':
+  '@dhis2/ui-constants@10.21.1':
     dependencies:
       prop-types: 15.8.1
 
-  '@dhis2/ui-icons@10.20.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+  '@dhis2/ui-icons@10.21.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
