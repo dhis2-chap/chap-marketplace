@@ -168,6 +168,11 @@ describe("loadBenchmarks", () => {
 });
 
 describe("buildBenchmarkSuites", () => {
+  // Every configured model of every opted-in model is a row in each suite.
+  const configured = registry.models
+    .filter((m) => m.benchmarking)
+    .reduce((n, m) => n + Math.max(1, Object.keys(m.configurations).length), 0);
+
   it("is empty while the store is empty", () => {
     expect(buildBenchmarkSuites(registry, [], METRICS)).toEqual([]);
   });
@@ -178,7 +183,7 @@ describe("buildBenchmarkSuites", () => {
     const suite = suites[0];
 
     expect(suite.heading).toBe("Vietnam monthly · horizon 3");
-    expect(suite.countLine).toBe("1 of 6 configured models evaluated");
+    expect(suite.countLine).toBe(`1 of ${configured} configured models evaluated`);
     // Columns are the metrics the suite's runs record, in chap-core's default order.
     expect(suite.columns.map((c) => c.id)).toEqual(["mae", "rmse", "crps", "crps_norm"]);
     expect(suite.runContext).toContainEqual({ k: "Observations", v: "2,808 rows" });
@@ -193,11 +198,7 @@ describe("buildBenchmarkSuites", () => {
     // never a model whose authors have not opted in.
     // One row per configured model of every opted-in model.
     expect(suite.rows.some((r) => r.modelId === "chapkit_ghr_model")).toBe(false);
-    expect(suite.rows).toHaveLength(
-      registry.models
-        .filter((m) => m.benchmarking)
-        .reduce((n, m) => n + Math.max(1, Object.keys(m.configurations).length), 0),
-    );
+    expect(suite.rows).toHaveLength(configured);
     expect(suite.rows.map((r) => r.pinLine.split(" · ")[0])).toContain(
       "monthly_selfhistory",
     );
@@ -265,7 +266,7 @@ describe("buildBenchmarkSuites", () => {
       "auto_arima_chapkit",
       "chapkit_simple_multistep_model",
     ]);
-    expect(suite.countLine).toBe("2 of 6 configured models evaluated");
+    expect(suite.countLine).toBe(`2 of ${configured} configured models evaluated`);
   });
 });
 
