@@ -175,12 +175,14 @@ function OverviewTab({
   );
 }
 
+function installCommand(id: string, version: ModelDetailView["versions"][number]) {
+  return version.isStable
+    ? `chap-admin install ${id}`
+    : `chap-admin install ${id} --image ${version.image}`;
+}
+
 function VersionsTab({ view }: { view: ModelDetailView }) {
   const installable = view.kind !== "starter";
-  const installCmd = (v: ModelDetailView["versions"][number]) =>
-    v.isStable
-      ? `chap-admin install ${view.id}`
-      : `chap-admin install ${view.id} --image ${v.image}`;
   return (
     <div>
       {view.inReview.length > 0 ? (
@@ -215,10 +217,10 @@ function VersionsTab({ view }: { view: ModelDetailView }) {
 
       <h2 className={H2}>Versions</h2>
       <p className={LEDE}>
-        Each version pins one commit and the image built from it. Production
-        should run <Code>stable</Code>.
+        Each version pins one commit and the image built from it. Only a verified
+        version can be <Code>stable</Code>.
         {installable
-          ? " Any other version installs as a custom image, with one default configuration instead of the verified ones, and only once you add --accept-risk yourself."
+          ? " Other versions install as custom images, with one default configuration, and only once you add --accept-risk yourself."
           : null}
       </p>
       <div className="d2-card overflow-x-auto">
@@ -260,7 +262,7 @@ function VersionsTab({ view }: { view: ModelDetailView }) {
                 </td>
                 {installable ? (
                   <td className="px-5 py-4">
-                    <CopyButton text={installCmd(v)} label="Copy command" />
+                    <CopyButton text={installCommand(view.id, v)} label="Copy command" />
                   </td>
                 ) : null}
               </tr>
@@ -277,7 +279,7 @@ function ConfigsTab({ view }: { view: ModelDetailView }) {
     <div>
       <h2 className={H2}>Configurations</h2>
       <p className={LEDE}>
-        Reviewed model configurations you can use as a starting point. Copy
+        Model configurations you can use as a starting point. Copy
         one as YAML, or as the request that creates it on a running service.
       </p>
       <div className="flex flex-col gap-5">
@@ -320,6 +322,8 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
       <p className="text-[15px] text-ink-2">
         {view.benchmarking ? (
           "No benchmark results for this model yet."
+        ) : !view.stable ? (
+          "Unverified models are not benchmarked."
         ) : (
           <>
             This model is not benchmarked: its authors have not opted in to
@@ -455,7 +459,9 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
 }
 
 function InstallTab({ view }: { view: ModelDetailView }) {
-  const cmd = `chap-admin install ${view.id}`;
+  const cmd = view.stable
+    ? `chap-admin install ${view.id}`
+    : installCommand(view.id, view.versions.find((v) => v.isLatest)!);
   return (
     <div className="max-w-[820px]">
       <h2 className={H2}>Install</h2>
@@ -468,8 +474,10 @@ function InstallTab({ view }: { view: ModelDetailView }) {
         <>
           <p className={LEDE}>
             Run this in the chap-core directory of a running Chap. It starts
-            the model, registers it and adds its verified configurations, so it
-            shows up in the DHIS2 Modeling App.
+            the model and registers it so it shows up in the DHIS2 Modeling App.
+            {view.stable
+              ? " It adds the listed configurations."
+              : " This is a custom-image install with one default configuration. Add --accept-risk yourself only if you choose to run this unreviewed image."}
           </p>
           {view.requiresGeo ? (
             <Notice>
@@ -483,9 +491,10 @@ function InstallTab({ view }: { view: ModelDetailView }) {
             <CopyButton text={cmd} />
           </div>
           <p className="mt-8 text-[15px] text-ink-2">
-            Installs the verified stable version, {view.stable.tag} (
-            <Code>{`${view.imageBase}:${view.stable.imageTag}`}</Code>).{" "}
-            <Code>chap-admin install-all</Code> installs every listed model.{" "}
+            {view.stable
+              ? `Installs the verified stable version, ${view.stable.tag}. `
+              : `Installs the latest version, ${view.latest.tag}, as a custom image. `}
+            <Code>chap-admin install-all</Code> only installs models with a verified stable version.{" "}
             <a
               href={view.installUrl}
               target="_blank"
@@ -525,6 +534,12 @@ export function ModelDetailTabs({
       <div className="bg-surface">
         <div className="mx-auto max-w-[1240px] px-5 pt-8 sm:px-8">
           {header}
+          {!view.stable ? (
+            <Notice>
+              <strong>Unverified.</strong> Its code has not been reviewed by the
+              Chap maintainers and may never be. Run at your own risk.
+            </Notice>
+          ) : null}
           <div
             role="tablist"
             aria-label="Model sections"

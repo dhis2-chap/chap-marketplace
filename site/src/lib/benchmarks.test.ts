@@ -19,9 +19,9 @@ import type { Benchmark, MetricInfo } from "./schema";
 
 const registry = loadRegistry();
 const arima = registry.models.find((m) => m.id === "auto_arima_chapkit")!;
-const arimaStable = stableVersion(arima);
+const arimaStable = stableVersion(arima)!;
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
-const multistepStable = stableVersion(multistep);
+const multistepStable = stableVersion(multistep)!;
 
 function metric(id: string, displayName: string): MetricInfo {
   return {
@@ -140,7 +140,7 @@ describe("loadBenchmarks", () => {
 
   it("rejects a model that has not opted in to benchmarking", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
-    const ghrStable = stableVersion(ghr);
+    const ghrStable = stableVersion(ghr)!;
     write(benchmark({ model: ghr.id, version: ghrStable.version, commit: ghrStable.commit }));
     expect(() => loadBenchmarks(registry, root)).toThrow(
       /chapkit_ghr_model\.yaml has not opted in to benchmarking/,
@@ -150,6 +150,13 @@ describe("loadBenchmarks", () => {
   it("rejects a commit that does not match the registry pin", () => {
     write(benchmark({ commit: "0".repeat(40) }));
     expect(() => loadBenchmarks(registry, root)).toThrow(/commit does not match the pin/);
+  });
+
+  it("rejects a result for an unverified version", () => {
+    const unverified = loadRegistry();
+    stableVersion(unverified.models.find((m) => m.id === arima.id)!)!.status = "unverified";
+    write(benchmark());
+    expect(() => loadBenchmarks(unverified, root)).toThrow(/is not verified/);
   });
 
   it("rejects a run configuration the model file does not declare", () => {

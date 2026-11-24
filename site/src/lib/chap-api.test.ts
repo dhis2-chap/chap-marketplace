@@ -4,7 +4,7 @@ import { loadRegistry, stableVersion } from "./registry";
 
 const registry = loadRegistry();
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
-const stable = stableVersion(multistep);
+const stable = stableVersion(multistep)!;
 const starter = registry.models.find((m) => m.kind === "starter")!;
 const optedOut = registry.models.find((m) => m.kind === "model" && !m.benchmarking)!;
 const suite = SUITES[0];
@@ -116,13 +116,23 @@ describe("toBenchmarks", () => {
         backtest({
           template: optedOut.service_id,
           name: key,
-          digest: stableVersion(optedOut).commit,
+          digest: stableVersion(optedOut)!.commit,
         }),
       ),
     );
     expect(records).toEqual([]);
     expect(skipped).toEqual([
       `${optedOut.service_id}:${key}: not opted in to benchmarking`,
+    ]);
+  });
+
+  it("skips a backtest of an unverified pin", () => {
+    const unverified = loadRegistry();
+    stableVersion(unverified.models.find((m) => m.id === multistep.id)!)!.status = "unverified";
+    const { records, skipped } = toBenchmarks(unverified, suite, spec(backtest()));
+    expect(records).toEqual([]);
+    expect(skipped).toEqual([
+      `${multistep.service_id}:monthly_climate: commit ${stable.commit} is not a verified pin`,
     ]);
   });
 
@@ -139,14 +149,14 @@ describe("toBenchmarks", () => {
           id: 5,
           template: starter.service_id,
           name: Object.keys(starter.configurations)[0],
-          digest: stableVersion(starter).commit,
+          digest: stableVersion(starter)!.commit,
         }),
       ),
     );
     expect(records).toEqual([]);
     expect(skipped).toEqual([
       "naive_model:naive_model: not a listed model",
-      `${multistep.service_id}:monthly_climate: commit ${"0".repeat(40)} is not a pin`,
+      `${multistep.service_id}:monthly_climate: commit ${"0".repeat(40)} is not a verified pin`,
       `${multistep.service_id}:nightly: not a listed configuration`,
       `${multistep.service_id}:monthly_climate: no metrics`,
       `${starter.service_id}:${Object.keys(starter.configurations)[0]}: a starter, not benchmarked`,

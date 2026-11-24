@@ -10,7 +10,6 @@ import {
   repoSlug,
   shortCommit,
   stableVersion,
-  verifiedCount,
   type Registry,
 } from "./registry";
 import type {
@@ -49,6 +48,8 @@ export interface ModelCardView {
   shortName: string;
   repo: string;
   kind: ModelKind;
+  /** Listings without a verified stable pin stay outside the main catalog. */
+  unverified: boolean;
   summary: string;
   framework: string;
   language: string;
@@ -82,12 +83,13 @@ export function horizonLabel(model: Model): string {
 export function toCardView(model: Model): ModelCardView {
   const pres = presentationFor(model.id);
   return {
-    license: toLicenseView(licenseFor(model, stableVersion(model))),
+    license: toLicenseView(licenseFor(model, stableVersion(model) ?? latestVersion(model))),
     id: model.id,
     name: model.display_name,
     shortName: pres.shortName,
     repo: repoPath(model),
     kind: model.kind,
+    unverified: !stableVersion(model),
     summary: model.summary,
     framework: pres.framework,
     language: pres.language,
@@ -259,7 +261,7 @@ export interface ModelDetailView {
   imageBase: string;
   runtimeImage: string;
   chapkitRequirement: string;
-  stable: ChannelView;
+  stable: ChannelView | null;
   latest: ChannelView;
   latestSameAsStable: boolean;
   versions: VersionRowView[];
@@ -269,8 +271,6 @@ export interface ModelDetailView {
   /** Whether the authors opted the model in to the benchmarks. */
   benchmarking: boolean;
   benchmarks: BenchmarksView | null;
-  verifiedPins: number;
-  reviews: number;
   installUrl: string;
 }
 
@@ -412,10 +412,9 @@ export function toDetailView(
   const stable = stableVersion(model);
   const latest = latestVersion(model);
   const required = registry.index.review_policy.required_approvals;
-  const verifiedPins = verifiedCount(model);
 
   return {
-    license: toLicenseView(licenseFor(model, stable)),
+    license: toLicenseView(licenseFor(model, stable ?? latest)),
     id: model.id,
     serviceId: model.service_id,
     name: model.display_name,
@@ -444,8 +443,8 @@ export function toDetailView(
     defaultCovariates: model.covariates.defaults,
     imageBase: model.source.image,
     runtimeImage: model.source.runtime_image,
-    chapkitRequirement: stable.chapkit,
-    stable: toChannelView(model, "stable", stable),
+    chapkitRequirement: (stable ?? latest).chapkit,
+    stable: stable ? toChannelView(model, "stable", stable) : null,
     latest: toChannelView(model, "latest", latest),
     latestSameAsStable: model.channels.stable === model.channels.latest,
     versions: model.versions.map((v) => ({
@@ -483,8 +482,6 @@ export function toDetailView(
       defaultMetrics,
       baselines,
     ),
-    verifiedPins,
-    reviews: verifiedPins * required,
     installUrl:
       registry.index.marketplace.documentation.install ??
       "https://chap.dhis2.org",

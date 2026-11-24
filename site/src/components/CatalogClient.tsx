@@ -121,8 +121,9 @@ export function CatalogClient({
   }
 
   const hits = models.filter((m) => matches(m, q));
-  const forecasting = hits.filter((m) => m.kind === "model");
-  const starters = hits.filter((m) => m.kind === "starter");
+  const forecasting = hits.filter((m) => m.kind === "model" && !m.unverified);
+  const starters = hits.filter((m) => m.kind === "starter" && !m.unverified);
+  const unverified = hits.filter((m) => m.unverified);
 
   return (
     <main className="mx-auto max-w-[1240px] px-5 pb-20 pt-12 sm:px-8 sm:pt-16">
@@ -138,11 +139,11 @@ export function CatalogClient({
         <Link href="/contribute" className="font-medium text-brand hover:underline">
           open a pull request
         </Link>
-        . Every version listed here is{" "}
+        .{" "}
         <Link href="/docs/verification" className="font-medium text-brand hover:underline">
-          verified
+          Verified versions
         </Link>{" "}
-        to run in Chap.
+        have been reviewed for compatibility with Chap.
       </p>
 
       <div className="relative mt-8 max-w-[560px]">
@@ -170,10 +171,17 @@ export function CatalogClient({
             Clear search
           </button>
         </div>
-      ) : forecasting.length > 0 ? (
-        <CardGrid models={forecasting} />
       ) : (
-        <p className="mt-6 text-[15px] text-ink-2">No models match.</p>
+        <section className="mt-8" aria-labelledby="verified-models">
+          <h2 id="verified-models" className="font-brand text-[20px] font-medium text-ink">
+            Verified models
+          </h2>
+          {forecasting.length > 0 ? <CardGrid models={forecasting} /> : (
+            <p className="mt-2 text-[15px] text-ink-2">
+              {q ? "No verified models match." : "No verified models listed yet."}
+            </p>
+          )}
+        </section>
       )}
 
       {starters.length > 0 ? (
@@ -185,6 +193,20 @@ export function CatalogClient({
             Starting points for writing a model — not for making forecasts.
           </p>
           <CardGrid models={starters} />
+        </section>
+      ) : null}
+
+      {unverified.length > 0 ? (
+        <section className="mt-14" aria-labelledby="unverified-models">
+          <h2 id="unverified-models" className="font-brand text-[20px] font-medium text-ink">
+            Unverified
+          </h2>
+          <p className="mt-2 max-w-[70ch] text-[15px] leading-[1.6] text-ink-2">
+            These listings have no verified stable version. Their code has not
+            been reviewed by the Chap maintainers and may never be. Run at your
+            own risk.
+          </p>
+          <CardGrid models={unverified} />
         </section>
       ) : null}
 

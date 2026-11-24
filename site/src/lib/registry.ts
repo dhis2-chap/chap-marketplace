@@ -116,7 +116,8 @@ export function versionByTag(
   return model.versions.find((v) => v.version === tag);
 }
 
-export function stableVersion(model: Model): ModelVersion {
+export function stableVersion(model: Model): ModelVersion | undefined {
+  if (!model.channels.stable) return undefined;
   const v = versionByTag(model, model.channels.stable);
   if (!v) throw new Error(`${model.id}: stable channel does not resolve`);
   return v;
@@ -166,6 +167,5 @@ export function marketplaceStats(registry: Registry) {
     models: registry.models.length - starters,
     starters,
     verifiedPins,
-    reviews: verifiedPins * registry.index.review_policy.required_approvals,
   };
 }

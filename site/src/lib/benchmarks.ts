@@ -74,6 +74,9 @@ export function loadBenchmarks(
         `${label}: commit does not match the pin for ${bench.model}@${bench.version} (${version.commit})`,
       );
     }
+    if (version.status !== "verified") {
+      throw new Error(`${label}: ${bench.model}@${bench.version} is not verified`);
+    }
     const config = bench.run?.configuration;
     if (config && !(config in model.configurations)) {
       throw new Error(
@@ -292,7 +295,7 @@ export function buildBenchmarkSuites(
           (key === null || !b.run?.configuration || b.run.configuration === key),
       );
     const pendingRows = models.flatMap((m) => {
-      const stable = stableVersion(m);
+      const stable = stableVersion(m)!;
       const keys = Object.keys(m.configurations);
       return (keys.length > 0 ? keys : [null])
         .filter((key) => !covered(m, key))

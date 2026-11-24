@@ -17,6 +17,7 @@ import { isOpenSourceCode, normalizeSpdx } from "./licenses";
 
 export const VERSION_STATUSES = [
   "verified",
+  "unverified",
   "unstable",
   "deprecated",
   "yanked",
@@ -177,7 +178,7 @@ export const modelSchema = z
       allow_free_additional: z.boolean(),
     }),
     channels: z.object({
-      stable: z.string().min(1),
+      stable: z.string().min(1).optional(),
       latest: z.string().min(1),
     }),
     versions: z.array(versionSchema).min(1),
@@ -198,6 +199,13 @@ export const modelSchema = z
         message: "a starter is not a forecasting model and cannot be benchmarked",
       });
     }
+    if (model.benchmarking && !model.channels.stable) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["benchmarking"],
+        message: "only a model with a verified stable version can opt in to benchmarking",
+      });
+    }
 
     // The service id is the model id in kebab-case. Enforced so a listing
     // cannot drift from the identity the service registers with chap-core.
@@ -212,7 +220,8 @@ export const modelSchema = z
 
     const byTag = new Map(model.versions.map((v) => [v.version, v]));
     for (const channel of ["stable", "latest"] as const) {
-      if (!byTag.has(model.channels[channel])) {
+      const tag = model.channels[channel];
+      if (tag !== undefined && !byTag.has(tag)) {
         ctx.addIssue({
           code: "custom",
           path: ["channels", channel],
@@ -220,7 +229,9 @@ export const modelSchema = z
         });
       }
     }
-    const stable = byTag.get(model.channels.stable);
+    const stable = model.channels.stable
+      ? byTag.get(model.channels.stable)
+      : undefined;
     if (stable && stable.status !== "verified") {
       ctx.addIssue({
         code: "custom",
@@ -239,6 +250,13 @@ export const modelSchema = z
         });
       }
       seen.add(v.version);
+      if (v.status === "unverified" && v.verified_by.length > 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["versions", i, "verified_by"],
+          message: "an unverified version cannot have verifying maintainers",
+        });
+      }
       if (v.license && v.license.code === model.license.code &&
         JSON.stringify(v.license.weights) === JSON.stringify(model.license.weights)) {
         ctx.addIssue({

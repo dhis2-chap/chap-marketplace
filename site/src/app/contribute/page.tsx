@@ -20,7 +20,7 @@ id: my_model
 service_id: my-model          # MLServiceInfo.id — kebab-case of id
 display_name: My Model
 kind: model                   # model | starter
-benchmarking: true            # opt in to the benchmarks (default false)
+benchmarking: false           # true opts in to the benchmarks once verified
 assessed_status: red          # YOUR OWN chapkit AssessedStatus
 
 summary: >-
@@ -56,8 +56,7 @@ covariates:
   allow_free_additional: true
 
 channels:
-  stable: 1.0.0               # must point at a verified version
-  latest: 1.0.0
+  latest: 1.0.0               # add stable only after verification
 
 versions:
   - version: 1.0.0            # your MLServiceInfo.version
@@ -65,8 +64,8 @@ versions:
     image_tag: sha-1111111    # the tag built from that commit
     image_digest: sha256:…    # what that tag resolves to
     chapkit: ">=2.0.0,<3"
-    status: verified          # set by maintainers on approval
-    verified_by: []           # the reviewers
+    status: unverified        # no code review yet
+    verified_by: []           # empty until verification
     changelog: First submission.
 
 configurations:
@@ -100,28 +99,33 @@ const STEPS: [string, ReactNode][] = [
     </>,
   ],
   [
-    "We review and verify it",
+    "A maintainer lists it as unverified",
     <>
-      The Chap team checks that the model works with Chap: that it is a
-      chapkit service whose published image matches the listed code, that it
-      registers with Chap and can train and predict, and that the file is
-      valid. This is what we call verification. Read{" "}
+      CI validates the file, pinned commit, image digest and build
+      attestation, and one maintainer merges the pull request without
+      reviewing your code. This is the fast way in. The model appears under
+      your name in Unverified. Users can install it, but must accept the risk
+      themselves, and it cannot be benchmarked.
+    </>,
+  ],
+  [
+    "You can ask us to verify it",
+    <>
+      Open a pull request that sets the version&apos;s status to{" "}
+      <code className="font-mono text-[15px] text-ink">verified</code> and
+      points <code className="font-mono text-[15px] text-ink">channels.stable</code>{" "}
+      at it, or ask us to. Three maintainers review the code and approve it.
+      A verified model moves to the main catalog, installs with its listed
+      configurations, and can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      in the model file, to be run in our{" "}
+      <Link href="/benchmarks" className={LINK}>
+        benchmarks
+      </Link>
+      . Read{" "}
       <Link href="/docs/verification" className={LINK}>
         Model verification
       </Link>{" "}
       for what it covers and what it does not.
-    </>,
-  ],
-  [
-    "Your model is listed",
-    <>
-      Once the review is approved, the model appears in the marketplace under
-      your name. If you opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
-      in the model file, it is also run in our{" "}
-      <Link href="/benchmarks" className={LINK}>
-        benchmarks
-      </Link>
-      .
     </>,
   ],
 ];
@@ -194,7 +198,7 @@ export default function ContributePage() {
             <IconSync24 />
             <p className="text-[14px] leading-[1.55]">
               To publish a new version later, open a pull request that adds it
-              to your file. Each version is verified separately.
+              to your file. Each version starts unverified and is verified separately.
             </p>
           </div>
           <div className="d2-notice d2-notice-warning [&_svg]:shrink-0 [&_svg]:fill-exp">

@@ -78,8 +78,7 @@ export default function BenchmarkDocsPage() {
             </a>
             , in the same way for every model. No results are self-reported by
             model authors. Benchmarking is opt-in: only models whose authors
-            have opted in are benchmarked, and their new versions are
-            benchmarked automatically once they are listed.
+            have opted in are benchmarked, and only their verified versions.
           </p>
         </section>
 
