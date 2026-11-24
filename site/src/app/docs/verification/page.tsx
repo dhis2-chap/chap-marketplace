@@ -27,20 +27,16 @@ export default function VerificationPage() {
             Unverified listings
           </h2>
           <p>
-            Unverified versions have not been reviewed by the Chap maintainers.
-            Their pin, image and license have not been checked by maintainers.
-            Run them at your own risk. They may remain unverified indefinitely.
-            Schema validation and automatic image checks still apply, but do
-            not replace a model review.
+            A maintainer lists an unverified version once its automatic checks
+            pass, without reviewing its code. Run it at your own risk. It may
+            remain unverified indefinitely.
           </p>
           <p className="mt-3">
-            Only versions that pass the review in{" "}
-            <a href="https://github.com/dhis2-chap/chap-marketplace-review" className="font-medium text-brand hover:underline">
-              chap-marketplace-review
-            </a>{" "}
-            can become verified and be selected as stable. A pull-request merge
-            alone does not verify a version. Versions that lose verification
-            are deprecated or yanked.
+            A version becomes verified through a pull request that sets its
+            status to verified, opened by its authors or by us on request.
+            Three maintainers review it, code included, and approve it. Only a
+            verified version can be selected as stable. Versions that lose
+            verification are deprecated or yanked.
           </p>
         </section>
         <section>
@@ -48,6 +44,9 @@ export default function VerificationPage() {
             What we check
           </h2>
           <ul className="list-disc space-y-2 pl-6">
+            <li>
+              Three maintainers review the code at the pinned commit.
+            </li>
             <li>
               The model is a chapkit service with a published image tied to
               the listed source-code commit, pinned by its digest.
@@ -63,8 +62,7 @@ export default function VerificationPage() {
             </li>
           </ul>
           <p className="mt-3">
-            New models and version pins go through a pull request before
-            listing. Versions still in review are not verified.
+            Versions still in review are not verified.
           </p>
         </section>
         <section>

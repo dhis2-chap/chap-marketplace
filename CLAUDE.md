@@ -32,9 +32,11 @@ site in `site/` is a build-time rendering of it. No auth, no server state.
   the stable pin, waits for self-registration and adds the entry's
   configurations. Not hand-written compose overlays, and not
   `chapkit mlproject run` — that was the schema_version 1 world.
-- **Verification semantics.** Versions start `unverified`; promotion requires
-  a completed review in `chap-marketplace-review`. A merge lists the pin but
-  does not verify it. `channels.stable` is optional and verified-only. Listings
+- **Verification semantics.** Versions start `unverified`: one maintainer
+  merges them without a code review. A version becomes verified through a PR
+  that sets `status: verified` (and `channels.stable`), reviewed, code
+  included, and approved by three maintainers; authors open it or ask us.
+  `channels.stable` is optional and verified-only. Listings
   without stable appear separately as Unverified. Open-PR pins render as
   in-review with n/3 approvals; the site never invents proposals.
 - **Two independent signals, never merged.** The review gate verifies the

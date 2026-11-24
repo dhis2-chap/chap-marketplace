@@ -12,12 +12,12 @@ the Chap Modeling Platform. **This repository is the marketplace**:
 the YAML files at the root are the source of truth, and the website is a
 rendering of them.
 
-Listed model versions start **Unverified** and may remain so indefinitely.
-They are marked **Verified** only after a compatibility review in
-[chap-marketplace-review](https://github.com/dhis2-chap/chap-marketplace-review).
-The site separates listings without a verified stable version and warns that
-their pin, image and license have not been checked by maintainers. Run them at
-your own risk.
+Listed model versions start **Unverified**: a maintainer merges the pull
+request once CI passes, without reviewing the model's code. A version becomes
+**Verified** through a pull request that sets its status to `verified`, which
+three maintainers review, code included, and approve. The site lists
+unverified models separately and warns that their code has not been reviewed.
+Run them at your own risk.
 Verification checks the pinned revision and published image, chapkit service
 registration, and training and prediction. **Verified does not assess or
 guarantee model performance.** See [Model verification](https://chap-marketplace.dhis2.org/docs/verification)
@@ -69,8 +69,10 @@ Starters — scaffolding, not forecasting models:
 
 ## Repository rules
 
-`main` is protected. Every change lands by pull request, needs green CI and
-**three approvals**, and the merge is the listing, not model verification. The count is
+`main` is protected. Every change lands by pull request and needs green CI.
+Unverified listings need one maintainer's approval; a pull request that
+verifies a version needs **three**. The ruleset below still requires three
+approvals for every pull request. The count is
 `review_policy.required_approvals` in `registry.yaml`, applied to the whole
 repository rather than to registry paths alone: a single number is easier to
 trust than a split, and nothing on the site is urgent enough to deserve a

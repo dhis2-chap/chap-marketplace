@@ -322,6 +322,8 @@ function BenchmarksTab({ view }: { view: ModelDetailView }) {
       <p className="text-[15px] text-ink-2">
         {view.benchmarking ? (
           "No benchmark results for this model yet."
+        ) : !view.stable ? (
+          "Unverified models are not benchmarked."
         ) : (
           <>
             This model is not benchmarked: its authors have not opted in to
@@ -534,9 +536,8 @@ export function ModelDetailTabs({
           {header}
           {!view.stable ? (
             <Notice>
-              <strong>Unverified.</strong> Not reviewed by the Chap maintainers.
-              The pin, image and license have not been checked by maintainers.
-              Run at your own risk. This listing may never be reviewed.
+              <strong>Unverified.</strong> Its code has not been reviewed by the
+              Chap maintainers and may never be. Run at your own risk.
             </Notice>
           ) : null}
           <div

@@ -58,15 +58,15 @@ No listed model is currently self-assessed `green`.
 Start a new version with `status: unverified` and `verified_by: []`. Set
 `channels.latest` to it and omit `channels.stable` if the model has no verified
 version yet; an existing verified stable version can stay selected while a newer
-latest is unverified. Unverified versions have not been reviewed by the Chap
-maintainers and may stay unverified indefinitely. The site lists them
+latest is unverified. A maintainer merges an unverified version once CI passes,
+without reviewing its code, and it may stay unverified indefinitely. The site lists them
 separately, and `chap-admin install` only installs them as a custom image with
 `--accept-risk`.
 
-Promotion requires a completed review in
-[chap-marketplace-review](https://github.com/dhis2-chap/chap-marketplace-review):
-record the reviewers, set the version's status to `verified` and point
-`channels.stable` at it. A version that loses verification is marked
+To have a version verified, open a pull request that sets its status to
+`verified`, records the reviewers in `verified_by` and points `channels.stable`
+at it, or ask the maintainers to. Three maintainers review the code and
+approve it; the merge verifies the version. A version that loses verification is marked
 `deprecated` or `yanked`, never relabelled unverified. Pins listed before this
 review process existed stay verified.
 

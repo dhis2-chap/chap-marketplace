@@ -1,9 +1,9 @@
 # Chap Marketplace — registry index
 #
 # This file is the entry point for the marketplace site. Listings can be
-# verified or unverified; each version records its status. Only versions that
-# pass the model review can become verified. All changes land through a PR;
-# a merge alone does not verify a model.
+# verified or unverified; each version records its status. A maintainer merges
+# unverified listings without reviewing the code; a version becomes verified
+# only through a PR that three maintainers review, code included.
 #
 # The site renders this repo — the repo stays the source of truth and the
 # review gate. See models/README.md for the per-model file format.
@@ -41,7 +41,9 @@ review_policy:
   required_approvals: 3
   note: >-
     New models and new version pins are proposed as pull requests against this
-    repository and must be approved by three maintainers before merge.
+    repository. One maintainer merges an unverified listing; a pull request
+    that sets a version to verified needs three maintainers to review the code
+    and approve it.
 
 # Ordered list of whitelisted models. Each entry is a standalone YAML file;
 # whether it is a forecasting model or a starter to copy is declared inside

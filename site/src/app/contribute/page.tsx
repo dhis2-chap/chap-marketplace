@@ -64,7 +64,7 @@ versions:
     image_tag: sha-1111111    # the tag built from that commit
     image_digest: sha256:…    # what that tag resolves to
     chapkit: ">=2.0.0,<3"
-    status: unverified        # no maintainer review yet
+    status: unverified        # no code review yet
     verified_by: []           # empty until verification
     changelog: First submission.
 
@@ -99,26 +99,24 @@ const STEPS: [string, ReactNode][] = [
     </>,
   ],
   [
-    "It is listed as unverified",
+    "A maintainer lists it as unverified",
     <>
       CI validates the file, pinned commit, image digest and build
-      attestation, and three maintainers approve the pull request. Nobody
-      reviews your model&apos;s code at this step, so it is the fast way in.
-      Once it merges, the model appears under your name in Unverified. Users
-      can install it, but must accept the risk themselves, and it cannot be
-      benchmarked.
+      attestation, and one maintainer merges the pull request without
+      reviewing your code. This is the fast way in. The model appears under
+      your name in Unverified. Users can install it, but must accept the risk
+      themselves, and it cannot be benchmarked.
     </>,
   ],
   [
-    "We can verify it",
+    "You can ask us to verify it",
     <>
-      Verification is a separate, slower review in{" "}
-      <a href="https://github.com/dhis2-chap/chap-marketplace-review" className={LINK}>
-        chap-marketplace-review
-      </a>{" "}
-      that checks the pinned version runs in Chap. A listing may stay
-      unverified. A verified model moves to the main catalog, installs with
-      its listed configurations, and can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      Open a pull request that sets the version&apos;s status to{" "}
+      <code className="font-mono text-[15px] text-ink">verified</code> and
+      points <code className="font-mono text-[15px] text-ink">channels.stable</code>{" "}
+      at it, or ask us to. Three maintainers review the code and approve it.
+      A verified model moves to the main catalog, installs with its listed
+      configurations, and can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
       in the model file, to be run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
@@ -200,7 +198,7 @@ export default function ContributePage() {
             <IconSync24 />
             <p className="text-[14px] leading-[1.55]">
               To publish a new version later, open a pull request that adds it
-              to your file. Each version starts unverified and is reviewed separately.
+              to your file. Each version starts unverified and is verified separately.
             </p>
           </div>
           <div className="d2-notice d2-notice-warning [&_svg]:shrink-0 [&_svg]:fill-exp">

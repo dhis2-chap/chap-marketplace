@@ -202,9 +202,9 @@ export function CatalogClient({
             Unverified
           </h2>
           <p className="mt-2 max-w-[70ch] text-[15px] leading-[1.6] text-ink-2">
-            These listings have no verified stable version. They have not been
-            reviewed by the Chap maintainers and may never be reviewed. Run at
-            your own risk.
+            These listings have no verified stable version. Their code has not
+            been reviewed by the Chap maintainers and may never be. Run at your
+            own risk.
           </p>
           <CardGrid models={unverified} />
         </section>
