@@ -98,7 +98,7 @@ export default function HomePage() {
           <aside className="rounded-[4px] border border-[#a5d6a7] bg-verified-tint p-6">
             <div className="flex items-center gap-2.5 text-verified [&_svg]:fill-current">
               <IconCheckmarkCircle24 />
-              <span className="text-[15px] font-medium">Check the review status</span>
+              <span className="text-[15px] font-medium">Verified to run in Chap</span>
             </div>
             <p className="mt-3 text-[15px] leading-[1.6] text-ink-2">
               <Link href="/docs/verification" className={LINK}>

@@ -51,7 +51,7 @@ covariates:
   allow_free_additional: true
 
 channels:
-  latest: 1.0.0              # add stable only after verification
+  latest: 1.0.0               # add stable only after verification
 
 versions:
   - version: 1.0.0            # your MLServiceInfo.version
@@ -76,7 +76,7 @@ const CHECKS = [
   "It is a chapkit service.",
   "The image is published with a sha-<short commit> tag and a build-provenance attestation (actions/attest-build-provenance).",
   "The pin is the full 40-character commit, the image tag built from it and the digest that tag resolves to.",
-  "Use status: unverified and omit channels.stable until the model review is complete.",
+  "It registers with chap-core and runs a train and a predict.",
   "assessed_status is your own honest rating — we copy it as is.",
   "At least one maintainer GitHub handle is listed.",
 ];
@@ -167,26 +167,6 @@ export default function ContributePage() {
             </span>
           </li>
         </ul>
-      </section>
-
-      <section className="mt-12 max-w-[70ch] text-[15px] leading-[1.6] text-ink-2">
-        <h2 className={H2}>Unverified and verified listings</h2>
-        <p>
-          Unverified means the Chap maintainers have not reviewed the pin, image
-          or license. Run it at your own risk. It needs no model verification
-          approvals, though the repository&apos;s pull-request rules still apply.
-          Automatic checks apply to every listing; they do not establish model
-          performance or suitability for your data.
-        </p>
-        <p className="mt-3">
-          To become verified, a version must pass the review in{" "}
-          <a href="https://github.com/dhis2-chap/chap-marketplace-review" className={LINK}>
-            chap-marketplace-review
-          </a>
-          . Maintainers then record the reviewers, set its status to verified
-          and point the stable channel to it. A verified version that loses its
-          status must be deprecated or yanked, not silently changed to unverified.
-        </p>
       </section>
 
       <section className="mt-12">

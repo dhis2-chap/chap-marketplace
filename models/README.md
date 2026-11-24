@@ -56,35 +56,19 @@ No listed model is currently self-assessed `green`.
 ## Unverified listings and promotion
 
 Start a new version with `status: unverified` and `verified_by: []`. Set
-`channels.latest` to its version and omit `channels.stable` if there is no
-verified version. An existing verified stable version can stay selected while
-a newer latest version is unverified.
-
-Unverified versions have not been reviewed by the Chap maintainers: the pin,
-image and license have not been checked by maintainers. Run at your own risk.
-They may stay unverified indefinitely; listing does not promise a future review.
-Schema validation, full commit and image digest pins, tag checks and build
-attestations still apply to **every** version through the existing CI checks.
-Licensing requirements are handled separately in CLIM-1994. Unverified listings
-need no model verification approvals; the repository's branch protection and
-pull-request approval requirements still apply.
+`channels.latest` to it and omit `channels.stable` if the model has no verified
+version yet; an existing verified stable version can stay selected while a newer
+latest is unverified. Unverified versions have not been reviewed by the Chap
+maintainers and may stay unverified indefinitely. The site lists them
+separately, and `chap-admin install` only installs them as a custom image with
+`--accept-risk`.
 
 Promotion requires a completed review in
-[chap-marketplace-review](https://github.com/dhis2-chap/chap-marketplace-review).
-Record the reviewers, change that version's status to `verified`, and select it
-as `channels.stable` in a pull request. Merging alone does not confer verification.
-If a verified version later loses its status, mark it `deprecated` or `yanked`
-and remove or replace its stable pointer; do not silently relabel it unverified.
-
-The pins listed before this review process existed stay verified: they were
-verified by the earlier three-approval merge gate or pinned by the
-maintainers. New pins start unverified and need a review verdict.
-
-`chap-admin install <id>` and `install-all` only use verified stable pins.
-An unverified version can be installed as a custom image with
-`chap-admin install <id> --image <image>:<tag>@<digest> --accept-risk`.
-The site leaves `--accept-risk` out of copied commands so the user must add it
-explicitly. Custom installs get one default configuration.
+[chap-marketplace-review](https://github.com/dhis2-chap/chap-marketplace-review):
+record the reviewers, set the version's status to `verified` and point
+`channels.stable` at it. A version that loses verification is marked
+`deprecated` or `yanked`, never relabelled unverified. Pins listed before this
+review process existed stay verified.
 
 ## Models and starters
 

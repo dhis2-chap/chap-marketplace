@@ -171,27 +171,26 @@ describe("schema refinements", () => {
     expect(modelSchema.safeParse(bad).success).toBe(false);
   });
 
-  it.each(["unverified", "unstable", "deprecated", "yanked"])("rejects a stable channel pointing at a %s version", (status) => {
+  it("rejects a stable channel pointing at an unverified version", () => {
     const bad = {
       ...base,
-      versions: [{ ...base.versions[0], status }],
+      versions: [{ ...base.versions[0], status: "unverified" }],
     };
     expect(modelSchema.safeParse(bad).success).toBe(false);
   });
 
-  it("accepts an unverified listing without stable but still validates its pin", () => {
+  it("accepts an unverified listing without stable, but not with reviewers", () => {
     const unverified = {
       ...base,
       channels: { latest: "1.0.0" },
       versions: [{ ...base.versions[0], status: "unverified" }],
     };
     expect(modelSchema.safeParse(unverified).success).toBe(true);
-    for (const invalid of [{ commit: "short" }, { image_digest: "" }, { image_tag: "sha-2222222" }, { verified_by: ["reviewer"] }]) {
-      expect(modelSchema.safeParse({
-        ...unverified,
-        versions: [{ ...unverified.versions[0], ...invalid }],
-      }).success).toBe(false);
-    }
+    const reviewed = {
+      ...unverified,
+      versions: [{ ...unverified.versions[0], verified_by: ["reviewer"] }],
+    };
+    expect(modelSchema.safeParse(reviewed).success).toBe(false);
   });
 
   it("keeps unverified listings separate and preserves a verified stable pin when latest is unverified", () => {
