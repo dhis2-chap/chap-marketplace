@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { SUITES, toBenchmarks, type Specification } from "./chap-api";
-import { loadRegistry, stableVersion } from "./registry";
+import { loadRegistry, latestVersion } from "./registry";
 
 const registry = loadRegistry();
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
-const stable = stableVersion(multistep);
+const stable = latestVersion(multistep);
 const starter = registry.models.find((m) => m.kind === "starter")!;
 const optedOut = registry.models.find((m) => m.kind === "model" && !m.benchmarking)!;
 const suite = SUITES[0];
@@ -116,7 +116,7 @@ describe("toBenchmarks", () => {
         backtest({
           template: optedOut.service_id,
           name: key,
-          digest: stableVersion(optedOut).commit,
+          digest: latestVersion(optedOut).commit,
         }),
       ),
     );
@@ -139,7 +139,7 @@ describe("toBenchmarks", () => {
           id: 5,
           template: starter.service_id,
           name: Object.keys(starter.configurations)[0],
-          digest: stableVersion(starter).commit,
+          digest: latestVersion(starter).commit,
         }),
       ),
     );

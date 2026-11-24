@@ -51,8 +51,7 @@ covariates:
   allow_free_additional: true
 
 channels:
-  stable: 1.0.0               # must point at a verified version
-  latest: 1.0.0
+  latest: 1.0.0              # add stable only after verification
 
 versions:
   - version: 1.0.0            # your MLServiceInfo.version
@@ -60,8 +59,8 @@ versions:
     image_tag: sha-1111111    # the tag built from that commit
     image_digest: sha256:…    # what that tag resolves to
     chapkit: ">=2.0.0,<3"
-    status: verified          # set by maintainers on approval
-    verified_by: []           # the reviewers
+    status: unverified        # no maintainer review yet
+    verified_by: []           # empty until verification
     changelog: First submission.
 
 configurations:
@@ -77,7 +76,7 @@ const CHECKS = [
   "It is a chapkit service.",
   "The image is published with a sha-<short commit> tag and a build-provenance attestation (actions/attest-build-provenance).",
   "The pin is the full 40-character commit, the image tag built from it and the digest that tag resolves to.",
-  "It registers with chap-core and runs a train and a predict.",
+  "Use status: unverified and omit channels.stable until the model review is complete.",
   "assessed_status is your own honest rating — we copy it as is.",
   "At least one maintainer GitHub handle is listed.",
 ];
@@ -95,12 +94,11 @@ const STEPS: [string, ReactNode][] = [
     </>,
   ],
   [
-    "We review and verify it",
+    "Automatic checks run",
     <>
-      The Chap team checks that the model works with Chap: that it is a
-      chapkit service whose published image matches the listed code, that it
-      registers with Chap and can train and predict, and that the file is
-      valid. This is what we call verification. Read{" "}
+      CI validates the file, pinned commit and image digest, and build
+      attestation. Passing these checks does not mean the Chap maintainers
+      have reviewed the model. Read{" "}
       <Link href="/docs/verification" className={LINK}>
         Model verification
       </Link>{" "}
@@ -110,8 +108,8 @@ const STEPS: [string, ReactNode][] = [
   [
     "Your model is listed",
     <>
-      Once the review is approved, the model appears in the marketplace under
-      your name. If you opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      Once the pull request merges, the model appears under your name in
+      Unverified. A listing may stay there indefinitely. If you opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
       in the model file, it is also run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
@@ -171,6 +169,26 @@ export default function ContributePage() {
         </ul>
       </section>
 
+      <section className="mt-12 max-w-[70ch] text-[15px] leading-[1.6] text-ink-2">
+        <h2 className={H2}>Unverified and verified listings</h2>
+        <p>
+          Unverified means the Chap maintainers have not reviewed the pin, image
+          or license. Run it at your own risk. It needs no model verification
+          approvals, though the repository&apos;s pull-request rules still apply.
+          Automatic checks apply to every listing; they do not establish model
+          performance or suitability for your data.
+        </p>
+        <p className="mt-3">
+          To become verified, a version must pass the review in{" "}
+          <a href="https://github.com/dhis2-chap/chap-marketplace-review" className={LINK}>
+            chap-marketplace-review
+          </a>
+          . Maintainers then record the reviewers, set its status to verified
+          and point the stable channel to it. A verified version that loses its
+          status must be deprecated or yanked, not silently changed to unverified.
+        </p>
+      </section>
+
       <section className="mt-12">
         <h2 className={H2}>What happens when you submit</h2>
         <ol className="grid gap-4 md:grid-cols-3">
@@ -189,7 +207,7 @@ export default function ContributePage() {
             <IconSync24 />
             <p className="text-[14px] leading-[1.55]">
               To publish a new version later, open a pull request that adds it
-              to your file. Each version is verified separately.
+              to your file. Each version starts unverified and is reviewed separately.
             </p>
           </div>
           <div className="d2-notice d2-notice-warning [&_svg]:shrink-0 [&_svg]:fill-exp">

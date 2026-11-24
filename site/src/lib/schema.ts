@@ -16,6 +16,7 @@ import { z } from "zod";
 
 export const VERSION_STATUSES = [
   "verified",
+  "unverified",
   "unstable",
   "deprecated",
   "yanked",
@@ -153,7 +154,7 @@ export const modelSchema = z
       allow_free_additional: z.boolean(),
     }),
     channels: z.object({
-      stable: z.string().min(1),
+      stable: z.string().min(1).optional(),
       latest: z.string().min(1),
     }),
     versions: z.array(versionSchema).min(1),
@@ -188,7 +189,8 @@ export const modelSchema = z
 
     const byTag = new Map(model.versions.map((v) => [v.version, v]));
     for (const channel of ["stable", "latest"] as const) {
-      if (!byTag.has(model.channels[channel])) {
+      const tag = model.channels[channel];
+      if (tag !== undefined && !byTag.has(tag)) {
         ctx.addIssue({
           code: "custom",
           path: ["channels", channel],
@@ -196,7 +198,9 @@ export const modelSchema = z
         });
       }
     }
-    const stable = byTag.get(model.channels.stable);
+    const stable = model.channels.stable
+      ? byTag.get(model.channels.stable)
+      : undefined;
     if (stable && stable.status !== "verified") {
       ctx.addIssue({
         code: "custom",
@@ -215,6 +219,13 @@ export const modelSchema = z
         });
       }
       seen.add(v.version);
+      if (v.status === "unverified" && v.verified_by.length > 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["versions", i, "verified_by"],
+          message: "an unverified version cannot have verifying maintainers",
+        });
+      }
       // A sha- tag is the commit; anything else (a semver release tag) is
       // taken at face value.
       const shortCommit = v.commit.slice(0, 7);

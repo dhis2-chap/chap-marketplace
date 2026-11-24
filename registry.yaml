@@ -1,9 +1,9 @@
 # Chap Marketplace — registry index
 #
-# This file is the entry point for the marketplace site. Every model listed
-# here has been reviewed and verified by the Chap maintainers; a model (or a
-# new version of one) only lands in this repo through a pull request approved
-# by three maintainers.
+# This file is the entry point for the marketplace site. Listings can be
+# verified or unverified; each version records its status. Only versions that
+# pass the model review can become verified. All changes land through a PR;
+# a merge alone does not verify a model.
 #
 # The site renders this repo — the repo stays the source of truth and the
 # review gate. See models/README.md for the per-model file format.

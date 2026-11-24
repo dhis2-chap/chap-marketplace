@@ -47,6 +47,8 @@ export interface ModelCardView {
   shortName: string;
   repo: string;
   kind: ModelKind;
+  /** Listings without a verified stable pin stay outside the main catalog. */
+  unverified: boolean;
   summary: string;
   framework: string;
   language: string;
@@ -85,6 +87,7 @@ export function toCardView(model: Model): ModelCardView {
     shortName: pres.shortName,
     repo: repoPath(model),
     kind: model.kind,
+    unverified: !stableVersion(model),
     summary: model.summary,
     framework: pres.framework,
     language: pres.language,
@@ -254,7 +257,7 @@ export interface ModelDetailView {
   imageBase: string;
   runtimeImage: string;
   chapkitRequirement: string;
-  stable: ChannelView;
+  stable: ChannelView | null;
   latest: ChannelView;
   latestSameAsStable: boolean;
   versions: VersionRowView[];
@@ -438,8 +441,8 @@ export function toDetailView(
     defaultCovariates: model.covariates.defaults,
     imageBase: model.source.image,
     runtimeImage: model.source.runtime_image,
-    chapkitRequirement: stable.chapkit,
-    stable: toChannelView(model, "stable", stable),
+    chapkitRequirement: (stable ?? latest).chapkit,
+    stable: stable ? toChannelView(model, "stable", stable) : null,
     latest: toChannelView(model, "latest", latest),
     latestSameAsStable: model.channels.stable === model.channels.latest,
     versions: model.versions.map((v) => ({

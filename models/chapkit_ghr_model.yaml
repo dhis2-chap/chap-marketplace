@@ -60,7 +60,6 @@ covariates:
   allow_free_additional: true
 
 channels:
-  stable: 0.1.9
   latest: 0.1.9
 
 versions:
@@ -69,7 +68,7 @@ versions:
     image_tag: sha-bb661b0
     image_digest: sha256:cee89ce8f4c64de67d3d7d9f024aec39b79acbf94a4420ba285d54ab0f321bec
     chapkit: ">=2.4.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round (CLIM-1745).
     verified_by: []
     changelog: >-
@@ -79,7 +78,7 @@ versions:
     image_tag: sha-84fbe77
     image_digest: sha256:c92c17d38fc5eaadf85b10d180e33bb52bb0ca418fa7e448a55aa38f484a9b77
     chapkit: ">=2.4.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round (security fix).
     verified_by: []
     changelog: >-
@@ -89,7 +88,7 @@ versions:
     image_tag: sha-1748a64
     image_digest: sha256:86d5af5dd4280e63365258e8066a1f5ffaf4b719b02ffceb914e7e7e9b6e006e
     chapkit: ">=2.4.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
@@ -101,7 +100,7 @@ versions:
     image_tag: sha-1a7f8e4
     image_digest: sha256:9621fd2ce265fad9f0d18a1cff6101a64ca12b55c5f4838a33db5dc15f88ef83
     chapkit: ">=2.4.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
@@ -111,7 +110,7 @@ versions:
     image_tag: sha-d4987bc
     image_digest: sha256:3429a43bcc883f9cbe5e682cf3b493f2e633995c5dd4af52efa1b10e5c25c244
     chapkit: ">=2.4.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
@@ -124,7 +123,7 @@ versions:
     image_tag: sha-dfb2e3f
     image_digest: sha256:517f261cc525c58d9924bf1d7a6c7df4cd469f5e840011274e63d9e6c4ef16d6
     chapkit: ">=2.2.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
@@ -134,7 +133,7 @@ versions:
     image_tag: sha-a9532c7
     image_digest: sha256:4242f3981fa27f4c3a47def6e742610dd305c3d278748ecd3153b95fdd98f30e
     chapkit: ">=2.1.2,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-

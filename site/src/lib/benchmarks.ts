@@ -4,6 +4,7 @@ import {
   getRegistry,
   shortCommit,
   stableVersion,
+  latestVersion,
   versionByTag,
   type Registry,
 } from "./registry";
@@ -292,23 +293,23 @@ export function buildBenchmarkSuites(
           (key === null || !b.run?.configuration || b.run.configuration === key),
       );
     const pendingRows = models.flatMap((m) => {
-      const stable = stableVersion(m);
+      const pin = stableVersion(m) ?? latestVersion(m);
       const keys = Object.keys(m.configurations);
       return (keys.length > 0 ? keys : [null])
         .filter((key) => !covered(m, key))
         .map(
           (key): BenchmarkRowView => ({
-            id: `${m.id}@${stable.version}${key ? `.${key}` : ""}`,
+            id: `${m.id}@${pin.version}${key ? `.${key}` : ""}`,
             modelId: m.id,
             name: m.display_name,
-            versionTag: stable.version,
-            isStable: true,
-            pinLine: `${key ? `${key} · ` : ""}${m.id}@${shortCommit(stable.commit)}`,
+            versionTag: pin.version,
+            isStable: pin.version === m.channels.stable,
+            pinLine: `${key ? `${key} · ` : ""}${m.id}@${shortCommit(pin.commit)}`,
             measured: false,
             metrics: [],
             values: {},
             comparisons: {},
-            suiteLine: `${m.id}@${shortCommit(stable.commit)}`,
+            suiteLine: `${m.id}@${shortCommit(pin.commit)}`,
           }),
         );
     });

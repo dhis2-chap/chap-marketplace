@@ -24,6 +24,27 @@ export default function VerificationPage() {
         </p>
         <section>
           <h2 className="mb-3 font-brand text-[22px] font-medium text-ink">
+            Unverified listings
+          </h2>
+          <p>
+            Unverified versions have not been reviewed by the Chap maintainers.
+            Their pin, image and license have not been checked by maintainers.
+            Run them at your own risk. They may remain unverified indefinitely.
+            Schema validation and automatic image checks still apply, but do
+            not replace a model review.
+          </p>
+          <p className="mt-3">
+            Only versions that pass the review in{" "}
+            <a href="https://github.com/dhis2-chap/chap-marketplace-review" className="font-medium text-brand hover:underline">
+              chap-marketplace-review
+            </a>{" "}
+            can become verified and be selected as stable. A pull-request merge
+            alone does not verify a version. Versions that lose verification
+            are deprecated or yanked.
+          </p>
+        </section>
+        <section>
+          <h2 className="mb-3 font-brand text-[22px] font-medium text-ink">
             What we check
           </h2>
           <ul className="list-disc space-y-2 pl-6">

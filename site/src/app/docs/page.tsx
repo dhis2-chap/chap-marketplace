@@ -11,7 +11,7 @@ const ENTRIES = [
   {
     kicker: "marketplace",
     title: "Model verification",
-    body: "What the Chap team checks before a model version is listed, and what verification does not mean.",
+    body: "What verified and unverified versions promise, and what the Chap team checks during review.",
     href: "/docs/verification",
   },
   {
@@ -68,7 +68,7 @@ export default function DocsPage() {
           </h1>
           <p className="max-w-[44ch] text-[17px] leading-[1.7] text-ink-2">
             Guides for running, building and listing chapkit models, and what
-            the Chap team checks before a model is listed.
+            the Chap team checks during model verification.
           </p>
         </div>
         <div className="d2-card overflow-hidden">

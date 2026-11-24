@@ -11,6 +11,7 @@ import {
   imageRef,
   loadRegistry,
   stableVersion,
+  latestVersion,
   verifiedCount,
 } from "../src/lib/registry";
 
@@ -21,13 +22,13 @@ try {
     `registry.yaml OK — ${registry.models.length - starters} models, ${starters} starters\n`,
   );
   for (const model of registry.models) {
-    const stable = stableVersion(model);
+    const pin = stableVersion(model) ?? latestVersion(model);
     console.log(`  ✓ ${model.id}`);
     console.log(
       `      ${model.kind.padEnd(8)} assessed=${model.assessed_status.padEnd(6)} ${verifiedCount(model)} verified pin${verifiedCount(model) === 1 ? "" : "s"}`,
     );
-    console.log(`      commit  ${displayPin(model, stable)}`);
-    console.log(`      image   ${imageRef(model, stable)}`);
+    console.log(`      commit  ${displayPin(model, pin)}`);
+    console.log(`      image   ${imageRef(model, pin)}`);
   }
 
   const benchmarks = loadBenchmarks(registry, registry.root).results;

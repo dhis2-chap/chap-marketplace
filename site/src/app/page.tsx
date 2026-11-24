@@ -98,16 +98,15 @@ export default function HomePage() {
           <aside className="rounded-[4px] border border-[#a5d6a7] bg-verified-tint p-6">
             <div className="flex items-center gap-2.5 text-verified [&_svg]:fill-current">
               <IconCheckmarkCircle24 />
-              <span className="text-[15px] font-medium">Verified to run in Chap</span>
+              <span className="text-[15px] font-medium">Check the review status</span>
             </div>
             <p className="mt-3 text-[15px] leading-[1.6] text-ink-2">
-              Every model version listed here has been reviewed by the Chap
-              team and{" "}
               <Link href="/docs/verification" className={LINK}>
-                verified
+                Verified versions
               </Link>{" "}
-              to run in Chap. Verification means a model works with the
-              platform. It does not tell you how well the model forecasts.
+              have been reviewed for compatibility with Chap. Unverified
+              listings are shown separately and may never be reviewed.
+              Verification does not tell you how well the model forecasts.
               For that, see the{" "}
               <Link href="/benchmarks" className={LINK}>
                 benchmarks

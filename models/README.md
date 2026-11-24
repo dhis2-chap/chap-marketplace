@@ -1,10 +1,9 @@
 # Model registry format (draft, schema_version 2)
 
-One YAML file per whitelisted model. Everything in this directory has been
-reviewed and verified by the Chap maintainers — a model, a new version pin, or
-a new verified configuration only lands here through a pull request approved
-by three maintainers. The marketplace site is a rendering of these files; the
-repo stays the source of truth and the review gate.
+One YAML file per listed model. Versions can be **unverified** or **verified**;
+listing a version does not verify it. The marketplace site renders these files,
+with listings that have no verified stable version in a separate Unverified
+section. All changes go through a pull request.
 
 `../registry.yaml` is the index: marketplace metadata, the review policy, and
 the ordered list of model files.
@@ -33,9 +32,9 @@ declares.
 
 Two separate signals live in every file, and the site keeps them apart:
 
-- **`versions[].status` / `verified_by`** — the marketplace review gate. Three
-  maintainers checked that the pin is the revision it claims to be and that it
-  runs as a chapkit service. This says nothing about forecast quality.
+- **`versions[].status` / `verified_by`** — the marketplace review outcome.
+  `verified` means maintainers reviewed the pin's compatibility with Chap;
+  `unverified` means they have not. Neither status assesses forecast quality.
 - **`assessed_status`** — the *model authors'* own judgement, copied verbatim
   from the service's `MLServiceInfo.model_metadata.author_assessed_status`.
   The marketplace never assigns or reinterprets it, and the site does not
@@ -54,11 +53,44 @@ come from chapkit itself (`src/chapkit/api/service_builder.py`):
 
 No listed model is currently self-assessed `green`.
 
+## Unverified listings and promotion
+
+Start a new version with `status: unverified` and `verified_by: []`. Set
+`channels.latest` to its version and omit `channels.stable` if there is no
+verified version. An existing verified stable version can stay selected while
+a newer latest version is unverified.
+
+Unverified versions have not been reviewed by the Chap maintainers: the pin,
+image and license have not been checked by maintainers. Run at your own risk.
+They may stay unverified indefinitely; listing does not promise a future review.
+Schema validation, full commit and image digest pins, tag checks and build
+attestations still apply to **every** version through the existing CI checks.
+Licensing requirements are handled separately in CLIM-1994. Unverified listings
+need no model verification approvals; the repository's branch protection and
+pull-request approval requirements still apply.
+
+Promotion requires a completed review in
+[chap-marketplace-review](https://github.com/dhis2-chap/chap-marketplace-review).
+Record the reviewers, change that version's status to `verified`, and select it
+as `channels.stable` in a pull request. Merging alone does not confer verification.
+If a verified version later loses its status, mark it `deprecated` or `yanked`
+and remove or replace its stable pointer; do not silently relabel it unverified.
+
+As a one-time correction in CLIM-1995, the existing pins are marked unverified
+and their stable pointers removed because they have not passed this review
+process. Future promotions require a review verdict.
+
+`chap-admin install <id>` and `install-all` only use verified stable pins.
+An unverified version can be installed as a custom image with
+`chap-admin install <id> --image <image>:<tag>@<digest> --accept-risk`.
+The site leaves `--accept-risk` out of copied commands so the user must add it
+explicitly. Custom installs get one default configuration.
+
 ## Models and starters
 
 `kind: starter` marks scaffolding — a repository whose whole purpose is to be
 copied when writing a model, with a placeholder regressor where the real model
-goes. Starters are listed because model authors need a reviewed, running
+goes. Starters are listed because model authors need a
 starting point, but they are counted, filtered and labelled separately from
 forecasting models everywhere on the site, and must never be deployed to
 produce real forecasts. They are called starters, not templates, because in Chap
@@ -153,8 +185,8 @@ versions:                        # newest first
     image_digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
                                  # what that tag resolves to
     chapkit: ">=2.0.0,<3"        # what the pinned revision requires
-    status: unstable             # verified | unstable | deprecated | yanked
-    verified_by: []              # empty until three maintainers approve
+    status: unverified           # verified | unverified | unstable | deprecated | yanked
+    verified_by: []              # empty until the model review is complete
     changelog: >-
       What changed since 1.1.0.
   - version: 1.1.0
@@ -167,7 +199,7 @@ versions:                        # newest first
     changelog: >-
       What changed since 1.0.0.
 
-configurations:                  # verified, copy-pasteable configurations
+configurations:                  # copy-pasteable configurations
   monthly:
     description: >-
       When to use this configuration and what its caveats are.
@@ -221,7 +253,8 @@ configurations:                  # verified, copy-pasteable configurations
   service id.
 - `display_name` is normalised for the catalog: no `(chapkit)` suffix (every
   listed model is a chapkit service), and never a raw repository name.
-- `channels.stable` must point at a version with `status: verified`.
+- `channels.stable` is optional; when present, it must point at a version with
+  `status: verified`. `channels.latest` is required and must resolve to a version.
 - `attribution.author` credits the people who built the model. Preserve an
   author's requested wording. Otherwise, when the Chap team packaged someone
   else's model as a chapkit service, use `Author (adapted by Chap team)`.
@@ -229,11 +262,8 @@ configurations:                  # verified, copy-pasteable configurations
   lines go in `attribution.organization` as a YAML literal block (`|-`).
   No personal contact details: the listing carries no e-mail addresses or
   GitHub handles.
-- `versions[].verified_by` lists the three approving maintainers of the PR
-  that added the pin. `[]` on a verified pin means the pin was verified by
-  the merge gate itself without named approvals on record — true for the
-  chapkit 2.0.0 seed import, which predates this repo's PR flow. Pins added
-  by PR going forward record their approvers.
+- `versions[].verified_by` records the maintainers who completed the model
+  review. It must be empty on unverified versions.
 - `version` keys are the service's own `MLServiceInfo.version`; we do not
   rename them, the channel pointers provide the uniform interface.
 - `changelog` is per-version, free text. `null` until we have one.

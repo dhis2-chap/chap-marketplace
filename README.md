@@ -7,12 +7,17 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/dhis2-chap/chap-marketplace/badge)](https://scorecard.dev/viewer/?uri=github.com/dhis2-chap/chap-marketplace)
 
-A curated, verified catalog of forecasting models for [Chap](https://chap.dhis2.org),
+A catalog of verified and unverified forecasting models for [Chap](https://chap.dhis2.org),
 the Chap Modeling Platform. **This repository is the marketplace**:
 the YAML files at the root are the source of truth, and the website is a
 rendering of them.
 
-Listed model versions are marked **Verified** after a compatibility review.
+Listed model versions start **Unverified** and may remain so indefinitely.
+They are marked **Verified** only after a compatibility review in
+[chap-marketplace-review](https://github.com/dhis2-chap/chap-marketplace-review).
+The site separates listings without a verified stable version and warns that
+their pin, image and license have not been checked by maintainers. Run them at
+your own risk.
 Verification checks the pinned revision and published image, chapkit service
 registration, and training and prediction. **Verified does not assess or
 guarantee model performance.** See [Model verification](https://chap-marketplace.dhis2.org/docs/verification)
@@ -40,7 +45,8 @@ image at `<image>:sha-<short commit>` for running it. The schema cross-checks
 the two, so they cannot drift; `:latest` moves and is never a pin.
 
 Channels (`stable` / `latest`) are named pointers into the version list;
-`channels.stable` must point at a version with `status: verified`. Files also
+`channels.stable` is optional and must point at a version with `status: verified`
+when present. Unverified-only listings have `latest` but no `stable`. Files also
 declare `kind` — a forecasting `model`, or a `starter` for authors to copy —
 and the format is documented with an annotated example in
 [models/README.md](models/README.md).
@@ -64,7 +70,7 @@ Starters — scaffolding, not forecasting models:
 ## Repository rules
 
 `main` is protected. Every change lands by pull request, needs green CI and
-**three approvals**, and the merge is the listing. The count is
+**three approvals**, and the merge is the listing, not model verification. The count is
 `review_policy.required_approvals` in `registry.yaml`, applied to the whole
 repository rather than to registry paths alone: a single number is easier to
 trust than a split, and nothing on the site is urgent enough to deserve a

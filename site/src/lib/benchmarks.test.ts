@@ -13,15 +13,21 @@ import {
   metricRankKey,
   type MetricColumn,
 } from "./metrics";
-import { loadRegistry, shortCommit, stableVersion } from "./registry";
+import { loadRegistry, latestVersion, shortCommit, stableVersion } from "./registry";
 import { toDetailView } from "./views";
 import type { Benchmark, MetricInfo } from "./schema";
 
+// Keep verified fixtures for the stable-channel cases even when real listings
+// are waiting for review.
 const registry = loadRegistry();
+for (const model of registry.models) {
+  model.channels.stable = model.channels.latest;
+  latestVersion(model).status = "verified";
+}
 const arima = registry.models.find((m) => m.id === "auto_arima_chapkit")!;
-const arimaStable = stableVersion(arima);
+const arimaStable = stableVersion(arima)!;
 const multistep = registry.models.find((m) => m.id === "chapkit_simple_multistep_model")!;
-const multistepStable = stableVersion(multistep);
+const multistepStable = stableVersion(multistep)!;
 
 function metric(id: string, displayName: string): MetricInfo {
   return {
@@ -140,7 +146,7 @@ describe("loadBenchmarks", () => {
 
   it("rejects a model that has not opted in to benchmarking", () => {
     const ghr = registry.models.find((m) => m.id === "chapkit_ghr_model")!;
-    const ghrStable = stableVersion(ghr);
+    const ghrStable = stableVersion(ghr)!;
     write(benchmark({ model: ghr.id, version: ghrStable.version, commit: ghrStable.commit }));
     expect(() => loadBenchmarks(registry, root)).toThrow(
       /chapkit_ghr_model\.yaml has not opted in to benchmarking/,
@@ -220,6 +226,19 @@ describe("buildBenchmarkSuites", () => {
       expect(row.measured).toBe(false);
       expect(row.metrics).toEqual([]);
       expect(row.values).toEqual({});
+    }
+  });
+
+  it("uses latest for pending benchmark rows without labelling unverified pins stable", () => {
+    const unverified = loadRegistry();
+    for (const model of unverified.models) {
+      delete model.channels.stable;
+    }
+    const rows = buildBenchmarkSuites(unverified, [smokeRun()], METRICS)[0].rows;
+    expect(rows.length).toBeGreaterThan(1);
+    expect(rows.every((row) => !row.isStable)).toBe(true);
+    for (const row of rows.filter((r) => !r.measured)) {
+      expect(row.versionTag).toBe(unverified.models.find((m) => m.id === row.modelId)!.channels.latest);
     }
   });
 

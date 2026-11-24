@@ -56,7 +56,6 @@ covariates:
   allow_free_additional: true
 
 channels:
-  stable: 0.1.6
   latest: 0.1.6
 
 versions:
@@ -65,7 +64,7 @@ versions:
     image_tag: sha-597636d
     image_digest: sha256:e80d5ccbe876c391c51b4b6d0f02f893b81ccc64844f821279a7b7d50f523442
     chapkit: ">=2.2.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round (CLIM-1745).
     verified_by: []
     changelog: >-
@@ -75,7 +74,7 @@ versions:
     image_tag: sha-8a412b1
     image_digest: sha256:1a3e1d3b116f01fa5c470f6905490c367aa3a47bc5449f2f1fce3e9952482db4
     chapkit: ">=2.2.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
@@ -85,7 +84,7 @@ versions:
     image_tag: sha-84a27e8
     image_digest: sha256:e235b122abfca0e27843b65b42318a412846e680dc820dffda52083493418b52
     chapkit: ">=2.2.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round (security fix).
     verified_by: []
     changelog: >-
@@ -95,7 +94,7 @@ versions:
     image_tag: sha-1ee5ea1
     image_digest: sha256:6fdb83a22d5cf8abcb85bc0d80c29ed0d04f0a30d04ff55a9eedebd09eab6d8e
     chapkit: ">=2.2.0,<3"
-    status: verified
+    status: unverified
     # Pinned by the maintainers without the three-approval round.
     verified_by: []
     changelog: >-
@@ -105,7 +104,7 @@ versions:
     image_tag: sha-a7b2892
     image_digest: sha256:0003a5e89597af306ae9f3e0f7cecc443b78fefee51a11cfaab9cb0a2e29f094
     chapkit: ">=2.1.2,<3"
-    status: verified
+    status: unverified
     # Verified by the merge gate. Part of the chapkit 2.0.0 seed import.
     verified_by: []
     changelog: >-
