@@ -175,6 +175,13 @@ export const modelSchema = z
         message: "a starter is not a forecasting model and cannot be benchmarked",
       });
     }
+    if (model.benchmarking && !model.channels.stable) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["benchmarking"],
+        message: "only a model with a verified stable version can opt in to benchmarking",
+      });
+    }
 
     // The service id is the model id in kebab-case. Enforced so a listing
     // cannot drift from the identity the service registers with chap-core.

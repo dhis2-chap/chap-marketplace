@@ -99,7 +99,8 @@ chap-core and run automatically, so they are not marketplace entries and
 `benchmarking: true` opts a forecasting model in to the marketplace
 benchmarks. Only opted-in models' backtests are read from the benchmarking
 server and shown on the site; without the flag the model page says its
-authors have not opted in. Leave it out to stay out. Starters cannot opt in.
+authors have not opted in. Leave it out to stay out. Starters and listings
+without a verified stable version cannot opt in.
 
 ## Annotated example
 

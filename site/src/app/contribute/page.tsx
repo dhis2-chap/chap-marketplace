@@ -20,7 +20,7 @@ id: my_model
 service_id: my-model          # MLServiceInfo.id — kebab-case of id
 display_name: My Model
 kind: model                   # model | starter
-benchmarking: true            # opt in to the benchmarks (default false)
+benchmarking: false           # true opts in to the benchmarks once verified
 assessed_status: red          # YOUR OWN chapkit AssessedStatus
 
 summary: >-
@@ -109,8 +109,9 @@ const STEPS: [string, ReactNode][] = [
     "Your model is listed",
     <>
       Once the pull request merges, the model appears under your name in
-      Unverified. A listing may stay there indefinitely. If you opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
-      in the model file, it is also run in our{" "}
+      Unverified. A listing may stay there indefinitely. Once it has a
+      verified version, you can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      in the model file, to have it run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
       </Link>

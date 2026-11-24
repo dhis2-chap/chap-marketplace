@@ -156,6 +156,11 @@ describe("schema refinements", () => {
     expect(modelSchema.safeParse(bad).success).toBe(false);
   });
 
+  it("rejects an unverified listing that opts in to benchmarking", () => {
+    const bad = { ...base, channels: { latest: "1.0.0" }, benchmarking: true };
+    expect(modelSchema.safeParse(bad).success).toBe(false);
+  });
+
   it("keeps GHRmodel out of the benchmarks", () => {
     const ghr = loadRegistry().models.find((m) => m.id === "chapkit_ghr_model")!;
     expect(ghr.benchmarking).toBe(false);
