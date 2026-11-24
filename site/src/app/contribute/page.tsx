@@ -99,32 +99,35 @@ const STEPS: [string, ReactNode][] = [
     </>,
   ],
   [
-    "It is checked and listed",
+    "It is listed as unverified",
     <>
       CI validates the file, pinned commit, image digest and build
-      attestation, and three maintainers approve the pull request. Once it
-      merges, the model appears under your name in Unverified. Listing is not
-      verification, and a listing may stay unverified indefinitely.
+      attestation, and three maintainers approve the pull request. Nobody
+      reviews your model&apos;s code at this step, so it is the fast way in.
+      Once it merges, the model appears under your name in Unverified. Users
+      can install it, but must accept the risk themselves, and it cannot be
+      benchmarked.
     </>,
   ],
   [
-    "We verify it",
+    "We can verify it",
     <>
-      A version becomes verified only after a review in{" "}
+      Verification is a separate, slower review in{" "}
       <a href="https://github.com/dhis2-chap/chap-marketplace-review" className={LINK}>
         chap-marketplace-review
-      </a>
-      . Read{" "}
-      <Link href="/docs/verification" className={LINK}>
-        Model verification
-      </Link>{" "}
-      for what it covers and what it does not. A model with a verified
-      version can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
+      </a>{" "}
+      that checks the pinned version runs in Chap. A listing may stay
+      unverified. A verified model moves to the main catalog, installs with
+      its listed configurations, and can opt in, by setting <code className="font-mono text-[15px] text-ink">benchmarking: true</code>{" "}
       in the model file, to be run in our{" "}
       <Link href="/benchmarks" className={LINK}>
         benchmarks
       </Link>
-      .
+      . Read{" "}
+      <Link href="/docs/verification" className={LINK}>
+        Model verification
+      </Link>{" "}
+      for what it covers and what it does not.
     </>,
   ],
 ];
